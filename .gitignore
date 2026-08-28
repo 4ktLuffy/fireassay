@@ -24,3 +24,8 @@ spike/corpus_small.jsonl
 spike/gen.db
 spike/*.db
 spike/*.jsonl
+
+# the real run's LLM cache is the checkpoint for a multi-hour generation
+# run - losing it means losing hours of model time. Smoke caches stay ignored.
+!.cache/llm/
+!.cache/llm/responses.jsonl
