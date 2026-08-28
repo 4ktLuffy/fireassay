@@ -24,6 +24,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
+from fireassay.curate.models import Decision, QueueItem, RubricVerdict
+from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
 from fireassay.hashing import config_hash as _config_hash
 from fireassay.hashing import suite_hash as _suite_hash
 from fireassay.models import (
@@ -39,6 +41,14 @@ from fireassay.models import (
 from fireassay.score.invariants import InvariantViolation
 
 _MIGRATIONS_DIR = Path(__file__).parent / "migrations"
+
+#: The name of `filter.pipeline`'s final stage ("balance") — duplicated
+#: here as a literal rather than imported, for the same reason
+#: `FilterResultRow` is its own dataclass rather than `filter.pipeline.
+#: StageResult`: `store/db.py` does not import pipeline modules from
+#: packages that import `Store`. `get_kept_candidate_ids` uses it to
+#: define "kept": a candidate_id with a `kept=1` row at this exact stage.
+_FINAL_FILTER_STAGE = "balance"
 
 
 @dataclass(frozen=True)
@@ -77,6 +87,24 @@ class MutationRunRow:
 
 
 @dataclass(frozen=True)
+class FilterResultRow:
+    """One persisted `filter_result` row (M3).
+
+    A plain dataclass, not `filter.pipeline.StageResult` — mirrors
+    `ControlCheckRow`'s reasoning: modules under `generate/`/`filter/`
+    import `Store` (`generate.pipeline`, and any future `filter` CLI
+    wiring), so `store/db.py` must not import back from either package's
+    pipeline modules to build its own return type.
+    """
+
+    candidate_id: str
+    stage: str
+    kept: bool
+    reason: str | None
+    checked_at: str
+
+
+@dataclass(frozen=True)
 class MutantRow:
     id: str
     mutation_run_id: str
@@ -103,6 +131,18 @@ class AdmissibilityAlreadySetError(Exception):
     verdict must not silently change underneath a reader who already
     looked at it. Recompute under a fresh run if the controls or expected
     bands genuinely changed.
+    """
+
+
+class AgreementAlreadySetError(Exception):
+    """Raised by `set_agreement` when `suite_id` already has a recorded
+    `agreement_json` verdict that **conflicts** with the one just
+    computed. Mirrors `AdmissibilityAlreadySetError` exactly: a
+    byte-identical re-assessment is an idempotent no-op, but a genuinely
+    different verdict landing on a suite that already has one must not
+    silently overwrite it — a suite's `agreement_json` is surfaced in
+    every report built on that suite, permanently (M3-SPEC.md §4), so it
+    must not silently change underneath a reader who already looked at it.
     """
 
 
@@ -256,7 +296,7 @@ class Store:
         unique_ids = sorted(set(question_ids))
         h = _suite_hash(unique_ids)
         row = self._conn.execute(
-            "SELECT id, name, version, suite_hash, frozen_at, question_count "
+            "SELECT id, name, version, suite_hash, frozen_at, question_count, agreement_json "
             "FROM suite WHERE name = ? AND version = ?",
             (name, version),
         ).fetchone()
@@ -273,6 +313,7 @@ class Store:
                 suite_hash=row["suite_hash"],
                 frozen_at=row["frozen_at"],
                 question_count=row["question_count"],
+                agreement_json=json.loads(row["agreement_json"]),
             )
         suite_id = h
         frozen_at = _now()
@@ -759,7 +800,7 @@ class Store:
 
     def get_suite(self, name: str, version: str) -> Suite:
         row = self._conn.execute(
-            "SELECT id, name, version, suite_hash, frozen_at, question_count "
+            "SELECT id, name, version, suite_hash, frozen_at, question_count, agreement_json "
             "FROM suite WHERE name = ? AND version = ?",
             (name, version),
         ).fetchone()
@@ -772,6 +813,7 @@ class Store:
             suite_hash=row["suite_hash"],
             frozen_at=row["frozen_at"],
             question_count=row["question_count"],
+            agreement_json=json.loads(row["agreement_json"]),
         )
 
     def iter_questions(self, suite_id: str) -> Iterator[Question]:
@@ -886,3 +928,241 @@ class Store:
         if row is None:
             return None
         return self.get_run(row["id"])
+
+    # -- M3: agreement --------------------------------------------------------
+
+    def set_agreement(self, suite_id: str, agreement_json: Mapping[str, object]) -> None:
+        """Record `curate.agreement`'s verdict onto `suite_id`. Idempotent
+        for a byte-identical re-assessment; raises `AgreementAlreadySetError`
+        for a genuinely different one — see that exception's docstring."""
+        row = self._conn.execute("SELECT agreement_json FROM suite WHERE id = ?", (suite_id,)).fetchone()
+        if row is None:
+            raise KeyError(f"no such suite: {suite_id}")
+        new_json = json.dumps(dict(agreement_json), sort_keys=True)
+        if row["agreement_json"] not in ("{}", None):
+            if row["agreement_json"] == new_json:
+                return
+            raise AgreementAlreadySetError(
+                f"suite {suite_id} already has a CONFLICTING agreement_json recorded: "
+                f"stored={row['agreement_json']!r}; new={new_json!r}"
+            )
+        self._conn.execute("UPDATE suite SET agreement_json = ? WHERE id = ?", (new_json, suite_id))
+        self._conn.commit()
+
+    # -- M3: candidate ----------------------------------------------------------
+
+    def put_candidate(self, candidate: ResolvedCandidate) -> None:
+        """Persist one span-resolved, feature-measured candidate. Idempotent
+        on `id` (`INSERT OR IGNORE`) — `generate.pipeline.generate_candidates`
+        mints a fresh uuid4 per raw candidate, so a repeat insert only
+        happens if a caller genuinely re-submits the same `ResolvedCandidate`
+        object, which is safe to no-op."""
+        self._conn.execute(
+            "INSERT OR IGNORE INTO candidate (id, batch_id, text, qtype, difficulty, reference_answer, "
+            "quote, source_doc_id, char_start, char_end, features_json, model_digest, prompt_hash, "
+            "created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                candidate.id,
+                candidate.batch_id,
+                candidate.text,
+                candidate.qtype,
+                candidate.difficulty,
+                candidate.reference_answer,
+                candidate.quote,
+                candidate.source_doc_id,
+                candidate.char_start,
+                candidate.char_end,
+                json.dumps(candidate.features.model_dump(), sort_keys=True),
+                candidate.model_digest,
+                candidate.prompt_hash,
+                candidate.created_at,
+            ),
+        )
+        self._conn.commit()
+
+    @staticmethod
+    def _row_to_candidate(row: sqlite3.Row) -> ResolvedCandidate:
+        return ResolvedCandidate(
+            id=row["id"],
+            batch_id=row["batch_id"],
+            text=row["text"],
+            qtype=row["qtype"],
+            difficulty=row["difficulty"],
+            reference_answer=row["reference_answer"],
+            quote=row["quote"],
+            source_doc_id=row["source_doc_id"],
+            char_start=row["char_start"],
+            char_end=row["char_end"],
+            features=LexicalFeatures(**json.loads(row["features_json"])),
+            model_digest=row["model_digest"],
+            prompt_hash=row["prompt_hash"],
+            created_at=row["created_at"],
+        )
+
+    def get_candidate(self, candidate_id: str) -> ResolvedCandidate:
+        row = self._conn.execute("SELECT * FROM candidate WHERE id = ?", (candidate_id,)).fetchone()
+        if row is None:
+            raise KeyError(f"no such candidate: {candidate_id}")
+        return self._row_to_candidate(row)
+
+    def get_candidates_by_batch(self, batch_id: str) -> list[ResolvedCandidate]:
+        rows = self._conn.execute(
+            "SELECT * FROM candidate WHERE batch_id = ? ORDER BY created_at, id", (batch_id,)
+        ).fetchall()
+        return [self._row_to_candidate(r) for r in rows]
+
+    def get_all_candidates(self) -> list[ResolvedCandidate]:
+        rows = self._conn.execute("SELECT * FROM candidate ORDER BY created_at, id").fetchall()
+        return [self._row_to_candidate(r) for r in rows]
+
+    # -- M3: filter_result --------------------------------------------------
+
+    def put_filter_result(self, candidate_id: str, stage: str, kept: bool, reason: str | None) -> None:
+        """Persist one `(candidate_id, stage)` filter-pipeline outcome.
+        Idempotent on `(candidate_id, stage)` (the primary key) — both
+        `generate.pipeline` and `filter.pipeline` visit each candidate at
+        each stage at most once by construction, so a repeat call is only
+        ever a genuine re-run, safe to no-op rather than error."""
+        self._conn.execute(
+            "INSERT OR IGNORE INTO filter_result (candidate_id, stage, kept, reason, checked_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (candidate_id, stage, int(kept), reason, _now()),
+        )
+        self._conn.commit()
+
+    def get_all_filter_results(self) -> list[FilterResultRow]:
+        rows = self._conn.execute(
+            "SELECT candidate_id, stage, kept, reason, checked_at FROM filter_result"
+        ).fetchall()
+        return [
+            FilterResultRow(
+                candidate_id=r["candidate_id"],
+                stage=r["stage"],
+                kept=bool(r["kept"]),
+                reason=r["reason"],
+                checked_at=r["checked_at"],
+            )
+            for r in rows
+        ]
+
+    def get_kept_candidate_ids(self) -> set[str]:
+        """Every candidate_id that survived the full filter pipeline: has a
+        `kept=1` `filter_result` row at the final stage (`balance`). A
+        candidate the filter pipeline has not yet processed at all — no
+        `balance`-stage row either way — is correctly excluded, not
+        assumed kept."""
+        rows = self._conn.execute(
+            "SELECT candidate_id FROM filter_result WHERE stage = ? AND kept = 1",
+            (_FINAL_FILTER_STAGE,),
+        ).fetchall()
+        return {r["candidate_id"] for r in rows}
+
+    # -- M3: queue_item -----------------------------------------------------
+
+    def put_queue_items(self, items: Sequence[QueueItem]) -> None:
+        """Persist a batch of queue items. Idempotent on `id` (content
+        hash of `(queue_id, curator_id, candidate_id)`, see `curate.queue.
+        build_queue`) — re-building an unchanged queue is a no-op."""
+        for item in items:
+            self._conn.execute(
+                "INSERT OR IGNORE INTO queue_item (id, queue_id, curator_id, candidate_id, position, "
+                "is_honeypot, honeypot_expected_reason, is_double_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    item.id,
+                    item.queue_id,
+                    item.curator_id,
+                    item.candidate_id,
+                    item.position,
+                    int(item.is_honeypot),
+                    item.honeypot_expected_reason,
+                    int(item.is_double_review),
+                ),
+            )
+        self._conn.commit()
+
+    @staticmethod
+    def _row_to_queue_item(row: sqlite3.Row) -> QueueItem:
+        return QueueItem(
+            id=row["id"],
+            queue_id=row["queue_id"],
+            curator_id=row["curator_id"],
+            candidate_id=row["candidate_id"],
+            position=row["position"],
+            is_honeypot=bool(row["is_honeypot"]),
+            honeypot_expected_reason=row["honeypot_expected_reason"],
+            is_double_review=bool(row["is_double_review"]),
+        )
+
+    def has_queue_items_for_curator(self, curator_id: str) -> bool:
+        row = self._conn.execute(
+            "SELECT 1 FROM queue_item WHERE curator_id = ? LIMIT 1", (curator_id,)
+        ).fetchone()
+        return row is not None
+
+    def next_undecided_queue_item(self, curator_id: str) -> QueueItem | None:
+        """The earliest-position `curator_id` queue item with no recorded
+        `decision` yet for `(candidate_id, curator_id)`. Once *any*
+        decision exists for a pair, that item is done — `decision` is
+        append-only, so a changed mind is a new row for the same pair, not
+        a reason to re-serve the item (M3-SPEC.md §5)."""
+        row = self._conn.execute(
+            "SELECT * FROM queue_item WHERE curator_id = ? AND candidate_id NOT IN "
+            "(SELECT candidate_id FROM decision WHERE curator_id = ?) ORDER BY position ASC LIMIT 1",
+            (curator_id, curator_id),
+        ).fetchone()
+        return None if row is None else self._row_to_queue_item(row)
+
+    def get_all_queue_items(self) -> list[QueueItem]:
+        rows = self._conn.execute("SELECT * FROM queue_item ORDER BY curator_id, position").fetchall()
+        return [self._row_to_queue_item(r) for r in rows]
+
+    # -- M3: decision -----------------------------------------------------------
+
+    def put_decision(self, decision: Decision) -> Decision:
+        """Persist `decision`, minting a fresh `id`/`decided_at` regardless
+        of whatever `decision.id`/`decision.decided_at` were set to (a
+        `Decision` built from a submitted `verdict.json` never sets
+        either) — always an INSERT, never an UPDATE: `decision` is
+        append-only (M3-SPEC.md §5)."""
+        decision_id = uuid.uuid4().hex
+        decided_at = _now()
+        self._conn.execute(
+            "INSERT INTO decision (id, candidate_id, curator_id, decision, reject_reason, rubric_json, "
+            "edited_text, edited_answer, notes, duration_ms, decided_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                decision_id,
+                decision.candidate_id,
+                decision.curator_id,
+                decision.decision,
+                decision.reject_reason,
+                json.dumps(decision.rubric.model_dump(), sort_keys=True),
+                decision.edited_text,
+                decision.edited_answer,
+                decision.notes,
+                decision.duration_ms,
+                decided_at,
+            ),
+        )
+        self._conn.commit()
+        return decision.model_copy(update={"id": decision_id, "decided_at": decided_at})
+
+    @staticmethod
+    def _row_to_decision(row: sqlite3.Row) -> Decision:
+        return Decision(
+            id=row["id"],
+            candidate_id=row["candidate_id"],
+            curator_id=row["curator_id"],
+            decision=row["decision"],
+            reject_reason=row["reject_reason"],
+            rubric=RubricVerdict(**json.loads(row["rubric_json"])),
+            edited_text=row["edited_text"],
+            edited_answer=row["edited_answer"],
+            notes=row["notes"],
+            duration_ms=row["duration_ms"],
+            decided_at=row["decided_at"],
+        )
+
+    def get_all_decisions(self) -> list[Decision]:
+        rows = self._conn.execute("SELECT * FROM decision ORDER BY decided_at").fetchall()
+        return [self._row_to_decision(r) for r in rows]

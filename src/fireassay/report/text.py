@@ -1,5 +1,6 @@
-"""Render `ComparabilityReport`/`Leaderboard` objects, and (M2) control and
-mutation results, to the terminal via `rich`."""
+"""Render `ComparabilityReport`/`Leaderboard` objects, (M2) control and
+mutation results, and (M3) curation funnel reports, to the terminal via
+`rich`."""
 
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ from rich.table import Table
 
 from fireassay.compare import Leaderboard
 from fireassay.controls.base import ControlOutcome
+from fireassay.curate.report import CurateReport, SessionFlag
 from fireassay.integrity import RefusalReason
 from fireassay.mutation.score import MutationScoreResult
 from fireassay.store.db import ControlCheckRow, MutantRow, MutationRunRow
@@ -214,3 +216,110 @@ def render_mutation_run(
         rows,
         console,
     )
+
+
+def render_curate_report(report: CurateReport, console: Console | None = None) -> None:
+    """Render `fireassay curate report`'s output (M3-SPEC.md §4/§6)."""
+    console = console or Console()
+
+    funnel_table = Table(title="curation funnel")
+    funnel_table.add_column("stage")
+    funnel_table.add_column("kept", justify="right")
+    funnel_table.add_column("rejected", justify="right")
+    funnel_table.add_column("reasons")
+    for stage in report.funnel.stages:
+        reasons = ", ".join(f"{reason}={count}" for reason, count in sorted(stage.rejected_by_reason.items()))
+        funnel_table.add_row(stage.stage, str(stage.kept), str(stage.rejected), reasons)
+    console.print(funnel_table)
+    reconciled = report.funnel.reconciles()
+    reconcile_style = "green" if reconciled else "bold red"
+    console.print(
+        f"generated={report.funnel.generated}  filter_kept={report.funnel.filter_kept}  "
+        f"[{reconcile_style}]reconciles={reconciled}[/{reconcile_style}]"
+    )
+    console.print(
+        f"curated: accepted={report.funnel.accepted}  edited={report.funnel.edited}  "
+        f"rejected={report.funnel.rejected}  reject_reasons={report.funnel.reject_reason_counts}"
+    )
+    console.print(
+        f"reviewer_hours={report.reviewer_hours:.2f}  "
+        f"median_seconds_per_item={report.median_seconds_per_item}"
+    )
+
+    agreement_table = Table(title="Krippendorff's alpha (agreement, not accuracy)")
+    agreement_table.add_column("criterion")
+    agreement_table.add_column("status")
+    agreement_table.add_column("alpha", justify="right")
+    agreement_table.add_column("flag")
+    agreement_table.add_column("detail")
+    for criterion, result in report.agreement_by_criterion.items():
+        # "OK but below threshold" and "not OK at all" are reported as
+        # distinct flags -- a NaN/raised alpha must never be indistinguishable
+        # from "we measured it and agreement is fine" (see agreement.py).
+        if criterion in report.unmeasurable_criteria:
+            flag = f"[bold red]{result.status}[/bold red]"
+        elif criterion in report.low_agreement_criteria:
+            flag = "[bold yellow]LOW AGREEMENT[/bold yellow]"
+        else:
+            flag = ""
+        alpha_text = f"{result.alpha:.4f}" if result.alpha is not None else "n/a"
+        agreement_table.add_row(criterion, result.status, alpha_text, flag, result.detail)
+    console.print(agreement_table)
+
+    honeypot_table = Table(title="honeypot accuracy (correctness, not agreement)")
+    honeypot_table.add_column("curator")
+    honeypot_table.add_column("accuracy", justify="right")
+    for curator, accuracy in sorted(report.honeypot_accuracy_by_curator.items()):
+        honeypot_table.add_row(curator, f"{accuracy:.4f}" if accuracy is not None else "n/a")
+    console.print(honeypot_table)
+
+    decile_table = Table(title="honeypot accuracy by session decile")
+    decile_table.add_column("decile")
+    decile_table.add_column("accuracy", justify="right")
+    for decile, accuracy in sorted(report.honeypot_accuracy_by_session_decile.items()):
+        decile_table.add_row(str(decile), f"{accuracy:.4f}" if accuracy is not None else "n/a")
+    console.print(decile_table)
+
+    def _flag_text(flag: SessionFlag) -> str:
+        return f"{flag.curator_id} session {flag.session_index} (n={flag.n_decisions})"
+
+    if report.autopilot_flags:
+        console.print(
+            "[bold yellow]AUTOPILOT[/bold yellow]: "
+            + ", ".join(_flag_text(f) for f in report.autopilot_flags)
+        )
+    if report.speeding_flags:
+        console.print(
+            "[bold yellow]SPEEDING[/bold yellow]: "
+            + ", ".join(_flag_text(f) for f in report.speeding_flags)
+        )
+    console.print(
+        f"[dim]sessions are recommended to stay under {report.recommended_max_session_minutes} minutes — "
+        "the documented threshold beyond which mental fatigue measurably degrades annotation quality.[/dim]"
+    )
+
+    if report.coverage is not None:
+        cov = report.coverage
+        console.print(
+            f"content coverage: {cov.documents_with_questions}/{cov.total_documents} documents "
+            f"({cov.doc_coverage_fraction:.2%})"
+        )
+        cell_table = Table(title="(qtype x difficulty) cell occupancy")
+        cell_table.add_column("qtype")
+        cell_table.add_column("difficulty")
+        cell_table.add_column("count", justify="right")
+        for (qtype, difficulty), count in sorted(cov.cell_occupancy.items()):
+            cell_table.add_row(qtype, difficulty, str(count))
+        console.print(cell_table)
+    else:
+        console.print("[dim]content coverage: no --corpus given, skipped[/dim]")
+
+    if report.difficulty_correlation:
+        corr_table = Table(title="proposed difficulty vs. measured lexical features (Pearson r)")
+        corr_table.add_column("feature")
+        corr_table.add_column("r", justify="right")
+        for feature, r in sorted(report.difficulty_correlation.items()):
+            corr_table.add_row(feature, f"{r:.4f}")
+        console.print(corr_table)
+    else:
+        console.print("[dim]difficulty/feature correlation: not enough variation to compute[/dim]")

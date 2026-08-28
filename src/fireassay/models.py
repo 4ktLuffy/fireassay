@@ -160,6 +160,15 @@ class Suite(BaseModel):
     `id` is the suite's `suite_hash`: suites, like questions and configs,
     are content-addressed, so two freezes of the identical question set
     (even under different (name, version) labels) share the same `id`.
+
+    `agreement_json` (added in M3, migration 0003) records
+    `curate.agreement`'s Krippendorff's-α verdict once curation has run
+    against the batch this suite was frozen from — M3-SPEC.md §4: "α < 0.6
+    ... is recorded in `suite.agreement_json` and surfaced in every report
+    built on that suite, permanently." Defaults to `{}` (never assessed
+    yet), exactly mirroring `Run.admissibility_json`'s M2-era default, so
+    every M1/M2 test constructing a `Suite` directly keeps working
+    unchanged; only `Store.set_agreement` (M3) ever populates it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -170,6 +179,7 @@ class Suite(BaseModel):
     suite_hash: str
     frozen_at: str
     question_count: int
+    agreement_json: dict[str, object] = Field(default_factory=dict)
 
 
 class Config(BaseModel):

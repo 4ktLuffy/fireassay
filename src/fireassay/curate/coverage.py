@@ -1,0 +1,90 @@
+"""Content validity (`docs/SPEC.md` §7, M3-SPEC.md §4): does the curated
+set actually spread across the corpus and the `(qtype, difficulty)` grid,
+or is it concentrated on a fraction of both?
+
+Also: **difficulty validation** — the spike (`spike/RESULTS.md`) found a
+generator's proposed `difficulty` label can be *inverted* relative to what
+actually drives retrieval (easy: 0.176 recall, hard: 0.588). `difficulty
+_feature_correlation` reports Pearson r between the proposed label
+(ordinal: easy=0, medium=1, hard=2) and each measured `LexicalFeatures`
+field, over every generated candidate — "a difficulty label that does not
+correlate with anything measurable is a label, not a difficulty" (M3-SPEC.md
+§2), and this is the number that lets a report say so.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Sequence
+from dataclasses import dataclass
+
+import numpy as np
+
+from fireassay.generate.models import ResolvedCandidate
+from fireassay.system.corpus import Doc
+
+_DIFFICULTY_ORDER = {"easy": 0.0, "medium": 1.0, "hard": 2.0}
+_LEXICAL_FEATURE_NAMES = ("title_overlap", "quote_overlap", "question_len_tokens")
+
+
+@dataclass(frozen=True)
+class CoverageReport:
+    #: fraction of corpus documents with >= 1 curated question.
+    doc_coverage_fraction: float
+    documents_with_questions: int
+    total_documents: int
+    #: {(qtype, difficulty): count}, over every (qtype, difficulty)
+    #: combination that appears at least once — cells with zero questions
+    #: are simply absent, which is itself the signal a sparse suite shows.
+    cell_occupancy: dict[tuple[str, str], int]
+
+
+def content_coverage(candidates: Sequence[ResolvedCandidate], docs: Sequence[Doc]) -> CoverageReport:
+    """Coverage over `candidates` — the caller decides which population
+    this means (M3-SPEC.md leaves this to the report: `curate report`
+    passes the currently accepted/edited set, since "the funnel reports
+    how many questions survived; it must also report coverage" is framed
+    in terms of survivors, not raw generation output)."""
+    doc_ids_with_questions = {c.source_doc_id for c in candidates}
+    total_documents = len(docs)
+    documents_with_questions = sum(1 for d in docs if d.doc_id in doc_ids_with_questions)
+    doc_coverage_fraction = (documents_with_questions / total_documents) if total_documents else 0.0
+
+    cell_occupancy: dict[tuple[str, str], int] = {}
+    for c in candidates:
+        cell = (c.qtype, c.difficulty)
+        cell_occupancy[cell] = cell_occupancy.get(cell, 0) + 1
+
+    return CoverageReport(
+        doc_coverage_fraction=doc_coverage_fraction,
+        documents_with_questions=documents_with_questions,
+        total_documents=total_documents,
+        cell_occupancy=cell_occupancy,
+    )
+
+
+def difficulty_feature_correlation(candidates: Sequence[ResolvedCandidate]) -> dict[str, float]:
+    """Pearson r between proposed `difficulty` (ordinal 0/1/2) and each
+    `LexicalFeatures` field, over `candidates`.
+
+    `{}` when fewer than 2 candidates are given, or when `difficulty` (or
+    a feature) is constant across all of them — `numpy.corrcoef` returns
+    `nan` for a zero-variance input, which would silently read as "no
+    correlation" when the honest answer is "undefined, not enough
+    variation to compute one"; both are reported as simply absent from the
+    result rather than as a misleading `0.0`.
+    """
+    if len(candidates) < 2:
+        return {}
+    difficulties = np.array([_DIFFICULTY_ORDER[c.difficulty] for c in candidates], dtype=float)
+    if np.std(difficulties) == 0.0:
+        return {}
+
+    result: dict[str, float] = {}
+    for feature_name in _LEXICAL_FEATURE_NAMES:
+        values = np.array([getattr(c.features, feature_name) for c in candidates], dtype=float)
+        if np.std(values) == 0.0:
+            continue
+        r = float(np.corrcoef(difficulties, values)[0, 1])
+        if not np.isnan(r):
+            result[feature_name] = r
+    return result

@@ -1,0 +1,8 @@
+# Example filter.yaml for `fireassay filter --config`. Unknown keys are
+# rejected (see filter/config.py) rather than silently ignored.
+
+min_question_tokens: 5
+max_question_tokens: 60
+near_dup_jaccard_threshold: 0.85
+generic_df_pct: 0.05
+cell_cap: 200

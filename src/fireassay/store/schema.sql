@@ -36,6 +36,7 @@ CREATE TABLE suite (
     suite_hash     TEXT NOT NULL,
     frozen_at      TEXT NOT NULL,
     question_count INTEGER NOT NULL,
+    agreement_json TEXT NOT NULL DEFAULT '{}',   -- added in migration 0003 (M3)
     UNIQUE (name, version)
 );
 
@@ -91,4 +92,58 @@ CREATE TABLE score (
 
 -- See migrations/0001_initial.sql for the append-only trigger definitions
 -- (result_seal_insert, result_seal_update, score_seal_insert,
--- score_seal_update).
+-- score_seal_update). See migrations/0002_controls_mutation.sql for
+-- control_check / mutation_run / mutant (M2), and
+-- migrations/0003_generation_curation.sql for candidate / filter_result /
+-- queue_item / decision (M3) and their own append-only triggers.
+
+CREATE TABLE candidate (
+    id               TEXT PRIMARY KEY,
+    batch_id         TEXT NOT NULL,
+    text             TEXT NOT NULL,
+    qtype            TEXT NOT NULL,
+    difficulty       TEXT NOT NULL,
+    reference_answer TEXT NOT NULL,
+    quote            TEXT NOT NULL,
+    source_doc_id    TEXT NOT NULL,
+    char_start       INTEGER NOT NULL,
+    char_end         INTEGER NOT NULL,
+    features_json    TEXT NOT NULL,
+    model_digest     TEXT NOT NULL,
+    prompt_hash      TEXT NOT NULL,
+    created_at       TEXT NOT NULL
+);
+
+CREATE TABLE filter_result (
+    candidate_id TEXT NOT NULL,
+    stage        TEXT NOT NULL,
+    kept         INTEGER NOT NULL,
+    reason       TEXT,
+    checked_at   TEXT NOT NULL,
+    PRIMARY KEY (candidate_id, stage)
+);
+
+CREATE TABLE queue_item (
+    id                       TEXT PRIMARY KEY,
+    queue_id                 TEXT NOT NULL,
+    curator_id               TEXT NOT NULL,
+    candidate_id             TEXT NOT NULL,
+    position                 INTEGER NOT NULL,
+    is_honeypot              INTEGER NOT NULL,
+    honeypot_expected_reason TEXT,
+    is_double_review         INTEGER NOT NULL
+);
+
+CREATE TABLE decision (
+    id            TEXT PRIMARY KEY,
+    candidate_id  TEXT NOT NULL,
+    curator_id    TEXT NOT NULL,
+    decision      TEXT NOT NULL,
+    reject_reason TEXT,
+    rubric_json   TEXT NOT NULL,
+    edited_text   TEXT,
+    edited_answer TEXT,
+    notes         TEXT,
+    duration_ms   INTEGER NOT NULL,
+    decided_at    TEXT NOT NULL
+);

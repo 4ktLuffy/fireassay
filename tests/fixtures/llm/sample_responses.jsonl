@@ -1,0 +1,2 @@
+{"model_name": "qwen2.5:7b", "model_digest": "digest-sha-abc123", "prompt": "hello world", "response": "{\"value\": 42}"}
+{"model_name": "qwen2.5:7b", "model_digest": "digest-sha-abc123", "prompt": "second prompt", "response": "{\"value\": 7}"}

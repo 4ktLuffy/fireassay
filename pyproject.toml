@@ -11,6 +11,7 @@ dependencies = [
     "pyyaml",
     "numpy",
     "rich",
+    "krippendorff",
 ]
 
 [project.optional-dependencies]
@@ -69,4 +70,9 @@ mypy_path = "src"
 
 [[tool.mypy.overrides]]
 module = ["yaml.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# krippendorff ships no py.typed / stubs.
+module = ["krippendorff.*"]
 ignore_missing_imports = true

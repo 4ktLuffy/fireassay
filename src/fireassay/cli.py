@@ -16,11 +16,13 @@ report, not a command failure (M2-SPEC.md §9).
 from __future__ import annotations
 
 import json
+import uuid
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 
 import typer
 import yaml
+from pydantic import ValidationError
 from rich.console import Console
 from rich.table import Table
 
@@ -30,7 +32,21 @@ from fireassay.config import MatrixSpec, expand
 from fireassay.controls.base import build_control_context
 from fireassay.controls.expected import load_expected_bands
 from fireassay.controls.registry import ALL_CONTROLS
+from fireassay.curate.models import Decision, RubricVerdict
+from fireassay.curate.report import build_report
+from fireassay.curate.serve import (
+    DEFAULT_DOUBLE_REVIEW_RATE,
+    DEFAULT_HONEYPOT_RATE,
+    next_item,
+    submit_decision,
+)
+from fireassay.filter.config import load_filter_config
+from fireassay.filter.pipeline import run_filter
+from fireassay.generate.models import ResolvedCandidate
+from fireassay.generate.pipeline import generate_candidates, select_chunks_for_target
 from fireassay.integrity import ComparisonRefusedError
+from fireassay.llm.cache import ResponseCache
+from fireassay.llm.ollama import OllamaClient
 from fireassay.models import EvidenceSpan, Question
 from fireassay.mutation.detector import ThresholdDetector
 from fireassay.mutation.operators import load_mutation_config
@@ -38,6 +54,7 @@ from fireassay.mutation.run import run_mutation
 from fireassay.report.text import (
     render_control_checks,
     render_control_outcomes,
+    render_curate_report,
     render_leaderboard,
     render_mutation_run,
     render_mutation_score,
@@ -60,10 +77,12 @@ questions_app = typer.Typer(no_args_is_help=True)
 suite_app = typer.Typer(no_args_is_help=True)
 controls_app = typer.Typer(no_args_is_help=True)
 mutation_app = typer.Typer(no_args_is_help=True)
+curate_app = typer.Typer(no_args_is_help=True)
 app.add_typer(questions_app, name="questions")
 app.add_typer(suite_app, name="suite")
 app.add_typer(controls_app, name="controls")
 app.add_typer(mutation_app, name="mutation")
+app.add_typer(curate_app, name="curate")
 
 #: Packaged default for `controls run --expected`: `controls/expected.yaml`
 #: ships inside the `fireassay` package itself (see pyproject.toml's
@@ -128,17 +147,92 @@ def questions_import(
     typer.echo(f"imported {inserted} new question(s) ({len(questions)} read from {path})")
 
 
+def _candidate_to_question(candidate: ResolvedCandidate, decision: Decision) -> Question:
+    """One accepted/edited candidate -> one `Question`.
+
+    `chunk_id` is synthesised (`f"{source_doc_id}#curated"`), not a real
+    chunking-strategy chunk id: `generate/`'s span resolution is against
+    the **document**, not any one chunk (`generate.spans`'s whole point),
+    so a curated candidate has a document-level span but no real chunk_id
+    to report. `EvidenceSpan.key()` only actually depends on
+    `(doc_id, chunk_id, char_start, char_end)`, so a stable synthetic
+    chunk_id is sufficient for content-addressing `Question.id` correctly;
+    it is never compared against a retrieval system's own chunk_ids
+    (`score.retrieval.RetrievalScorer` matches by character-range overlap,
+    not chunk_id equality — M1-SPEC.md correction 1).
+    """
+    edited = decision.decision == "edit"
+    text = decision.edited_text if edited and decision.edited_text else candidate.text
+    reference_answer = (
+        decision.edited_answer if edited and decision.edited_answer else candidate.reference_answer
+    )
+    span = EvidenceSpan(
+        doc_id=candidate.source_doc_id,
+        # Synthetic, not a real chunking-strategy id -- safe because
+        # RetrievalScorer resolves relevance by character overlap, never
+        # by chunk_id equality (see this function's docstring).
+        chunk_id=f"{candidate.source_doc_id}#curated",
+        char_start=candidate.char_start,
+        char_end=candidate.char_end,
+        quote=candidate.quote,
+    )
+    return Question(
+        text=text,
+        qtype=candidate.qtype,
+        difficulty=candidate.difficulty,
+        reference_answer=reference_answer,
+        evidence_spans=(span,),
+        provenance="synthetic",
+        generator=f"generate@{candidate.model_digest[:12]}",
+        source_doc_id=candidate.source_doc_id,
+    )
+
+
+def _freeze_curated_questions(store: Store) -> list[str]:
+    """Convert every latest accept/edit `Decision` into a `Question`,
+    import it, and return the resulting question ids — the `--from-curated`
+    source set for `suite freeze` (M3-SPEC.md §6).
+
+    Latest-per-`(candidate_id, curator_id)` (`decision` is append-only, so
+    a candidate can have several superseded decisions from the same
+    curator). Two curators independently accepting the same candidate with
+    identical text/answer collapse to one `Question` for free — `Question`
+    is content-addressed, so `Store.put_questions` de-duplicates them; if
+    their edits genuinely differ, two distinct questions are correctly
+    produced.
+    """
+    decisions = store.get_all_decisions()
+    latest: dict[tuple[str, str], Decision] = {}
+    for d in decisions:
+        key = (d.candidate_id, d.curator_id)
+        existing = latest.get(key)
+        if existing is None or d.decided_at > existing.decided_at:
+            latest[key] = d
+
+    questions = [
+        _candidate_to_question(store.get_candidate(d.candidate_id), d)
+        for d in latest.values()
+        if d.decision in ("accept", "edit")
+    ]
+    store.put_questions(questions)
+    return [q.id for q in questions]
+
+
 @suite_app.command("freeze")
 def suite_freeze(
     name: str = typer.Option(..., "--name"),
     version: str = typer.Option(..., "--version"),
     db: Path = typer.Option(..., "--db"),
+    from_curated: bool = typer.Option(
+        False, "--from-curated", help="freeze accepted/edited curated candidates, not every imported question"
+    ),
 ) -> None:
-    """Freeze every question currently in the store into a named,
-    versioned suite."""
+    """Freeze a named, versioned suite: by default, every question
+    currently in the store; with `--from-curated`, every accepted/edited
+    curation `Decision` instead (M3-SPEC.md §6)."""
     store = Store(db)
     store.migrate()
-    question_ids = store.all_question_ids()
+    question_ids = _freeze_curated_questions(store) if from_curated else store.all_question_ids()
     try:
         suite = store.freeze_suite(name, version, question_ids)
     except SuiteExistsError as exc:
@@ -618,6 +712,196 @@ def mutation_score(
     mutants = store.get_mutants(mutation_run)
     store.close()
     render_mutation_run(run_row, mutants)
+
+
+# -- M3: generate / filter / curate -----------------------------------------
+
+
+@app.command()
+def generate(
+    corpus: Path = typer.Option(..., "--corpus", help="corpus JSONL file"),
+    model: str = typer.Option(..., "--model", help="an Ollama model tag, e.g. qwen2.5:7b"),
+    n: int = typer.Option(..., "--n", help="approximate total candidates to generate"),
+    cache_dir: Path = typer.Option(..., "--cache-dir", help="LLM response cache directory"),
+    db: Path = typer.Option(..., "--db"),
+    n_per_chunk: int = typer.Option(1, "--n-per-chunk", help="questions requested per chunk"),
+    base_url: str = typer.Option("http://localhost:11434", "--base-url", help="Ollama server base URL"),
+    chunk_size: int = typer.Option(800, "--chunk-size"),
+    chunk_overlap: int = typer.Option(100, "--chunk-overlap"),
+    batch_id: str = typer.Option("", "--batch-id", help="defaults to a fresh random id"),
+) -> None:
+    """Generate candidate questions from --corpus using --model, via
+    Ollama (the only command permitted to call an LLM — M3-SPEC.md §1/§2).
+
+    Every rejection (`NOT_A_QUESTION`, `QUOTE_NOT_FOUND`, `QUOTE_AMBIGUOUS`)
+    is recorded, not silently dropped — see `generate.pipeline` and
+    `curate report`'s funnel.
+    """
+    store = Store(db)
+    store.migrate()
+
+    docs = load_corpus(corpus)
+    chunks = list(chunk_corpus(docs, size=chunk_size, overlap=chunk_overlap))
+    selected = select_chunks_for_target(chunks, n, n_per_chunk)
+
+    cache = ResponseCache(Path(cache_dir) / "responses.jsonl")
+    client = OllamaClient(base_url=base_url, cache=cache)
+    model_ref = client.model_ref(model)
+
+    resolved_batch_id = batch_id or uuid.uuid4().hex
+    stats = generate_candidates(
+        store, client, model_ref, docs, selected, n_per_chunk=n_per_chunk, batch_id=resolved_batch_id
+    )
+    store.close()
+    typer.echo(
+        f"batch_id={resolved_batch_id}  generated={stats.generated}  kept={stats.kept}  "
+        f"not_a_question={stats.not_a_question}  quote_not_found={stats.quote_not_found}  "
+        f"quote_ambiguous={stats.quote_ambiguous}"
+    )
+
+
+@app.command("filter")
+def filter_candidates(
+    batch: str = typer.Option(..., "--batch", help="a --batch-id from a prior `generate` run"),
+    config: Path = typer.Option(..., "--config", help="configs/filter.yaml"),
+    corpus: Path = typer.Option(
+        ..., "--corpus", help="corpus JSONL file (required: the `generic` stage needs corpus-wide "
+        "document frequency, which M3-SPEC.md's CLI signature omits but the stage cannot run without)"
+    ),
+    db: Path = typer.Option(..., "--db"),
+) -> None:
+    """Run the deterministic filter pipeline (M3-SPEC.md §3) over every
+    candidate generated in --batch, persisting a `filter_result` row for
+    every candidate at every stage it reaches."""
+    store = Store(db)
+    store.migrate()
+
+    candidates = store.get_candidates_by_batch(batch)
+    if not candidates:
+        store.close()
+        typer.echo(f"no candidates found for batch {batch!r}", err=True)
+        raise typer.Exit(code=1)
+
+    docs = load_corpus(corpus)
+    filter_config = load_filter_config(config)
+    result = run_filter(candidates, docs, filter_config)
+    for stage_result in result.stage_results:
+        store.put_filter_result(
+            stage_result.candidate_id, stage_result.stage, stage_result.kept, stage_result.reason
+        )
+    store.close()
+    typer.echo(f"batch={batch}  in={len(candidates)}  kept={len(result.kept)}")
+
+
+@curate_app.command("next")
+def curate_next(
+    curator: str = typer.Option(..., "--curator"),
+    db: Path = typer.Option(..., "--db"),
+    honeypot_rate: float = typer.Option(DEFAULT_HONEYPOT_RATE, "--honeypot-rate"),
+    double_review_rate: float = typer.Option(DEFAULT_DOUBLE_REVIEW_RATE, "--double-review-rate"),
+) -> None:
+    """Emit the next undecided queue item for --curator as JSON
+    (M3-SPEC.md §6) — the non-interactive core the M3b TUI will drive.
+    Lazily builds --curator's queue on first call, over every currently
+    filter-kept candidate. Prints `{"done": true}` once the queue is
+    exhausted."""
+    store = Store(db)
+    store.migrate()
+    item = next_item(store, curator, honeypot_rate=honeypot_rate, double_review_rate=double_review_rate)
+    store.close()
+    if item is None:
+        typer.echo(json.dumps({"done": True}))
+        return
+    payload = {
+        "queue_item_id": item.queue_item_id,
+        "candidate_id": item.candidate_id,
+        "curator_id": item.curator_id,
+        **item.view,
+    }
+    typer.echo(json.dumps(payload, ensure_ascii=False))
+
+
+@curate_app.command("submit")
+def curate_submit(
+    file: Path = typer.Argument(..., help="a verdict JSON file, shaped like curate.models.Decision"),
+    db: Path = typer.Option(..., "--db"),
+) -> None:
+    """Record one curator decision from --file (M3-SPEC.md §6). Exits 1 —
+    not a silent no-op — if the file is not a valid `Decision` (e.g. a
+    reject with no `reject_reason`)."""
+    with open(file, encoding="utf-8") as f:
+        raw = json.load(f)
+    try:
+        decision = Decision(
+            candidate_id=raw["candidate_id"],
+            curator_id=raw["curator_id"],
+            decision=raw["decision"],
+            reject_reason=raw.get("reject_reason"),
+            rubric=RubricVerdict(**raw["rubric"]),
+            edited_text=raw.get("edited_text"),
+            edited_answer=raw.get("edited_answer"),
+            notes=raw.get("notes"),
+            duration_ms=raw["duration_ms"],
+        )
+    except (ValidationError, KeyError) as exc:
+        typer.echo(f"invalid verdict in {file}: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
+    store = Store(db)
+    store.migrate()
+    stored = submit_decision(store, decision)
+    store.close()
+    typer.echo(f"recorded decision {stored.id}: candidate={stored.candidate_id} curator={stored.curator_id}")
+
+
+@curate_app.command("report")
+def curate_report_cmd(
+    db: Path = typer.Option(..., "--db"),
+    corpus: Path | None = typer.Option(
+        None, "--corpus", help="optional corpus JSONL: enables the content-coverage section"
+    ),
+    suite: str | None = typer.Option(
+        None, "--suite", help="optional name@version: persists the alpha<0.6 flag onto suite.agreement_json"
+    ),
+) -> None:
+    """The funnel, agreement, honeypot accuracy, curator-quality, coverage,
+    and difficulty-validation report (M3-SPEC.md §4).
+
+    `--corpus` and `--suite` are not in M3-SPEC.md §6's literal CLI
+    signature; both are additive and optional — see the delivery notes for
+    why content coverage cannot be computed without corpus access, and why
+    persisting `agreement_json` needs a suite to persist it onto.
+    """
+    store = Store(db)
+    store.migrate()
+    filter_results = store.get_all_filter_results()
+    decisions = store.get_all_decisions()
+    queue_items = store.get_all_queue_items()
+    candidates = store.get_all_candidates()
+    docs = load_corpus(corpus) if corpus is not None else None
+
+    report = build_report(filter_results, decisions, queue_items, candidates, docs)
+
+    if suite is not None:
+        name, _, version = suite.partition("@")
+        suite_row = store.get_suite(name, version)
+        # Status travels with the number, not just the alpha value: a
+        # suite built on unmeasurable agreement must carry that fact
+        # forward permanently, exactly as a low alpha does (see
+        # curate.agreement's module docstring on why collapsing
+        # "unmeasurable" into a number is the bug this schema prevents).
+        agreement_payload: dict[str, object] = {
+            "by_criterion": {
+                criterion: {"alpha": result.alpha, "status": result.status, "detail": result.detail}
+                for criterion, result in report.agreement_by_criterion.items()
+            },
+            "low_agreement_criteria": list(report.low_agreement_criteria),
+            "unmeasurable_criteria": list(report.unmeasurable_criteria),
+        }
+        store.set_agreement(suite_row.id, agreement_payload)
+
+    store.close()
+    render_curate_report(report)
 
 
 if __name__ == "__main__":
