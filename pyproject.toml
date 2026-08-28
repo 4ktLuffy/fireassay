@@ -12,6 +12,7 @@ dependencies = [
     "numpy",
     "rich",
     "krippendorff",
+    "textual",
 ]
 
 [project.optional-dependencies]
@@ -74,5 +75,13 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # krippendorff ships no py.typed / stubs.
-module = ["krippendorff.*"]
+module = ["krippendorff.*", "textual.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# textual ships no type information, so its base classes resolve to Any and
+# strict mode rejects subclassing them. Scoped to this one module -- it is
+# the only place that subclasses a textual class, and every decision worth
+# checking lives in tui_logic.py / tui_session.py, which stay fully strict.
+module = ["fireassay.curate.tui"]
+disallow_subclassing_any = false

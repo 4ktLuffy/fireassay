@@ -752,6 +752,13 @@ def generate(
     `--max-generation-failure-rate` aborts the run instead, on the theory
     that most attempts failing means something is actually wrong rather
     than a few unlucky pairings.
+
+    **Safe to re-run into an existing --db (M3b-SPEC.md Part 1).** Any
+    chunk --db already has at least one candidate for is skipped
+    entirely, reported as `resumed=N chunks already present` — deleting
+    the database first is no longer necessary, and doing so would throw
+    away every candidate (and every already-paid-for cache hit) the
+    earlier run produced.
     """
     store = Store(db)
     store.migrate()
@@ -778,7 +785,8 @@ def generate(
     typer.echo(
         f"batch_id={resolved_batch_id}  generated={stats.generated}  kept={stats.kept}  "
         f"generation_failed={stats.generation_failed}  not_a_question={stats.not_a_question}  "
-        f"quote_not_found={stats.quote_not_found}  quote_ambiguous={stats.quote_ambiguous}"
+        f"quote_not_found={stats.quote_not_found}  quote_ambiguous={stats.quote_ambiguous}  "
+        f"resumed={stats.resumed} chunks already present"
     )
 
 
@@ -882,6 +890,37 @@ def curate_submit(
     stored = submit_decision(store, decision)
     store.close()
     typer.echo(f"recorded decision {stored.id}: candidate={stored.candidate_id} curator={stored.curator_id}")
+
+
+@curate_app.command("tui")
+def curate_tui(
+    curator: str = typer.Option(..., "--curator"),
+    db: Path = typer.Option(..., "--db"),
+    honeypot_rate: float = typer.Option(DEFAULT_HONEYPOT_RATE, "--honeypot-rate"),
+    double_review_rate: float = typer.Option(DEFAULT_DOUBLE_REVIEW_RATE, "--double-review-rate"),
+) -> None:
+    """Launch the interactive curation TUI (M3b-SPEC.md Part 2).
+
+    Drives the exact same `curate.serve.next_item`/`submit_decision` core
+    as `curate next`/`curate submit` — the TUI adds no logic, only
+    keystrokes; see `curate/tui_logic.py` and `curate/tui_session.py` for
+    the decisions pulled out into plain, tested functions, and
+    `curate/tui.py`'s module docstring for what could not be tested in
+    this environment.
+
+    `textual` is imported lazily, inside this function, rather than at
+    module load time: every other `fireassay` command must keep working
+    even before `pip install -e .` has picked up this milestone's one new
+    runtime dependency.
+    """
+    from fireassay.curate.tui import run_curate_tui
+
+    store = Store(db)
+    store.migrate()
+    try:
+        run_curate_tui(store, curator, honeypot_rate=honeypot_rate, double_review_rate=double_review_rate)
+    finally:
+        store.close()
 
 
 @curate_app.command("report")

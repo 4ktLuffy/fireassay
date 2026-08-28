@@ -66,6 +66,13 @@ def corrupt_candidate_view(
         "source_doc_id": candidate.source_doc_id,
         "char_start": candidate.char_start,
         "char_end": candidate.char_end,
+        # Mirrors `curate.serve._candidate_view`'s own `gold_doc_rank` key,
+        # unmodified by either corruption mechanism below: neither
+        # WRONG_REFERENCE nor INSUFFICIENT_EVIDENCE touches the candidate's
+        # own measured difficulty signal, and a honeypot missing a key a
+        # real item always has would itself be a tell (M3-SPEC.md §4:
+        # honeypots must render identically to real items).
+        "gold_doc_rank": candidate.features.gold_doc_rank,
     }
 
     if reason == "WRONG_REFERENCE":

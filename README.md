@@ -1,10 +1,10 @@
-# fireassay — M1 + M2 + M3
+# fireassay — M1 + M2 + M3 + M3b
 
 An evaluation integrity layer: content-addressed suites that refuse to report unsound
-comparisons, and a harness that proves it can fail. This covers **M1, M2 and M3** — the
-deterministic spine, controls and mutation scores, and question generation / deterministic
-filtering / human curation. Read this section honestly before assuming fireassay does more
-than it does.
+comparisons, and a harness that proves it can fail. This covers **M1, M2, M3 and M3b** — the
+deterministic spine, controls and mutation scores, question generation / deterministic
+filtering / human curation, and (M3b) an interactive curation TUI plus incremental resume for
+generation. Read this section honestly before assuming fireassay does more than it does.
 
 ## What M1 actually is
 
@@ -161,18 +161,58 @@ fireassay generate  --corpus corpus.jsonl --model qwen2.5:7b --n 3000 --cache-di
 fireassay filter    --batch <batch_id> --config configs/filter.example.yaml --corpus corpus.jsonl --db bench.db
 fireassay curate next    --curator alice --db bench.db
 fireassay curate submit  verdict.json --db bench.db
+fireassay curate tui     --curator alice --db bench.db   # M3b: interactive, drives next/submit
 fireassay curate report  --db bench.db [--corpus corpus.jsonl] [--suite support-kb@1.0.0]
 fireassay suite freeze --name support-kb --version 1.0.0 --db bench.db --from-curated
 ```
+
+## What M3b adds
+
+Two things: a real interactive curation TUI, and a fix for two measured re-run problems in
+`generate`.
+
+- **Incremental resume** (`generate/pipeline.py`). Re-running `generate` into an existing
+  database used to duplicate candidates (verified: 5 candidates became 10 on a second run,
+  duplicate question texts — `candidate.id` is a random uuid4, so reprocessing a chunk mints a
+  fresh row every time) and, separately, replaying an already-cached chunk into a fresh database
+  still cost ~1s/candidate with zero model calls — about an hour at 4,000 candidates, for a cause
+  the spike could not isolate to BM25 (35ms at gold-rank depth) or per-run retriever construction
+  (built once, not per candidate). The fix for both: `candidate.chunk_id` (migration 0005,
+  additive to `source_doc_id` — several chunks share one document, so `source_doc_id` alone is
+  not enough to resume safely) lets `generate_candidates` skip any chunk the target database
+  already has a candidate for, before any model call or cache lookup. **`rm -f run/golden.db` (or
+  any `--db`) is no longer necessary before re-running `generate`** — doing so now only throws
+  away work. A resumed run reports what it skipped: `resumed=N chunks already present`. The
+  per-row SQLite write pattern some earlier hypotheses pointed at as the ~1s/candidate cause was
+  never profiled in this environment (no shell access) — the skip fix removes the cost for any
+  chunk already present outright, which is the fix M3b-SPEC.md asked for; whether the replay path
+  *itself* is also slow for chunks not yet skipped remains unmeasured and unclaimed.
+- **The curation TUI** (`curate/tui.py`, `textual` — the milestone's one new runtime dependency).
+  `fireassay curate tui --curator <id> --db <db>` drives the exact same `curate.serve.next_item`/
+  `submit_decision` core `curate next`/`curate submit` already used non-interactively — the TUI
+  adds no rule of its own. The one-keystroke fast path (`a` accepts with the rubric defaulted to
+  "everything agrees"; `r` rejects via a single-keystroke reason picker; the six rubric criteria
+  are only touched via `d`, drilling in) is the difference between an annotator averaging ~5s and
+  one averaging ~15s per item — roughly two hours versus five across 1,000 items. Layout is fixed
+  and never scrolls: every field is truncated to a known character budget before rendering, with
+  an explicit "+N chars hidden" marker and a `v` key to see the untruncated original. A 45-minute
+  session banner and a 15-in-a-row identical-verdict note are both non-blocking (M3b-SPEC.md's
+  documented fatigue/autopilot thresholds — the same constants `curate.quality`'s post-hoc report
+  already uses). Honeypots render through the exact same code path as any real item, since
+  `ServedItem.view` never carries the honeypot flags in the first place — nothing in the TUI could
+  branch on them even by accident. Every decision worth testing (the default-accept rubric, the
+  reject-reason key bijection, truncation, the two session thresholds) is a plain function in
+  `curate/tui_logic.py`/`curate/tui_session.py`, fully unit-tested with no `textual` import;
+  `curate/tui.py` itself is Textual wiring this milestone's environment could not exercise
+  headlessly, and says so in its own docstring.
 
 ## What M1+M2+M3 are honestly *not*
 
 The following are explicitly out of scope and **not built**, regardless of what the parent
 spec (`../fireassay-SPEC.md`) describes for the finished project:
 
-- **No curation TUI** (M3b will drive `curate next`/`curate submit` interactively; both are
-  already fully usable non-interactively). No crowd-kit/Dawid-Skene aggregation — pointless with
-  one curator, revisit when there are several.
+- No crowd-kit/Dawid-Skene aggregation — pointless with one curator, revisit when there are
+  several.
 - **No LLM judges** (`correctness`, `groundedness`), no `judge_calibration` control with a real
   judge — five of the eventual eight metrics are built; the three that need a judge, and the
   sixth control, are M4.
@@ -236,11 +276,13 @@ following exist because of them, not because the original spec asked for them:
 pip install -e ".[dev]"
 ```
 
-Runtime dependencies are `pydantic>=2`, `typer`, `pyyaml`, `numpy`, `rich`, plus **`krippendorff`**
-(M3's one new dependency — no pandas, no scikit-learn). Dev-only: `pytest`, `pytest-cov`, `ruff`,
-`mypy`, `cosmic-ray` (the last is never imported at runtime; it powers `make mutants` only). No
-SQLAlchemy, no ORM — SQLite is stdlib `sqlite3`; Ollama access is stdlib `urllib.request`, no HTTP
-library. No LLM call and no network anywhere in M1 or M2, and nowhere in M3 outside `generate/`.
+Runtime dependencies are `pydantic>=2`, `typer`, `pyyaml`, `numpy`, `rich`, `krippendorff` (M3's
+one new dependency — no pandas, no scikit-learn), plus **`textual`** (M3b's one new dependency,
+for `curate/tui.py` only — every other command works without it ever being imported). Dev-only:
+`pytest`, `pytest-cov`, `ruff`, `mypy`, `cosmic-ray` (the last is never imported at runtime; it
+powers `make mutants` only). No SQLAlchemy, no ORM — SQLite is stdlib `sqlite3`; Ollama access is
+stdlib `urllib.request`, no HTTP library. No LLM call and no network anywhere in M1 or M2, and
+nowhere in M3/M3b outside `generate/`.
 
 ## Quick tour
 
@@ -281,7 +323,7 @@ src/fireassay/
 ├── text.py                    # the one tokenizer
 ├── runner.py                    # sequential run_matrix, run_once (M2)
 ├── compare.py                     # leaderboard aggregation
-├── store/                           # migrations/ (0001 M1, 0002 M2, 0003 M3), db.py
+├── store/                           # migrations/ (0001 M1, 0002 M2, 0003 M3, 0004/0005 M3 addenda), db.py
 ├── system/                           # bm25.py, corpus.py, base.py (System protocol)
 ├── score/                             # retrieval, latency, cost, policy, abstention, invariants
 ├── controls/                           # M2: 5 deterministic controls + expected.yaml + registry
@@ -289,7 +331,8 @@ src/fireassay/
 ├── llm/                                  # M3: OllamaClient, ResponseCache — the only LLM boundary
 ├── generate/                              # M3: candidate generation, span resolution, features
 ├── filter/                                 # M3: deterministic filter pipeline (no LLM)
-├── curate/                                  # M3: rubric, queue, honeypots, agreement, report
+├── curate/                                  # M3: rubric, queue, honeypots, agreement, report;
+│                                             # M3b: tui.py, tui_logic.py, tui_session.py
 └── report/                                   # text.py — rich table rendering (M1 + M2 + M3)
 tests/
 ├── fixtures/            # corpus.jsonl (12 docs), questions.jsonl (20 questions), llm/ (cache fixtures)

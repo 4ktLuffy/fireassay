@@ -210,7 +210,15 @@ def target_cell_for(chunk_id: str, index_in_chunk: int) -> tuple[QType, Difficul
 @dataclass(frozen=True)
 class GenerationStats:
     """Reconciles exactly: `generated == kept + generation_failed +
-    not_a_question + quote_not_found + quote_ambiguous`."""
+    not_a_question + quote_not_found + quote_ambiguous`.
+
+    `resumed` (M3b-SPEC.md Part 1) is deliberately **not** part of that
+    reconciliation: a resumed chunk was skipped before any attempt was
+    made against it this run — it contributes no `filter_result` row this
+    run at all (it already has one from whichever earlier run actually
+    generated it), so counting it into `generated` would double-count work
+    done in a previous run. It is reported purely so a resumed run can say
+    what it skipped (`resumed=N chunks already present`)."""
 
     generated: int
     kept: int
@@ -218,6 +226,7 @@ class GenerationStats:
     not_a_question: int
     quote_not_found: int
     quote_ambiguous: int
+    resumed: int = 0
 
 
 _CHUNK_ORDER_PREFIX = "fa.chunkorder.1"
@@ -346,17 +355,39 @@ def generate_candidates(
     `ResolvedCandidate`, carrying both the target cell it was asked for
     and the model's own proposed `qtype`/`difficulty` (which may disagree
     — that disagreement rate is `curate.coverage.generator_obedience`).
+
+    **Incremental resume (M3b-SPEC.md Part 1):** before touching any
+    chunk, `store.candidate_source_chunks()` is read once to get the set
+    of chunk ids `store` already has at least one `candidate` row for.
+    Any chunk in that set is skipped entirely — no `generate_json` call,
+    no cache lookup, no `filter_result` row — and counted in
+    `GenerationStats.resumed` instead. This is the fix for two problems
+    measured on a real run: re-running `generate` into an existing
+    database used to mint a fresh uuid4 candidate id per chunk every time,
+    duplicating candidates (5 became 10 across two batches); and replaying
+    an already-cached chunk into a *fresh* database still cost ~1s/chunk
+    with zero model calls (an hour at 4,000 chunks) — a cost this skip
+    removes outright for any chunk already present, rather than trying to
+    make the replay itself faster (that would need profiling this
+    environment could not do; see M3b-SPEC.md Part 1 and the delivery
+    notes for what was and was not measured).
     """
     docs_by_id = {doc.doc_id: doc for doc in docs}
     retriever = _build_gold_rank_retriever(docs)
+    already_present = store.candidate_source_chunks()
     generation_failed = 0
     not_a_question = 0
     quote_not_found = 0
     quote_ambiguous = 0
     kept = 0
+    resumed = 0
     total_attempts = 0
 
     for chunk in chunks:
+        if chunk.chunk_id in already_present:
+            resumed += 1
+            continue
+
         doc = docs_by_id.get(chunk.doc_id)
         if doc is None:
             raise KeyError(f"chunk {chunk.chunk_id} references unknown doc_id {chunk.doc_id!r}")
@@ -424,6 +455,7 @@ def generate_candidates(
                     features=features,
                     model_digest=model.digest,
                     prompt_hash=prompt_hash,
+                    chunk_id=chunk.chunk_id,
                     created_at=_now(),
                 )
                 store.put_candidate(resolved)
@@ -437,4 +469,5 @@ def generate_candidates(
         not_a_question=not_a_question,
         quote_not_found=quote_not_found,
         quote_ambiguous=quote_ambiguous,
+        resumed=resumed,
     )

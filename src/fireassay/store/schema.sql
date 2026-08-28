@@ -97,7 +97,9 @@ CREATE TABLE score (
 -- 0003_generation_curation.sql for candidate / filter_result /
 -- queue_item / decision (M3) and their own append-only triggers, and
 -- migrations/0004_target_cells.sql for candidate.target_qtype /
--- target_difficulty (M3 pre-flight addendum: stratified generation).
+-- target_difficulty (M3 pre-flight addendum: stratified generation), and
+-- migrations/0005_candidate_chunk_id.sql for candidate.chunk_id (M3b
+-- addendum: incremental resume).
 
 CREATE TABLE candidate (
     id                TEXT PRIMARY KEY,
@@ -115,7 +117,8 @@ CREATE TABLE candidate (
     features_json     TEXT NOT NULL,
     model_digest      TEXT NOT NULL,
     prompt_hash       TEXT NOT NULL,
-    created_at        TEXT NOT NULL
+    created_at        TEXT NOT NULL,
+    chunk_id          TEXT NOT NULL DEFAULT ''    -- added in migration 0005
 );
 
 CREATE TABLE filter_result (

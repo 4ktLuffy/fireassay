@@ -978,8 +978,8 @@ class Store:
         self._conn.execute(
             "INSERT OR IGNORE INTO candidate (id, batch_id, text, qtype, difficulty, target_qtype, "
             "target_difficulty, reference_answer, quote, source_doc_id, char_start, char_end, "
-            "features_json, model_digest, prompt_hash, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "features_json, model_digest, prompt_hash, created_at, chunk_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 candidate.id,
                 candidate.batch_id,
@@ -997,6 +997,7 @@ class Store:
                 candidate.model_digest,
                 candidate.prompt_hash,
                 candidate.created_at,
+                candidate.chunk_id,
             ),
         )
         self._conn.commit()
@@ -1026,6 +1027,7 @@ class Store:
             model_digest=row["model_digest"],
             prompt_hash=row["prompt_hash"],
             created_at=row["created_at"],
+            chunk_id=row["chunk_id"],
         )
 
     def get_candidate(self, candidate_id: str) -> ResolvedCandidate:
@@ -1043,6 +1045,25 @@ class Store:
     def get_all_candidates(self) -> list[ResolvedCandidate]:
         rows = self._conn.execute("SELECT * FROM candidate ORDER BY created_at, id").fetchall()
         return [self._row_to_candidate(r) for r in rows]
+
+    def candidate_source_chunks(self) -> set[str]:
+        """Every `chunk_id` with at least one persisted `candidate` row
+        (M3b-SPEC.md Part 1) — real, non-empty chunk ids only. A `''`
+        `chunk_id` (a row written before migration 0005 added the column)
+        is excluded rather than treated as one shared "no chunk" bucket:
+        see migration 0005's own comment for why that is a deliberate,
+        bounded trade rather than a bug.
+
+        Read by `generate.pipeline.generate_candidates` to build the
+        resume skip set: a chunk already in this set is skipped entirely
+        rather than reprocessed, which is what makes a re-run over an
+        existing database produce no duplicate candidates and avoid
+        replaying an already-cached (but still ~1s/candidate) generation
+        call for a chunk that was already generated."""
+        rows = self._conn.execute(
+            "SELECT DISTINCT chunk_id FROM candidate WHERE chunk_id != ''"
+        ).fetchall()
+        return {r["chunk_id"] for r in rows}
 
     # -- M3: filter_result --------------------------------------------------
 

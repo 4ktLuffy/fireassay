@@ -106,6 +106,18 @@ class ResolvedCandidate(BaseModel):
     disagree with the target — `curate.coverage.generator_obedience`
     reports how often they agree, a free measure of whether the model is
     actually listening to what it is asked for.
+
+    `chunk_id` (M3b addendum, migration 0005) is the specific chunk this
+    candidate was generated from — recorded so a resumed `generate` run
+    can skip a chunk the target database already has a candidate for
+    without over- or under-skipping: `source_doc_id` alone is not enough,
+    since several chunks share one document (M3b-SPEC.md Part 1). Defaults
+    to `""` rather than being required like `target_qtype`/
+    `target_difficulty`: a `""` chunk_id simply does not contribute to
+    `Store.candidate_source_chunks()`'s resume skip set (see migration
+    0005's own comment for why that is a bounded cost, not a correctness
+    hazard) — existing fixtures/tests that build a `ResolvedCandidate`
+    directly, with no real chunk in hand, are unaffected.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -126,3 +138,4 @@ class ResolvedCandidate(BaseModel):
     model_digest: str
     prompt_hash: str
     created_at: str
+    chunk_id: str = ""

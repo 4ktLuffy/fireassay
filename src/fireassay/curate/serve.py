@@ -40,6 +40,16 @@ def _candidate_view(candidate: ResolvedCandidate) -> dict[str, object]:
         "source_doc_id": candidate.source_doc_id,
         "char_start": candidate.char_start,
         "char_end": candidate.char_end,
+        # Added for M3b's TUI (M3b-SPEC.md's own mock layout shows
+        # "gold rank 2" on the PROPOSED line): a *measured* difficulty
+        # signal, not a decision, so exposing it here is display context
+        # for the curator's own `difficulty_agrees` judgement, not a rule
+        # this module or the TUI decides anything from. Present on every
+        # served item, honeypot or not (see `honeypots.corrupt_candidate_
+        # view`, which mirrors this key unmodified) -- a field a curator
+        # could see on a real item but not a honeypot would itself be a
+        # tell (M3-SPEC.md §4: honeypots must render identically).
+        "gold_doc_rank": candidate.features.gold_doc_rank,
     }
 
 
