@@ -33,7 +33,7 @@ from fireassay.controls.registry import ALL_CONTROLS
 from fireassay.integrity import ComparisonRefusedError
 from fireassay.models import EvidenceSpan, Question
 from fireassay.mutation.detector import ThresholdDetector
-from fireassay.mutation.operators import load_operators
+from fireassay.mutation.operators import load_mutation_config
 from fireassay.mutation.run import run_mutation
 from fireassay.report.text import (
     render_control_checks,
@@ -496,6 +496,14 @@ def controls_show(
     render_control_checks(checks, console)
 
 
+#: Fallback detector settings, used only when neither the mutants YAML's
+#: `detector:` block nor an explicitly-passed `--detector-*` flag sets
+#: them. Never used to silently override either -- see `mutate`'s
+#: docstring and the precedence comment inline below.
+_DEFAULT_DETECTOR_METRIC = "retrieval.recall@5"
+_DEFAULT_DETECTOR_MAX_DROP = 0.05
+
+
 @app.command()
 def mutate(
     suite: str = typer.Option(..., "--suite", help="name@version"),
@@ -507,12 +515,32 @@ def mutate(
     price_out: float = typer.Option(0.0, "--price-out"),
     chunk_size: int = typer.Option(800, "--chunk-size"),
     chunk_overlap: int = typer.Option(100, "--chunk-overlap"),
-    detector_metric: str = typer.Option("retrieval.recall@5", "--detector-metric"),
-    detector_max_drop: float = typer.Option(0.05, "--detector-max-drop"),
+    detector_metric: str | None = typer.Option(
+        None, "--detector-metric", help="overrides --operators' detector.metric; not a default"
+    ),
+    detector_max_drop: float | None = typer.Option(
+        None, "--detector-max-drop", help="overrides --operators' detector.max_drop; not a default"
+    ),
+    detector_max_rise: float | None = typer.Option(
+        None, "--detector-max-rise", help="overrides --operators' detector.max_rise; not a default"
+    ),
 ) -> None:
     """Mutate CONFIG's system with every operator in --operators, baseline
     it once, and report `gate_mutation_score`. Always exits **0** — a low
-    score is a finding to report, not a command failure (M2-SPEC.md §9)."""
+    score is a finding to report, not a command failure (M2-SPEC.md §9).
+
+    Detector precedence: `--operators`' `detector:` block (if present)
+    configures `ThresholdDetector`; a `--detector-*` flag overrides it
+    **only when actually passed** (each defaults to `None`, distinguishable
+    from "passed the CLI default", precisely so a flag nobody typed can
+    never silently beat a setting the YAML file did specify — that was the
+    bug: `--detector-metric`/`--detector-max-drop` used to default to
+    fixed values that always won, so `detector:` in the YAML was parsed,
+    accepted, and then had no effect). If neither the YAML nor any flag
+    sets a field, `_DEFAULT_DETECTOR_METRIC`/`_DEFAULT_DETECTOR_MAX_DROP`
+    apply, matching this command's original behaviour when no detector
+    configuration is given anywhere.
+    """
     store = Store(db)
     store.migrate()
 
@@ -532,8 +560,33 @@ def mutate(
         PolicyScorer(),
         AbstentionScorer(),
     ]
-    operator_list = load_operators(operators)
-    detector = ThresholdDetector(metric=detector_metric, max_drop=detector_max_drop)
+    mutation_config = load_mutation_config(operators)
+    operator_list = mutation_config.operators
+    yaml_detector = mutation_config.detector
+
+    resolved_metric = (
+        detector_metric
+        if detector_metric is not None
+        else (yaml_detector.metric if yaml_detector is not None else _DEFAULT_DETECTOR_METRIC)
+    )
+    resolved_max_drop = (
+        detector_max_drop
+        if detector_max_drop is not None
+        else (yaml_detector.max_drop if yaml_detector is not None else None)
+    )
+    resolved_max_rise = (
+        detector_max_rise
+        if detector_max_rise is not None
+        else (yaml_detector.max_rise if yaml_detector is not None else None)
+    )
+    if resolved_max_drop is None and resolved_max_rise is None:
+        # Neither the YAML nor a flag set either bound -- fall back to the
+        # command's original default rather than letting ThresholdDetector
+        # raise for "no bound configured at all".
+        resolved_max_drop = _DEFAULT_DETECTOR_MAX_DROP
+    detector = ThresholdDetector(
+        metric=resolved_metric, max_drop=resolved_max_drop, max_rise=resolved_max_rise
+    )
 
     result = run_mutation(
         store, suite_row, config_row, questions, docs, system_factory, scorers, scoring_ctx,

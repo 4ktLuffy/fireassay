@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 from fireassay.controls._common import stable_seed
@@ -16,6 +17,7 @@ from fireassay.mutation.operators import (
     ShuffleTopkOperator,
     SwapRankingOperator,
     TruncateTopkOperator,
+    load_mutation_config,
     load_operators,
 )
 
@@ -231,3 +233,70 @@ def test_load_operators_from_yaml(tmp_path: Path) -> None:
         "corrupt_query",
         "swap_ranking",
     ]
+
+
+def test_load_mutation_config_parses_the_detector_block(tmp_path: Path) -> None:
+    """Regression test for the bug: `load_operators`/an earlier
+    `load_mutation_config` parsed `operators:` and silently discarded
+    `detector:` entirely, so a YAML asking for `metric: retrieval.mrr`
+    had no effect at all -- `cli.py`'s `mutate` always built a
+    `ThresholdDetector` from its own hardcoded default instead. This
+    asserts the parsed `DetectorSpec` actually reflects the file."""
+    path = tmp_path / "mutants.yaml"
+    path.write_text(
+        yaml.safe_dump(
+            {
+                "detector": {"metric": "retrieval.mrr", "max_drop": 0.05},
+                "operators": [{"kind": "swap_ranking"}],
+            }
+        )
+    )
+    config = load_mutation_config(path)
+    assert config.detector is not None
+    assert config.detector.metric == "retrieval.mrr"
+    assert config.detector.max_drop == 0.05
+    assert config.detector.max_rise is None
+    assert [op.name for op in config.operators] == ["swap_ranking"]
+
+
+def test_load_mutation_config_detector_is_none_when_the_file_has_no_detector_block(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "mutants.yaml"
+    path.write_text(yaml.safe_dump({"operators": [{"kind": "swap_ranking"}]}))
+    config = load_mutation_config(path)
+    assert config.detector is None
+
+
+def test_load_mutation_config_parses_max_rise(tmp_path: Path) -> None:
+    path = tmp_path / "mutants.yaml"
+    path.write_text(
+        yaml.safe_dump({"detector": {"metric": "cost.usd", "max_rise": 0.1}, "operators": []})
+    )
+    config = load_mutation_config(path)
+    assert config.detector is not None
+    assert config.detector.max_drop is None
+    assert config.detector.max_rise == 0.1
+
+
+def test_load_mutation_config_rejects_unknown_top_level_key(tmp_path: Path) -> None:
+    path = tmp_path / "mutants.yaml"
+    path.write_text(yaml.safe_dump({"operators": [], "bogus_key": 1}))
+    with pytest.raises(ValueError, match="unknown top-level key"):
+        load_mutation_config(path)
+
+
+def test_load_mutation_config_rejects_unknown_detector_key(tmp_path: Path) -> None:
+    path = tmp_path / "mutants.yaml"
+    path.write_text(
+        yaml.safe_dump({"detector": {"metric": "retrieval.mrr", "bogus_key": 1}, "operators": []})
+    )
+    with pytest.raises(ValueError, match="unknown key.*detector"):
+        load_mutation_config(path)
+
+
+def test_load_mutation_config_detector_requires_metric(tmp_path: Path) -> None:
+    path = tmp_path / "mutants.yaml"
+    path.write_text(yaml.safe_dump({"detector": {"max_drop": 0.05}, "operators": []}))
+    with pytest.raises(ValueError, match="requires a 'metric'"):
+        load_mutation_config(path)

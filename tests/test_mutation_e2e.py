@@ -89,3 +89,42 @@ def test_mutation_e2e_equivalent_mutants_are_excluded_and_justified(store: Store
     for m in result.mutants:
         assert m.equivalent is True
         assert m.equivalent_reason
+
+
+def test_mutation_e2e_order_sensitive_metric_catches_what_recall_does_not(store: Store) -> None:
+    """Regression test for the `detector:` block being silently discarded
+    (cli.py's `mutate` always built `ThresholdDetector` from its own
+    hardcoded `retrieval.recall@5` default, ignoring whatever the mutants
+    YAML actually asked for). `swap_ranking` reverses the retrieved list
+    without changing *which* chunks are in the top-k window, so it is
+    invisible to `retrieval.recall@5` (window membership only) but must be
+    caught by `retrieval.mrr` (rank of the first relevant chunk, order-
+    sensitive) -- a detector silently defaulted to `recall@5` would report
+    this mutant as SURVIVED when the eval setup, configured as asked,
+    actually kills it.
+    """
+    suite, questions = setup_suite(store)
+    docs = load_fixture_docs()
+    config = store.put_config({"top_k": 5})
+    scoring_ctx = scoring_ctx_factory(config.spec)
+    scorers = standard_scorers()
+    operators = [SwapRankingOperator()]
+
+    recall_detector = ThresholdDetector(metric="retrieval.recall@5", max_drop=0.05)
+    recall_result = run_mutation(
+        store, suite, config, questions, docs, bm25_system_factory, scorers, scoring_ctx,
+        operators, recall_detector,
+    )
+    swap_under_recall = next(m for m in recall_result.mutants if m.operator == "swap_ranking")
+    assert swap_under_recall.equivalent is False
+    assert swap_under_recall.killed is False  # recall@5 cannot see a pure re-ordering
+
+    mrr_detector = ThresholdDetector(metric="retrieval.mrr", max_drop=0.05)
+    mrr_result = run_mutation(
+        store, suite, config, questions, docs, bm25_system_factory, scorers, scoring_ctx,
+        operators, mrr_detector,
+    )
+    swap_under_mrr = next(m for m in mrr_result.mutants if m.operator == "swap_ranking")
+    assert swap_under_mrr.equivalent is False
+    assert swap_under_mrr.killed is True  # mrr is order-sensitive and must catch it
+    assert "retrieval.mrr" in swap_under_mrr.detail

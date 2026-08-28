@@ -13,11 +13,14 @@ from fireassay.mutation.detector import MutationDetector, ThresholdDetector
 from fireassay.mutation.operators import (
     ALL_OPERATOR_KINDS,
     CorruptQueryOperator,
+    DetectorSpec,
     DropResultsOperator,
+    MutationConfig,
     MutationOperator,
     ShuffleTopkOperator,
     SwapRankingOperator,
     TruncateTopkOperator,
+    load_mutation_config,
     load_operators,
 )
 from fireassay.mutation.run import run_mutation
@@ -26,8 +29,10 @@ from fireassay.mutation.score import MutantResult, MutationScoreResult, compute_
 __all__ = [
     "ALL_OPERATOR_KINDS",
     "CorruptQueryOperator",
+    "DetectorSpec",
     "DropResultsOperator",
     "MutantResult",
+    "MutationConfig",
     "MutationDetector",
     "MutationOperator",
     "MutationScoreResult",
@@ -36,6 +41,7 @@ __all__ = [
     "ThresholdDetector",
     "TruncateTopkOperator",
     "compute_score",
+    "load_mutation_config",
     "load_operators",
     "run_mutation",
 ]

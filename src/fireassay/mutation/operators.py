@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import random
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
@@ -243,10 +244,51 @@ ALL_OPERATOR_KINDS = frozenset(
     {"drop_results", "truncate_topk", "shuffle_topk", "corrupt_query", "swap_ranking"}
 )
 
+#: Top-level keys a mutants YAML file may declare, and the keys its
+#: optional `detector:` block may declare. Any other key at either level
+#: is rejected by `load_mutation_config` -- see its docstring for why: a
+#: config key that is accepted and silently ignored is exactly the bug
+#: this pair of constants exists to rule out (mirrors
+#: `controls.expected.VALID_CONTROL_KINDS`'s same rule for its own file).
+_TOP_LEVEL_KEYS = frozenset({"operators", "detector"})
+_DETECTOR_KEYS = frozenset({"metric", "max_drop", "max_rise"})
 
-def load_operators(path: Path | str) -> list[MutationOperator]:
-    """Load a list of `MutationOperator` instances from a YAML file shaped:
 
+@dataclass(frozen=True)
+class DetectorSpec:
+    """The parsed `detector:` block of a mutants YAML file -- the settings
+    `fireassay mutate` should build its `ThresholdDetector` from, unless
+    the caller explicitly overrides one via a CLI flag.
+
+    `max_drop`/`max_rise` are `None` when the YAML omits them, exactly
+    mirroring `mutation.detector.ThresholdDetector`'s own optional
+    parameters (which require at least one of the two to be set — enforced
+    there, not here, since this dataclass only describes what the YAML
+    said, not what is valid to construct a detector from).
+    """
+
+    metric: str
+    max_drop: float | None = None
+    max_rise: float | None = None
+
+
+@dataclass(frozen=True)
+class MutationConfig:
+    """The fully-parsed contents of a mutants YAML file: every operator,
+    in file order, plus the optional `detector:` block (`None` if the
+    file has no `detector:` key at all, in which case the caller falls
+    back to its own default rather than this module inventing one)."""
+
+    operators: list[MutationOperator]
+    detector: DetectorSpec | None
+
+
+def load_mutation_config(path: Path | str) -> MutationConfig:
+    """Load a mutants YAML file shaped:
+
+        detector:
+          metric: retrieval.recall@5
+          max_drop: 0.05
         operators:
           - kind: drop_results
             n: 2
@@ -257,10 +299,38 @@ def load_operators(path: Path | str) -> list[MutationOperator]:
             pct: 0.5
           - kind: swap_ranking
 
-    Raises `ValueError` for an unknown `kind`.
+    `detector:` is optional. When present, it is the caller's
+    responsibility (see `cli.py`'s `mutate` command) to give it precedence
+    over a CLI flag's *default* value while still letting an
+    explicitly-passed CLI flag override it — a file setting must not be
+    silently beaten by a flag nobody typed.
+
+    Raises `ValueError` for:
+    - an unknown operator `kind`;
+    - a top-level key other than `operators`/`detector`;
+    - a key inside `detector` other than `metric`/`max_drop`/`max_rise`;
+    - a `detector:` block with no `metric`.
+
+    A silently-ignored key is how a documented, accepted config setting
+    ends up having no effect — the exact bug class this project exists to
+    catch, found on this exact file (an earlier version parsed `operators:`
+    and silently dropped `detector:` entirely: a YAML asking for
+    `metric: retrieval.mrr` produced a run that scored `retrieval.recall@5`
+    throughout, with no error). Mirrors
+    `controls.expected.load_expected_bands`'s same rule for its own file.
     """
     with open(path, encoding="utf-8") as f:
         raw = yaml.safe_load(f) or {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"mutants.yaml must be a mapping, got {type(raw).__name__}")
+
+    unknown_top_level = set(raw) - _TOP_LEVEL_KEYS
+    if unknown_top_level:
+        raise ValueError(
+            f"mutants.yaml: unknown top-level key(s) {sorted(unknown_top_level)}; "
+            f"must be a subset of {sorted(_TOP_LEVEL_KEYS)}"
+        )
+
     operators: list[MutationOperator] = []
     for spec in raw.get("operators", []):
         kind = spec["kind"]
@@ -278,4 +348,34 @@ def load_operators(path: Path | str) -> list[MutationOperator]:
             raise ValueError(
                 f"mutants.yaml: unknown operator kind {kind!r}; must be one of {sorted(ALL_OPERATOR_KINDS)}"
             )
-    return operators
+
+    detector: DetectorSpec | None = None
+    raw_detector = raw.get("detector")
+    if raw_detector is not None:
+        if not isinstance(raw_detector, dict):
+            raise ValueError(
+                f"mutants.yaml: detector must be a mapping, got {type(raw_detector).__name__}"
+            )
+        unknown_detector_keys = set(raw_detector) - _DETECTOR_KEYS
+        if unknown_detector_keys:
+            raise ValueError(
+                f"mutants.yaml: unknown key(s) in detector: {sorted(unknown_detector_keys)}; "
+                f"must be a subset of {sorted(_DETECTOR_KEYS)}"
+            )
+        if "metric" not in raw_detector:
+            raise ValueError("mutants.yaml: detector requires a 'metric' key")
+        detector = DetectorSpec(
+            metric=str(raw_detector["metric"]),
+            max_drop=float(raw_detector["max_drop"]) if "max_drop" in raw_detector else None,
+            max_rise=float(raw_detector["max_rise"]) if "max_rise" in raw_detector else None,
+        )
+
+    return MutationConfig(operators=operators, detector=detector)
+
+
+def load_operators(path: Path | str) -> list[MutationOperator]:
+    """The operator list alone, for callers that do not need
+    `detector:` (thin wrapper over `load_mutation_config`; kept so
+    narrower call sites and existing tests do not need the full
+    `MutationConfig`)."""
+    return load_mutation_config(path).operators

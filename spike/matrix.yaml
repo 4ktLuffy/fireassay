@@ -1,0 +1,6 @@
+suite: govuk-spike@1.0.0
+axes:
+  top_k: ["3", "5", "10"]
+  k1: ["1.2", "1.5"]
+include: []
+exclude: []

@@ -2,9 +2,18 @@
 #
 # `detector` configures the M2 ThresholdDetector (mutation/detector.py) —
 # a mutant is "killed" when `metric`'s run mean drops by at least
-# `max_drop` relative to the baseline run's mean for the same metric.
-# M2 ships no statistical test here on purpose (see detector.py's
-# docstring); M5 adds a GateDetector using the real statistical gate.
+# `max_drop` (or rises by at least `max_rise`, if given instead/as well)
+# relative to the baseline run's mean for the same metric. M2 ships no
+# statistical test here on purpose (see detector.py's docstring); M5 adds
+# a GateDetector using the real statistical gate.
+#
+# `--detector-metric`/`--detector-max-drop`/`--detector-max-rise` on the
+# CLI override these only when actually passed; an unpassed flag never
+# beats this file (see cli.py's `mutate` docstring -- this file's own
+# `detector:` block was, for a time, parsed and then silently discarded
+# entirely regardless of what it said, which is exactly the failure mode
+# this project exists to catch; it is fixed now and covered by
+# tests/test_mutation_operators.py and tests/test_mutation_e2e.py).
 detector:
   metric: retrieval.recall@5
   max_drop: 0.05
