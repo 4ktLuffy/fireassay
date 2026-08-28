@@ -1,0 +1,70 @@
+[project]
+name = "fireassay"
+version = "0.1.0"
+description = "An evaluation integrity layer: content-addressed suites that refuse unsound comparisons."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "pydantic>=2",
+    "typer",
+    "pyyaml",
+    "numpy",
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "mypy",
+]
+
+[project.scripts]
+fireassay = "fireassay.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fireassay"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/fireassay/store/migrations" = "fireassay/store/migrations"
+"src/fireassay/store/schema.sql" = "fireassay/store/schema.sql"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=fireassay --cov-report=term-missing"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "N"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["fireassay"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Typer's idiomatic style is `param: T = typer.Option(...)` /
+# `typer.Argument(...)` as the default value itself (Typer inspects the
+# call to build the CLI). That is exactly the pattern B008 ("function call
+# in default argument") exists to catch for mutable-default bugs, but it
+# is safe and required here, so these two are exempted rather than
+# scattering `# noqa: B008` through cli.py.
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["yaml.*"]
+ignore_missing_imports = true

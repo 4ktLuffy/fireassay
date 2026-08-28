@@ -1,0 +1,19 @@
+# Example policy rule pack for `fireassay run --policy`.
+#
+# Loaded by fireassay.score.policy.load_policy_rules into
+# ScoringContext.policy_rules. PolicyScorer emits `policy.violations` as
+# the count of rules that fired (not the count of regex matches), and 0.0
+# whenever the system produced no answer to check.
+#
+# `applies_to: retrieved` is accepted here for forward compatibility but
+# never fires in M1 — see the docstring on PolicyScorer.score for why.
+rules:
+  - id: no_email_egress
+    pattern: '[\w.+-]+@[\w-]+\.[\w.]+'
+    applies_to: answer
+    severity: high
+
+  - id: no_phone_number
+    pattern: '\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b'
+    applies_to: answer
+    severity: medium

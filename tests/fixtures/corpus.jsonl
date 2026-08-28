@@ -1,0 +1,12 @@
+{"doc_id": "doc01", "title": "Password Reset", "text": "To reset your password, click Forgot Password on the sign in page and follow the emailed link to choose a new password."}
+{"doc_id": "doc02", "title": "Billing and Invoices", "text": "Invoices are generated monthly and emailed as a PDF. You can download past invoices from the Billing tab in your account settings."}
+{"doc_id": "doc03", "title": "Refund Policy", "text": "Refunds are issued within 14 days of purchase if the product is unused. Contact support with your order number to request a refund."}
+{"doc_id": "doc04", "title": "Shipping Times", "text": "Standard shipping takes 3 to 5 business days. Express shipping takes 1 to 2 business days and is available at checkout."}
+{"doc_id": "doc05", "title": "Account Deletion", "text": "To delete your account, go to Account Settings and select Delete Account. This action is permanent and cannot be undone."}
+{"doc_id": "doc06", "title": "Two Factor Authentication", "text": "Enable two factor authentication in Security Settings to add a one time code from an authenticator app at sign in."}
+{"doc_id": "doc07", "title": "API Rate Limits", "text": "The API allows 100 requests per minute per API key. Exceeding this limit returns a 429 status code until the window resets."}
+{"doc_id": "doc08", "title": "Data Export", "text": "You can export all your data as a CSV file from the Privacy tab. Exports are prepared within 24 hours and emailed to you."}
+{"doc_id": "doc09", "title": "Subscription Cancellation", "text": "To cancel your subscription, open Billing and choose Cancel Plan. Your plan remains active until the end of the billing period."}
+{"doc_id": "doc10", "title": "Contact Support Hours", "text": "Support is available Monday through Friday from 9am to 6pm Eastern Time. Email replies typically arrive within one business day."}
+{"doc_id": "doc11", "title": "Change Email Address", "text": "To change your email address, go to Account Settings, edit your email, and confirm the change using the verification link sent to the new address."}
+{"doc_id": "doc12", "title": "Mobile App Installation", "text": "The mobile app is available for iOS and Android. Search for the app name in the App Store or Google Play and sign in with your existing account."}

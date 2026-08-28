@@ -1,0 +1,31 @@
+# Example config matrix for `fireassay run --matrix`.
+#
+# `suite` is "name@version", a suite already frozen via
+# `fireassay suite freeze`. `axes` is a grid: fireassay.config.expand
+# produces the Cartesian product of every axis, one config dict per cell,
+# with each axis's chosen value stored under that axis's key. An axis's
+# values can be plain strings (as below) or dicts bundling several
+# parameters together as one option — see M1-SPEC.md §5.
+#
+# This example matches the fixture suite built by `make demo`
+# (tests/fixtures/questions.jsonl frozen as demo@1.0.0) and produces 4
+# configs: every combination of top_k in {3, 5} and k1 in {1.2, 1.5}.
+suite: demo@1.0.0
+
+axes:
+  top_k:
+    - "3"
+    - "5"
+  k1:
+    - "1.2"
+    - "1.5"
+
+# Extra configs to run outside the grid (e.g. a hand-picked baseline
+# config). Each entry is a full config dict, not filtered by `exclude`.
+include: []
+
+# Drop any grid cell matching one of these patterns. A pattern matches a
+# config when every key it names equals the config's value for that key —
+# e.g. `- {top_k: "5"}` would drop every config with top_k == "5",
+# regardless of k1.
+exclude: []
