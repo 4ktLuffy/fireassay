@@ -4,7 +4,7 @@ are indistinguishable in the emitted item."""
 from __future__ import annotations
 
 from fireassay.curate.queue import build_queue, seed_from_candidates
-from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
+from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 
 
 def _candidates(n: int) -> list[ResolvedCandidate]:
@@ -15,12 +15,14 @@ def _candidates(n: int) -> list[ResolvedCandidate]:
             text=f"question number {i} about something specific?",
             qtype="factual",
             difficulty="easy",
+            target_qtype="factual",
+            target_difficulty="easy",
             reference_answer="an answer",
             quote="a quote",
             source_doc_id=f"doc{i % 5}",
             char_start=0,
             char_end=8,
-            features=LexicalFeatures(title_overlap=0.0, quote_overlap=0.0, question_len_tokens=6),
+            features=CandidateFeatures(title_overlap=0.0, quote_overlap=0.0, question_len_tokens=6),
             model_digest="digest",
             prompt_hash="prompt-hash",
             created_at=f"2026-01-01T00:{i:02d}:00",

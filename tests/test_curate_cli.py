@@ -15,18 +15,19 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from fireassay.cli import app
-from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
+from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 from fireassay.store.db import Store
 
 runner = CliRunner()
 
 _ALL_STAGES = (
+    "generation",
     "not_a_question",
     "span_resolution",
     "degeneracy",
     "self_containment",
     "near_duplicate",
-    "generic",
+    "unretrievable",
     "balance",
 )
 
@@ -53,12 +54,14 @@ def _seed_kept_candidate(db: Path, candidate_id: str = "cand1") -> None:
         text="What is the refund window?",
         qtype="factual",
         difficulty="easy",
+        target_qtype="factual",
+        target_difficulty="easy",
         reference_answer="14 days",
         quote="Refunds are issued within 14 days",
         source_doc_id="doc1",
         char_start=0,
         char_end=10,
-        features=LexicalFeatures(title_overlap=0.1, quote_overlap=0.2, question_len_tokens=5),
+        features=CandidateFeatures(title_overlap=0.1, quote_overlap=0.2, question_len_tokens=5),
         model_digest="digest",
         prompt_hash="prompt",
         created_at="2026-01-01T00:00:00",

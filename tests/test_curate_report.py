@@ -12,7 +12,7 @@ import pytest
 from fireassay.curate.funnel import compute_funnel
 from fireassay.curate.models import Decision, QueueItem, RubricVerdict
 from fireassay.curate.report import build_report
-from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
+from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 from fireassay.store.db import FilterResultRow
 from fireassay.system.corpus import Doc
 
@@ -31,7 +31,7 @@ def test_funnel_reconciles_generated_equals_kept_plus_every_reason() -> None:
         _row("c1", "degeneracy", True),
         _row("c1", "self_containment", True),
         _row("c1", "near_duplicate", True),
-        _row("c1", "generic", True),
+        _row("c1", "unretrievable", True),
         _row("c1", "balance", True),
         # c2: rejected immediately as NOT_A_QUESTION.
         _row("c2", "not_a_question", False, "NOT_A_QUESTION"),
@@ -48,23 +48,27 @@ def test_funnel_reconciles_generated_equals_kept_plus_every_reason() -> None:
         _row("c5", "degeneracy", True),
         _row("c5", "self_containment", True),
         _row("c5", "near_duplicate", True),
-        _row("c5", "generic", True),
+        _row("c5", "unretrievable", True),
         _row("c5", "balance", False, "CELL_FULL"),
         # c6: rejected as QUOTE_AMBIGUOUS.
         _row("c6", "not_a_question", True),
         _row("c6", "span_resolution", False, "QUOTE_AMBIGUOUS"),
+        # c7: the LLM call itself exhausted its retries -- no raw
+        # candidate ever existed, so this is the only row for c7 at all.
+        _row("c7", "generation", False, "GENERATION_FAILED"),
     ]
 
     funnel = compute_funnel(rows, decisions=[])
 
-    assert funnel.generated == 6
+    assert funnel.generated == 7
     assert funnel.filter_kept == 1
-    assert funnel.total_rejected_by_filter() == 5
+    assert funnel.total_rejected_by_filter() == 6
     assert funnel.reconciles() is True
 
     reasons = {
         stage.stage: stage.rejected_by_reason for stage in funnel.stages if stage.rejected_by_reason
     }
+    assert reasons["generation"] == {"GENERATION_FAILED": 1}
     assert reasons["not_a_question"] == {"NOT_A_QUESTION": 1}
     assert reasons["span_resolution"] == {"QUOTE_NOT_FOUND": 1, "QUOTE_AMBIGUOUS": 1}
     assert reasons["degeneracy"] == {"DEGENERATE": 1}
@@ -101,7 +105,7 @@ def test_funnel_curation_counts_use_latest_decision_per_pair() -> None:
         _row("c1", "degeneracy", True),
         _row("c1", "self_containment", True),
         _row("c1", "near_duplicate", True),
-        _row("c1", "generic", True),
+        _row("c1", "unretrievable", True),
         _row("c1", "balance", True),
     ]
     rubric = RubricVerdict(
@@ -126,7 +130,13 @@ def test_funnel_curation_counts_use_latest_decision_per_pair() -> None:
 
 
 def _candidate(
-    candidate_id: str, source_doc_id: str, qtype: str = "factual", difficulty: str = "easy"
+    candidate_id: str,
+    source_doc_id: str,
+    qtype: str = "factual",
+    difficulty: str = "easy",
+    *,
+    target_qtype: str | None = None,
+    target_difficulty: str | None = None,
 ) -> ResolvedCandidate:
     return ResolvedCandidate(
         id=candidate_id,
@@ -134,10 +144,14 @@ def _candidate(
         text=f"question about {source_doc_id}?",
         qtype=qtype,  # type: ignore[arg-type]
         difficulty=difficulty,  # type: ignore[arg-type]
+        target_qtype=(target_qtype if target_qtype is not None else qtype),  # type: ignore[arg-type]
+        target_difficulty=(  # type: ignore[arg-type]
+            target_difficulty if target_difficulty is not None else difficulty
+        ),
         reference_answer="ans",
         quote="q",
         source_doc_id=source_doc_id, char_start=0, char_end=1,
-        features=LexicalFeatures(title_overlap=0.2, quote_overlap=0.3, question_len_tokens=5),
+        features=CandidateFeatures(title_overlap=0.2, quote_overlap=0.3, question_len_tokens=5),
         model_digest="digest", prompt_hash="prompt", created_at="2026-01-01T00:00:00",
     )
 
@@ -208,6 +222,45 @@ def test_build_report_honeypot_accuracy_by_curator() -> None:
     ]
     report = build_report([], decisions, queue_items, candidates)
     assert report.honeypot_accuracy_by_curator["alice"] == pytest.approx(1.0)
+    assert report.total_queue_items == 2
+    assert report.total_honeypot_items == 1
+
+
+def test_build_report_reports_zero_honeypots_scheduled_not_an_empty_ambiguity() -> None:
+    """When no queue item is a honeypot, `honeypot_accuracy_by_curator` is
+    empty -- but `total_queue_items`/`total_honeypot_items` let a reader
+    (via the renderer) tell "no honeypots were scheduled" apart from "the
+    curator scored zero" (M1's missing-score rule / M2's NOT_RUN, applied
+    to a queue)."""
+    candidates = [_candidate("c1", "doc1")]
+    queue_items = [
+        QueueItem(
+            id="q1", queue_id="qu", curator_id="alice", candidate_id="c1", position=1,
+            is_honeypot=False, honeypot_expected_reason=None, is_double_review=False,
+        ),
+    ]
+    decisions = [
+        Decision(
+            id="d1", candidate_id="c1", curator_id="alice", decision="accept", rubric=_rubric(),
+            duration_ms=1000, decided_at="2026-01-01T00:00:00",
+        ),
+    ]
+    report = build_report([], decisions, queue_items, candidates)
+    assert report.honeypot_accuracy_by_curator == {}
+    assert report.total_queue_items == 1
+    assert report.total_honeypot_items == 0
+
+
+def test_build_report_computes_generator_obedience() -> None:
+    obedient = _candidate("c1", "doc1", qtype="factual", difficulty="easy")
+    disobedient = _candidate(
+        "c2", "doc1", qtype="procedural", difficulty="hard",
+        target_qtype="factual", target_difficulty="easy",
+    )
+    report = build_report([], [], [], [obedient, disobedient])
+    assert report.generator_obedience.n_candidates == 2
+    assert report.generator_obedience.qtype_match_rate == pytest.approx(0.5)
+    assert report.generator_obedience.cell_match_rate == pytest.approx(0.5)
 
 
 # -- agreement status: unmeasurable vs low-agreement must never collapse ----

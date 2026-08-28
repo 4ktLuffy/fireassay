@@ -2,7 +2,7 @@
 
 Each candidate is evaluated stage by stage, **in the fixed order** given in
 M3-SPEC.md §3's table (degeneracy -> self_containment -> near_duplicate ->
-generic -> balance); a rejection at any stage stops that candidate's
+unretrievable -> balance); a rejection at any stage stops that candidate's
 progress through the rest — it is never double-counted against a later
 stage. A `StageResult` row is recorded for *every* stage a candidate
 reaches, whether it passes (`kept=True, reason=None`) or is rejected
@@ -10,13 +10,20 @@ reaches, whether it passes (`kept=True, reason=None`) or is rejected
 per stage in the pipeline and a rejected candidate has exactly one
 `StageResult` per stage up to and including the one that rejected it. This
 is what lets the funnel reconcile exactly: summing `kept=False` counts by
-reason, across every stage (including generate/'s own
-`not_a_question`/`span_resolution` stages), plus the final survivor count,
-equals the number of candidates the pipeline was handed.
+reason, across every stage (including generate/'s own `generation`/
+`not_a_question`/`span_resolution` stages), plus the final survivor
+count, equals the number of candidates the pipeline was handed.
 
 Candidates are processed in `(created_at, id)` order — the order they were
 generated in — so "keeping the earliest" (near-duplicate, balance) means
 exactly what it says.
+
+`unretrievable` (`filter.stages.check_unretrievable`) needs a live BM25
+index over the whole corpus, built **once per `run_filter` call**, not
+once per candidate — `docs` must be non-empty for this pipeline to mean
+anything, and `run_filter` raises `ValueError` immediately, rather than
+silently rejecting every candidate against a degenerate empty index, if it
+is not.
 """
 
 from __future__ import annotations
@@ -27,23 +34,38 @@ from dataclasses import dataclass
 from fireassay.filter.config import FilterConfig
 from fireassay.filter.stages import (
     check_degeneracy,
-    check_generic,
     check_near_duplicate,
     check_self_containment,
+    check_unretrievable,
 )
 from fireassay.generate.models import ResolvedCandidate
-from fireassay.system.corpus import Doc
+from fireassay.system.bm25 import BM25System
+from fireassay.system.corpus import Doc, chunk_corpus
 from fireassay.text import tokenize
 
 STAGE_DEGENERACY = "degeneracy"
 STAGE_SELF_CONTAINMENT = "self_containment"
 STAGE_NEAR_DUPLICATE = "near_duplicate"
-STAGE_GENERIC = "generic"
+STAGE_UNRETRIEVABLE = "unretrievable"
 STAGE_BALANCE = "balance"
 
 #: Fixed pipeline order (M3-SPEC.md §3's table, minus the two
 #: generate/-owned span-resolution reason codes).
-STAGE_ORDER = (STAGE_DEGENERACY, STAGE_SELF_CONTAINMENT, STAGE_NEAR_DUPLICATE, STAGE_GENERIC, STAGE_BALANCE)
+STAGE_ORDER = (
+    STAGE_DEGENERACY,
+    STAGE_SELF_CONTAINMENT,
+    STAGE_NEAR_DUPLICATE,
+    STAGE_UNRETRIEVABLE,
+    STAGE_BALANCE,
+)
+
+#: Chunking used to build the filter's own BM25 index — matches the
+#: defaults used elsewhere in this codebase for chunking a corpus (`run`,
+#: `controls run`, and `generate.pipeline`'s independent, generation-time
+#: index). Not (yet) exposed via `FilterConfig`; only `unretrievable_top_n`
+#: is (see that field's docstring).
+_RETRIEVAL_CHUNK_SIZE = 800
+_RETRIEVAL_CHUNK_OVERLAP = 100
 
 
 @dataclass(frozen=True)
@@ -60,18 +82,9 @@ class FilterRunResult:
     stage_results: tuple[StageResult, ...]
 
 
-def _build_doc_frequency(docs: Sequence[Doc]) -> tuple[dict[str, int], int]:
-    """Document frequency of every content-bearing token across the full
-    corpus, for `check_generic`. Built from full document text, not just
-    the chunks candidates were generated from — genericness is a property
-    of the corpus a question would have to be distinguished against, which
-    is the whole corpus, not only the sampled chunks a `generate` run
-    happened to touch."""
-    doc_freq: dict[str, int] = {}
-    for doc in docs:
-        for token in set(tokenize(doc.text)):
-            doc_freq[token] = doc_freq.get(token, 0) + 1
-    return doc_freq, len(docs)
+def _build_retriever(docs: Sequence[Doc], top_k: int) -> BM25System:
+    chunks = list(chunk_corpus(docs, size=_RETRIEVAL_CHUNK_SIZE, overlap=_RETRIEVAL_CHUNK_OVERLAP))
+    return BM25System(chunks, top_k=top_k)
 
 
 def run_filter(
@@ -80,8 +93,24 @@ def run_filter(
     """Run every candidate in `candidates` through the ordered filter
     pipeline, returning the survivors and the full, stage-by-stage audit
     trail (`stage_results`) needed to persist `filter_result` rows and to
-    reconcile the funnel."""
-    doc_freq, n_docs = _build_doc_frequency(docs)
+    reconcile the funnel.
+
+    Raises `ValueError` if `docs` is empty: the `unretrievable` stage's
+    BM25 index would otherwise build over zero chunks and reject every
+    candidate by construction, which is a broken run silently producing
+    output that looks like a real (if harsh) filtering decision — exactly
+    the "check that cannot run must never read as a pass" failure mode
+    this project exists to rule out, applied to a corpus precondition
+    instead of a control.
+    """
+    if not docs:
+        raise ValueError(
+            "run_filter requires a non-empty corpus: the unretrievable stage builds a BM25 "
+            "index over it, and an empty corpus would silently reject every candidate rather "
+            "than fail clearly"
+        )
+
+    retriever = _build_retriever(docs, top_k=config.unretrievable_top_n)
     ordered = sorted(candidates, key=lambda c: (c.created_at, c.id))
 
     stage_results: list[StageResult] = []
@@ -105,8 +134,8 @@ def run_filter(
         if not ok:
             continue
 
-        ok, reason = check_generic(candidate, doc_freq, n_docs, config.generic_df_pct)
-        stage_results.append(StageResult(candidate.id, STAGE_GENERIC, ok, reason))
+        ok, reason = check_unretrievable(candidate, retriever, config.unretrievable_top_n)
+        stage_results.append(StageResult(candidate.id, STAGE_UNRETRIEVABLE, ok, reason))
         if not ok:
             continue
 

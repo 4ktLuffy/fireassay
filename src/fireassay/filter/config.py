@@ -27,9 +27,14 @@ class FilterConfig(BaseModel):
     max_question_tokens: int = 60
     #: near-duplicate: token-set Jaccard threshold against any kept candidate.
     near_dup_jaccard_threshold: float = 0.85
-    #: generic: a question is TOO_GENERIC when every one of its content
-    #: words appears in more than this fraction of corpus documents.
-    generic_df_pct: float = 0.05
+    #: unretrievable: a question is UNRETRIEVABLE when its own source
+    #: document does not appear anywhere in the top `unretrievable_top_n`
+    #: BM25 results for the question's own text, queried over the whole
+    #: corpus. Deliberately a floor (default 50 of ~24,584 chunks on the
+    #: real corpus, ~0.2%), not a selection criterion — see
+    #: `filter.stages.check_unretrievable`'s docstring for the bias this
+    #: is defensible against, and what it is not.
+    unretrievable_top_n: int = 50
     #: balance: max candidates kept per (qtype, difficulty) cell.
     cell_cap: int = 200
 

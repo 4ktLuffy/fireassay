@@ -1,9 +1,10 @@
-# fireassay — M1 + M2
+# fireassay — M1 + M2 + M3
 
 An evaluation integrity layer: content-addressed suites that refuse to report unsound
-comparisons, and a harness that proves it can fail. This covers **M1 and M2** — the
-deterministic spine, plus controls, admissibility, and both mutation scores. Read this section
-honestly before assuming fireassay does more than it does.
+comparisons, and a harness that proves it can fail. This covers **M1, M2 and M3** — the
+deterministic spine, controls and mutation scores, and question generation / deterministic
+filtering / human curation. Read this section honestly before assuming fireassay does more
+than it does.
 
 ## What M1 actually is
 
@@ -100,13 +101,78 @@ always exits **0** — a low `gate_mutation_score` is a finding to report, not a
 On the M1 fixture (retrieval-only `BM25System`), `judge_calibration` and `null_questions` are
 *always* `NOT_RUN`, so `controls run` needs both named in `--allow-not-run` to exit 0.
 
-## What M1+M2 are honestly *not*
+## What M3 adds
+
+Turning a corpus into a curated golden set (fireassay-SPEC.md §2, pillar 3), with a rubric and
+a measured error rate — not a funnel that trusts its own inputs.
+
+- **Generation** (`generate/`, `llm/`) is the only part of fireassay allowed to call an LLM, via
+  a thin `OllamaClient` (`urllib.request` only, no new HTTP dependency) that pins a model by
+  **digest, from `GET /api/tags`, never `/api/show`** (verified against a live server: `/api/show`
+  carries no `digest` key at all) and never by tag, and that **raises rather than returns a
+  partial result** when every retry produces invalid JSON. Every LLM response is content-addressed
+  on `(digest, prompt)` in a `ResponseCache`, so tests replay fixtures and never touch a live
+  model. A candidate's evidence span is resolved by locating its quote **verbatim, under
+  whitespace normalisation only** (never fuzzy matching) in the source document; a quote that
+  does not appear, or appears more than once, is discarded and counted, never guessed at.
+- **Filtering** (`filter/`) is entirely deterministic and LLM-free: degeneracy, self-containment,
+  near-duplication (token-set Jaccard via the one shared tokenizer), an `unretrievable` check, and
+  a per-`(qtype, difficulty)` balance cap, in that fixed order, with every candidate's full
+  stage-by-stage trail persisted so the funnel reconciles exactly (`generated == kept + every
+  rejection reason`).
+  **`unretrievable` replaces an earlier per-word document-frequency check (`TOO_GENERIC`)**,
+  measured on the real 1,181-document gov.uk corpus to have a ~50% false-positive rate: on a
+  topically narrow corpus, ordinary words are common simply because the whole corpus shares a
+  topic, so "every content word is common" rejects specific, well-formed questions. `unretrievable`
+  instead asks the more direct question an answerability filter asks — can the retriever that will
+  eventually have to answer this find its own source document at all? — by running the question
+  through the BM25 retriever already in this repo and rejecting it only if its own source document
+  fails to appear in the top `unretrievable_top_n` (default 50 of ~24,584 chunks — a floor, not a
+  selection criterion) of the whole corpus. This is defensible for filtering configs that are
+  later evaluated with the same retriever family only because it is (1) a wide floor, not a
+  ranking criterion, and (2) applied identically to every config, so it cannot differentially
+  favour one. **The bias that remains is real and is not hidden: the curated set will
+  under-represent questions that require semantic rather than lexical matching.** When a second,
+  differently-biased retriever family exists in this repo, filtering with it instead of the one
+  under evaluation is the correct fix; until then this is a documented limitation of the set's
+  composition, not of any comparison drawn from it.
+- **Curation** (`curate/`) is the non-interactive core (`curate next` / `curate submit`) a future
+  TUI (M3b) will drive with no new logic, only keystrokes: a six-question rubric, a queue that
+  interleaves invisible known-bad honeypots and double-reviews, Krippendorff's α (ordinal for the
+  two ordinal rubric fields, nominal for the four booleans, missing observations passed through as
+  `NaN` rather than imputed), and a funnel/coverage/difficulty-validation report.
+  **Agreement and accuracy are different instruments and neither substitutes for the other**: α
+  says whether curators agree with each other, honeypots say whether a curator is right against a
+  known-bad item planted invisibly in the queue. **"Unmeasurable" is a state, not a number**:
+  `krippendorff.alpha` can raise (two curators agreeing on every shared item is an entirely
+  ordinary case) or return `NaN` (sparse, missing-heavy data) without raising — both are reported
+  as a distinct `UNMEASURABLE` status, never silently compared against the low-agreement threshold
+  as if they were a real, if low, α.
+- **`gold_doc_rank`** — the BM25 rank at which a candidate's own source document is first found,
+  measured once at generation time — is recorded as a feature alongside the lexical ones, and
+  `curate report`'s difficulty-validation correlation checks the generator's *proposed* difficulty
+  label against it: the spike found a generator's difficulty labels can be **inverted** relative to
+  what actually drives retrieval (`easy` probes scored 0.176 recall, `hard` scored 0.588, because
+  what drove it was document-title overlap, not passage overlap). A difficulty label that does not
+  correlate with anything measurable is a label, not a difficulty.
+
+```
+fireassay generate  --corpus corpus.jsonl --model qwen2.5:7b --n 3000 --cache-dir .cache/llm --db bench.db
+fireassay filter    --batch <batch_id> --config configs/filter.example.yaml --corpus corpus.jsonl --db bench.db
+fireassay curate next    --curator alice --db bench.db
+fireassay curate submit  verdict.json --db bench.db
+fireassay curate report  --db bench.db [--corpus corpus.jsonl] [--suite support-kb@1.0.0]
+fireassay suite freeze --name support-kb --version 1.0.0 --db bench.db --from-curated
+```
+
+## What M1+M2+M3 are honestly *not*
 
 The following are explicitly out of scope and **not built**, regardless of what the parent
 spec (`../fireassay-SPEC.md`) describes for the finished project:
 
-- **No question generation, no curation TUI, no reject taxonomy, no inter-annotator
-  agreement.** Questions are imported from a JSONL file you provide.
+- **No curation TUI** (M3b will drive `curate next`/`curate submit` interactively; both are
+  already fully usable non-interactively). No crowd-kit/Dawid-Skene aggregation — pointless with
+  one curator, revisit when there are several.
 - **No LLM judges** (`correctness`, `groundedness`), no `judge_calibration` control with a real
   judge — five of the eventual eight metrics are built; the three that need a judge, and the
   sixth control, are M4.
@@ -170,10 +236,11 @@ following exist because of them, not because the original spec asked for them:
 pip install -e ".[dev]"
 ```
 
-Runtime dependencies are exactly `pydantic>=2`, `typer`, `pyyaml`, `numpy`, `rich` — unchanged
-by M2. Dev-only: `pytest`, `pytest-cov`, `ruff`, `mypy`, `cosmic-ray` (the last is never
-imported at runtime; it powers `make mutants` only). No SQLAlchemy, no ORM, no network
-library — SQLite is stdlib `sqlite3`. No LLM call and no network anywhere in M1 or M2.
+Runtime dependencies are `pydantic>=2`, `typer`, `pyyaml`, `numpy`, `rich`, plus **`krippendorff`**
+(M3's one new dependency — no pandas, no scikit-learn). Dev-only: `pytest`, `pytest-cov`, `ruff`,
+`mypy`, `cosmic-ray` (the last is never imported at runtime; it powers `make mutants` only). No
+SQLAlchemy, no ORM — SQLite is stdlib `sqlite3`; Ollama access is stdlib `urllib.request`, no HTTP
+library. No LLM call and no network anywhere in M1 or M2, and nowhere in M3 outside `generate/`.
 
 ## Quick tour
 
@@ -214,14 +281,18 @@ src/fireassay/
 ├── text.py                    # the one tokenizer
 ├── runner.py                    # sequential run_matrix, run_once (M2)
 ├── compare.py                     # leaderboard aggregation
-├── store/                           # migrations/ (0001 M1, 0002 M2 controls+mutation), db.py
+├── store/                           # migrations/ (0001 M1, 0002 M2, 0003 M3), db.py
 ├── system/                           # bm25.py, corpus.py, base.py (System protocol)
 ├── score/                             # retrieval, latency, cost, policy, abstention, invariants
 ├── controls/                           # M2: 5 deterministic controls + expected.yaml + registry
 ├── mutation/                            # M2: operators, ThresholdDetector, score, run_mutation
-└── report/                               # text.py — rich table rendering (M1 + M2)
+├── llm/                                  # M3: OllamaClient, ResponseCache — the only LLM boundary
+├── generate/                              # M3: candidate generation, span resolution, features
+├── filter/                                 # M3: deterministic filter pipeline (no LLM)
+├── curate/                                  # M3: rubric, queue, honeypots, agreement, report
+└── report/                                   # text.py — rich table rendering (M1 + M2 + M3)
 tests/
-├── fixtures/            # corpus.jsonl (12 docs), questions.jsonl (20 questions)
+├── fixtures/            # corpus.jsonl (12 docs), questions.jsonl (20 questions), llm/ (cache fixtures)
 └── test_*.py
 ```
 

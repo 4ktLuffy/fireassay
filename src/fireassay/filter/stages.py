@@ -11,10 +11,11 @@ shape elsewhere in this codebase.
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
 
 from fireassay.filter.config import FilterConfig
 from fireassay.generate.models import ResolvedCandidate
+from fireassay.models import Question
+from fireassay.system.bm25 import BM25System
 from fireassay.text import tokenize
 
 #: A minimal function-word list used only to detect a degenerate,
@@ -84,49 +85,66 @@ def check_near_duplicate(
     return True, None
 
 
-def check_generic(
-    candidate: ResolvedCandidate, doc_freq: Mapping[str, int], n_docs: int, generic_df_pct: float
+def check_unretrievable(
+    candidate: ResolvedCandidate, retriever: BM25System, top_n: int
 ) -> tuple[bool, str | None]:
-    """`TOO_GENERIC`: every content word **that actually appears somewhere
-    in the corpus** shows up in more than `generic_df_pct` of documents —
-    i.e. not a single corpus-attested word in the question narrows down
-    which document(s) it could be about. This is the spike's *"What does
-    the guidance say about revenue and customs?"* failure mode: a question
-    with no recoverable ground truth because nothing in it discriminates
-    the corpus at all.
+    """`UNRETRIEVABLE`: the candidate's own source document does not
+    appear anywhere in `retriever`'s top `top_n` BM25 results for the
+    candidate's own question text, queried over the whole corpus.
 
-    **Genericity is a claim about words that exist in the corpus and fail
-    to discriminate it.** A content word with `doc_freq.get(w, 0) == 0` is
-    excluded from that judgement entirely, never treated as "rare and
-    therefore specific" — a word absent from every document discriminates
-    nothing, because there is nothing for it to point at. Scoring it as
-    maximally specific has it backwards: it would make a question look
-    well-targeted precisely when one of its terms doesn't occur anywhere
-    in the corpus. Concretely, in *"What does the guidance say about
-    revenue and customs?"*, "say" is filler that happens not to appear in
-    the fixture corpus at all — it must not single-handedly save the
-    question from `TOO_GENERIC` just because it has no document-frequency
-    entry to be common *in*.
+    **Replaces `TOO_GENERIC`** (a per-word document-frequency check),
+    which measured on the real 1,181-document gov.uk corpus had a ~50%
+    false-positive rate: on a topically narrow corpus, ordinary content
+    words ("hmrc", "sign", "online", "payment", "cancel") are common
+    simply because the *whole corpus* is about government services, so
+    "is every content word common" rejects specific, well-formed
+    questions. It also misdiagnosed the case it was built for — the
+    spike's *"What does the guidance say about revenue and customs?"*
+    fails not because its words are individually common, but because
+    **nothing in it identifies which document could answer it.**
+    Answerability, not per-word rarity, is the actual property that
+    matters, and an answerability filter is established practice in
+    published synthetic-data pipelines; per-word document frequency is
+    not a technique anyone uses. `check_unretrievable` asks the question
+    directly, with machinery already in this repo: can the retriever
+    that will eventually have to answer this find its own source
+    document at all?
 
-    A candidate whose content words are all either common-in-corpus or
-    absent-from-corpus (no word is both present and rare) still has no
-    recoverable ground truth and must be flagged — the same failure this
-    check exists for. Only when every content word is genuinely absent
-    from the corpus (nothing left to judge genericity against at all) does
-    this stage pass by default: that case is an answerability problem
-    (the generator introduced a term with no corpus support), which span
-    resolution's document-level quote match already guards against
-    separately, not a genericity problem for this stage to adjudicate.
+    **Two things make filtering with BM25 defensible even though later
+    evaluation also uses BM25 configs, and both must hold, not be
+    assumed:**
+
+    1. This is a **floor, not a selection criterion** — `top_n` defaults
+       to 50 of ~24,584 chunks on the real corpus (~0.2%). It discards
+       only candidates BM25 cannot locate at all within a wide margin,
+       never candidates it merely ranks imperfectly.
+    2. It is applied **identically to every config** at evaluation time,
+       so it cannot differentially favour one over another. The bias
+       this leaves is on the *curated set's composition*, never on the
+       *comparison* between configs.
+
+    **The composition bias is real and must be stated, not hidden: the
+    resulting set will under-represent questions that require semantic
+    rather than lexical matching** — a paraphrase-heavy question whose
+    source document shares little vocabulary with it can fail this check
+    even though a semantic retriever would find it easily. When a second
+    retriever family (e.g. a dense/embedding retriever) exists in this
+    repo, filtering with a *different* one than whichever is under
+    evaluation is the proper fix; until then this is a known, documented
+    limitation, not a solved problem. See `curate.report`'s rendered
+    output and the README for the same disclosure — it belongs wherever
+    someone might read the resulting numbers, not only here.
+
+    `retriever` must already be constructed with `top_k == top_n`
+    (`filter.pipeline.run_filter` does this once per run, not once per
+    candidate) so `retriever.answer(...)` naturally returns exactly the
+    window this check needs.
     """
-    if n_docs <= 0:
-        return True, None
-    content_words = [t for t in tokenize(candidate.text) if t not in _STOPWORDS and len(t) >= 3]
-    if not content_words:
-        return True, None
-    considered = [w for w in content_words if doc_freq.get(w, 0) > 0]
-    if not considered:
-        return True, None
-    fractions = [doc_freq[w] / n_docs for w in considered]
-    if all(f > generic_df_pct for f in fractions):
-        return False, "TOO_GENERIC"
-    return True, None
+    question = Question(
+        text=candidate.text, qtype=candidate.qtype, difficulty=candidate.difficulty, provenance="synthetic"
+    )
+    output = retriever.answer(question)
+    for chunk in output.retrieved:
+        if chunk.doc_id == candidate.source_doc_id:
+            return True, None
+    return False, "UNRETRIEVABLE"

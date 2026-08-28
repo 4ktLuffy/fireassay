@@ -22,3 +22,5 @@ spike/spike.db
 .cache/
 spike/corpus_small.jsonl
 spike/gen.db
+spike/*.db
+spike/*.jsonl

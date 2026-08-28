@@ -6,10 +6,14 @@ Also: **difficulty validation** — the spike (`spike/RESULTS.md`) found a
 generator's proposed `difficulty` label can be *inverted* relative to what
 actually drives retrieval (easy: 0.176 recall, hard: 0.588). `difficulty
 _feature_correlation` reports Pearson r between the proposed label
-(ordinal: easy=0, medium=1, hard=2) and each measured `LexicalFeatures`
+(ordinal: easy=0, medium=1, hard=2) and each measured `CandidateFeatures`
 field, over every generated candidate — "a difficulty label that does not
 correlate with anything measurable is a label, not a difficulty" (M3-SPEC.md
-§2), and this is the number that lets a report say so.
+§2), and this is the number that lets a report say so. `gold_doc_rank` — a
+*measured*, empirical difficulty signal (1 = easy to find, 30+ = hard) — is
+checked alongside the lexical features for exactly this reason: a
+generator's proposed label should be validated against retrieval reality,
+not only against lexical overlap with the title/quote.
 """
 
 from __future__ import annotations
@@ -23,7 +27,55 @@ from fireassay.generate.models import ResolvedCandidate
 from fireassay.system.corpus import Doc
 
 _DIFFICULTY_ORDER = {"easy": 0.0, "medium": 1.0, "hard": 2.0}
-_LEXICAL_FEATURE_NAMES = ("title_overlap", "quote_overlap", "question_len_tokens")
+#: `gold_doc_rank` is nullable (a candidate may have no measured rank, or
+#: none within the search depth) unlike the other three, which are always
+#: present -- `difficulty_feature_correlation` filters it to only the
+#: candidates that have a value before computing anything, per-feature,
+#: rather than requiring every candidate to have every feature.
+_FEATURE_NAMES = ("title_overlap", "quote_overlap", "question_len_tokens", "gold_doc_rank")
+
+
+@dataclass(frozen=True)
+class GeneratorObedience:
+    """How often the model's own proposed `qtype`/`difficulty` matched
+    the specific cell `generate.pipeline` asked it for (M3-SPEC.md's
+    pre-flight finding: an unstratified prompt let the model default to
+    easy factual questions almost every time). A free measure of whether
+    the generator is actually listening to what it is asked for, distinct
+    from whether its proposal is *correct* — a model can honestly report
+    that it produced something other than what was requested, and that is
+    a different fact from disagreeing about the label on a question it
+    was correctly asked to attempt.
+
+    `None` fields mean no candidates were given to compute a rate from —
+    never a misleading `0.0`, the same omit-don't-zero rule this project
+    applies everywhere a mean can be computed over an empty population.
+    """
+
+    n_candidates: int
+    qtype_match_rate: float | None
+    difficulty_match_rate: float | None
+    cell_match_rate: float | None
+
+
+def generator_obedience(candidates: Sequence[ResolvedCandidate]) -> GeneratorObedience:
+    """Compute `GeneratorObedience` over `candidates`."""
+    n = len(candidates)
+    if n == 0:
+        return GeneratorObedience(
+            n_candidates=0, qtype_match_rate=None, difficulty_match_rate=None, cell_match_rate=None
+        )
+    qtype_matches = sum(1 for c in candidates if c.qtype == c.target_qtype)
+    difficulty_matches = sum(1 for c in candidates if c.difficulty == c.target_difficulty)
+    cell_matches = sum(
+        1 for c in candidates if c.qtype == c.target_qtype and c.difficulty == c.target_difficulty
+    )
+    return GeneratorObedience(
+        n_candidates=n,
+        qtype_match_rate=qtype_matches / n,
+        difficulty_match_rate=difficulty_matches / n,
+        cell_match_rate=cell_matches / n,
+    )
 
 
 @dataclass(frozen=True)
@@ -64,25 +116,33 @@ def content_coverage(candidates: Sequence[ResolvedCandidate], docs: Sequence[Doc
 
 def difficulty_feature_correlation(candidates: Sequence[ResolvedCandidate]) -> dict[str, float]:
     """Pearson r between proposed `difficulty` (ordinal 0/1/2) and each
-    `LexicalFeatures` field, over `candidates`.
+    `CandidateFeatures` field, over `candidates`.
 
-    `{}` when fewer than 2 candidates are given, or when `difficulty` (or
-    a feature) is constant across all of them — `numpy.corrcoef` returns
-    `nan` for a zero-variance input, which would silently read as "no
-    correlation" when the honest answer is "undefined, not enough
-    variation to compute one"; both are reported as simply absent from the
-    result rather than as a misleading `0.0`.
+    Each feature is filtered to the candidates that actually have a value
+    for it *before* correlating (`gold_doc_rank` is `None` for a candidate
+    with no measured rank; the other three are always present) — a
+    per-feature filter, not a single global one, so one nullable feature
+    does not shrink the population every other feature is correlated over.
+
+    A feature is simply absent from the result — never a misleading `0.0`
+    — when fewer than 2 candidates have a value for it, or when
+    `difficulty` (or the feature itself) is constant across that subset:
+    `numpy.corrcoef` returns `nan` for a zero-variance input, which would
+    otherwise silently read as "no correlation" when the honest answer is
+    "undefined, not enough variation to compute one".
     """
-    if len(candidates) < 2:
-        return {}
-    difficulties = np.array([_DIFFICULTY_ORDER[c.difficulty] for c in candidates], dtype=float)
-    if np.std(difficulties) == 0.0:
-        return {}
-
     result: dict[str, float] = {}
-    for feature_name in _LEXICAL_FEATURE_NAMES:
-        values = np.array([getattr(c.features, feature_name) for c in candidates], dtype=float)
-        if np.std(values) == 0.0:
+    for feature_name in _FEATURE_NAMES:
+        pairs = [
+            (_DIFFICULTY_ORDER[c.difficulty], getattr(c.features, feature_name))
+            for c in candidates
+            if getattr(c.features, feature_name) is not None
+        ]
+        if len(pairs) < 2:
+            continue
+        difficulties = np.array([p[0] for p in pairs], dtype=float)
+        values = np.array([p[1] for p in pairs], dtype=float)
+        if np.std(difficulties) == 0.0 or np.std(values) == 0.0:
             continue
         r = float(np.corrcoef(difficulties, values)[0, 1])
         if not np.isnan(r):

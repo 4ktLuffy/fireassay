@@ -6,11 +6,12 @@ governs it:
 A funnel that loses candidates without naming a reason is the reporting
 equivalent of a check that cannot run reading as a pass (M2-SPEC.md §1's
 rule, applied to reporting instead of controls). This module computes the
-funnel from the full, stage-by-stage `filter_result` audit trail — two
-stages recorded by `generate/` (`not_a_question`, `span_resolution`) and
-five recorded by `filter/` (`degeneracy`, `self_containment`,
-`near_duplicate`, `generic`, `balance`) — and `reconciles()` is checked by
-`test_curate_report.py`'s required reconciliation test.
+funnel from the full, stage-by-stage `filter_result` audit trail — three
+stages recorded by `generate/` (`generation`, `not_a_question`,
+`span_resolution`) and five recorded by `filter/` (`degeneracy`,
+`self_containment`, `near_duplicate`, `unretrievable`, `balance`) — and
+`reconciles()` is checked by `test_curate_report.py`'s required
+reconciliation test.
 """
 
 from __future__ import annotations
@@ -21,11 +22,14 @@ from dataclasses import dataclass
 
 from fireassay.curate.models import Decision
 from fireassay.filter.pipeline import STAGE_ORDER as _FILTER_STAGE_ORDER
-from fireassay.generate.pipeline import STAGE_NOT_A_QUESTION, STAGE_SPAN_RESOLUTION
+from fireassay.generate.pipeline import STAGE_GENERATION, STAGE_NOT_A_QUESTION, STAGE_SPAN_RESOLUTION
 from fireassay.store.db import FilterResultRow
 
-#: Full pipeline order: generate/'s two stages, then filter/'s five.
-FUNNEL_STAGE_ORDER = (STAGE_NOT_A_QUESTION, STAGE_SPAN_RESOLUTION, *_FILTER_STAGE_ORDER)
+#: Full pipeline order: generate/'s three stages, then filter/'s five.
+#: `generation` (a failed LLM call, GENERATION_FAILED) comes first: it is
+#: the earliest possible failure point, before there is even a raw
+#: candidate to check for imperativeness.
+FUNNEL_STAGE_ORDER = (STAGE_GENERATION, STAGE_NOT_A_QUESTION, STAGE_SPAN_RESOLUTION, *_FILTER_STAGE_ORDER)
 
 _FINAL_STAGE = _FILTER_STAGE_ORDER[-1]
 
@@ -72,14 +76,16 @@ def compute_funnel(
     filter_results: Sequence[FilterResultRow], decisions: Sequence[Decision]
 ) -> FunnelReport:
     """Build the `FunnelReport` from every persisted `filter_result` row
-    (across `generate/`'s two stages and `filter/`'s five) and the latest
-    `Decision` per `(candidate_id, curator_id)`.
+    (across `generate/`'s three stages and `filter/`'s five) and the
+    latest `Decision` per `(candidate_id, curator_id)`.
 
     `generated` is the count of distinct `candidate_id`s appearing in
-    `filter_results` at all — every raw LLM proposal gets a
-    `not_a_question` row, whether or not it survives, so this is exactly
-    the funnel's starting count regardless of how many later stages a
-    given candidate reached.
+    `filter_results` at all — every generation attempt gets a `generation`
+    row (a failed LLM call gets one for a throwaway id with no raw
+    candidate behind it; a successful one gets one per raw candidate
+    returned), whether or not it survives, so this is exactly the
+    funnel's starting count regardless of how many later stages a given
+    candidate reached.
     """
     by_candidate: dict[str, list[FilterResultRow]] = {}
     for row in filter_results:

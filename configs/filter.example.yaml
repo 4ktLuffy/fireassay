@@ -4,5 +4,11 @@
 min_question_tokens: 5
 max_question_tokens: 60
 near_dup_jaccard_threshold: 0.85
-generic_df_pct: 0.05
+# UNRETRIEVABLE: reject a candidate whose own source document does not
+# appear in the top N BM25 results for its own question text, over the
+# whole corpus. A floor (N of ~24,584 chunks on the real corpus), not a
+# selection criterion -- see filter/stages.py's check_unretrievable
+# docstring for the composition bias this leaves (under-represents
+# questions that need semantic rather than lexical matching).
+unretrievable_top_n: 50
 cell_cap: 200

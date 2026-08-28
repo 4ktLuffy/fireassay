@@ -20,7 +20,13 @@ from fireassay.curate.agreement import (
     RubricCriterion,
     krippendorff_alpha,
 )
-from fireassay.curate.coverage import CoverageReport, content_coverage, difficulty_feature_correlation
+from fireassay.curate.coverage import (
+    CoverageReport,
+    GeneratorObedience,
+    content_coverage,
+    difficulty_feature_correlation,
+    generator_obedience,
+)
 from fireassay.curate.funnel import FunnelReport, compute_funnel
 from fireassay.curate.honeypots import is_honeypot_correct
 from fireassay.curate.models import Decision, QueueItem, RubricVerdict
@@ -70,6 +76,14 @@ class CurateReport:
     speeding_flags: tuple[SessionFlag, ...]
     coverage: CoverageReport | None
     difficulty_correlation: dict[str, float]
+    generator_obedience: GeneratorObedience
+    #: Queue composition, needed by the renderer to tell "no honeypots
+    #: were scheduled" apart from "the curator scored zero" -- an empty
+    #: `honeypot_accuracy_by_curator` is ambiguous between those two on
+    #: its own (M3-SPEC.md's rule: `None` is not `0`, applied to a queue
+    #: rather than a score).
+    total_queue_items: int
+    total_honeypot_items: int
     recommended_max_session_minutes: int = field(default=RECOMMENDED_MAX_SESSION_MINUTES)
 
 
@@ -195,6 +209,7 @@ def build_report(
     coverage = content_coverage(accepted_candidates, docs) if docs is not None else None
 
     difficulty_correlation = difficulty_feature_correlation(candidates)
+    obedience = generator_obedience(candidates)
 
     return CurateReport(
         funnel=funnel,
@@ -209,6 +224,9 @@ def build_report(
         speeding_flags=speeding_flags,
         coverage=coverage,
         difficulty_correlation=difficulty_correlation,
+        generator_obedience=obedience,
+        total_queue_items=len(queue_items),
+        total_honeypot_items=sum(1 for qi in queue_items if qi.is_honeypot),
     )
 
 

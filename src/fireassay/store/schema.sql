@@ -93,25 +93,29 @@ CREATE TABLE score (
 -- See migrations/0001_initial.sql for the append-only trigger definitions
 -- (result_seal_insert, result_seal_update, score_seal_insert,
 -- score_seal_update). See migrations/0002_controls_mutation.sql for
--- control_check / mutation_run / mutant (M2), and
--- migrations/0003_generation_curation.sql for candidate / filter_result /
--- queue_item / decision (M3) and their own append-only triggers.
+-- control_check / mutation_run / mutant (M2), migrations/
+-- 0003_generation_curation.sql for candidate / filter_result /
+-- queue_item / decision (M3) and their own append-only triggers, and
+-- migrations/0004_target_cells.sql for candidate.target_qtype /
+-- target_difficulty (M3 pre-flight addendum: stratified generation).
 
 CREATE TABLE candidate (
-    id               TEXT PRIMARY KEY,
-    batch_id         TEXT NOT NULL,
-    text             TEXT NOT NULL,
-    qtype            TEXT NOT NULL,
-    difficulty       TEXT NOT NULL,
-    reference_answer TEXT NOT NULL,
-    quote            TEXT NOT NULL,
-    source_doc_id    TEXT NOT NULL,
-    char_start       INTEGER NOT NULL,
-    char_end         INTEGER NOT NULL,
-    features_json    TEXT NOT NULL,
-    model_digest     TEXT NOT NULL,
-    prompt_hash      TEXT NOT NULL,
-    created_at       TEXT NOT NULL
+    id                TEXT PRIMARY KEY,
+    batch_id          TEXT NOT NULL,
+    text              TEXT NOT NULL,
+    qtype             TEXT NOT NULL,
+    difficulty        TEXT NOT NULL,
+    target_qtype      TEXT NOT NULL DEFAULT '',   -- added in migration 0004
+    target_difficulty TEXT NOT NULL DEFAULT '',   -- added in migration 0004
+    reference_answer  TEXT NOT NULL,
+    quote             TEXT NOT NULL,
+    source_doc_id     TEXT NOT NULL,
+    char_start        INTEGER NOT NULL,
+    char_end          INTEGER NOT NULL,
+    features_json     TEXT NOT NULL,
+    model_digest      TEXT NOT NULL,
+    prompt_hash       TEXT NOT NULL,
+    created_at        TEXT NOT NULL
 );
 
 CREATE TABLE filter_result (

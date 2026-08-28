@@ -13,7 +13,7 @@ from fireassay.curate.honeypots import (
     is_honeypot_correct,
 )
 from fireassay.curate.models import Decision, QueueItem, RubricVerdict
-from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
+from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 
 
 def _candidate(candidate_id: str, source_doc_id: str = "doc1") -> ResolvedCandidate:
@@ -23,12 +23,14 @@ def _candidate(candidate_id: str, source_doc_id: str = "doc1") -> ResolvedCandid
         text=f"question {candidate_id}?",
         qtype="factual",
         difficulty="easy",
+        target_qtype="factual",
+        target_difficulty="easy",
         reference_answer=f"answer for {candidate_id}",
         quote=f"quote for {candidate_id}",
         source_doc_id=source_doc_id,
         char_start=0,
         char_end=8,
-        features=LexicalFeatures(title_overlap=0.0, quote_overlap=0.0, question_len_tokens=2),
+        features=CandidateFeatures(title_overlap=0.0, quote_overlap=0.0, question_len_tokens=2),
         model_digest="digest",
         prompt_hash="prompt-hash",
         created_at="2026-01-01T00:00:00",

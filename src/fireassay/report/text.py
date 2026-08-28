@@ -245,40 +245,75 @@ def render_curate_report(report: CurateReport, console: Console | None = None) -
         f"reviewer_hours={report.reviewer_hours:.2f}  "
         f"median_seconds_per_item={report.median_seconds_per_item}"
     )
+    console.print(
+        "[dim]unretrievable: a floor (top-N of the whole corpus, applied identically to every "
+        "config), not a selection criterion -- but the resulting set will under-represent "
+        "questions that require semantic rather than lexical matching. See filter/stages.py "
+        "and the README.[/dim]"
+    )
 
-    agreement_table = Table(title="Krippendorff's alpha (agreement, not accuracy)")
-    agreement_table.add_column("criterion")
-    agreement_table.add_column("status")
-    agreement_table.add_column("alpha", justify="right")
-    agreement_table.add_column("flag")
-    agreement_table.add_column("detail")
-    for criterion, result in report.agreement_by_criterion.items():
-        # "OK but below threshold" and "not OK at all" are reported as
-        # distinct flags -- a NaN/raised alpha must never be indistinguishable
-        # from "we measured it and agreement is fine" (see agreement.py).
-        if criterion in report.unmeasurable_criteria:
-            flag = f"[bold red]{result.status}[/bold red]"
-        elif criterion in report.low_agreement_criteria:
-            flag = "[bold yellow]LOW AGREEMENT[/bold yellow]"
-        else:
-            flag = ""
-        alpha_text = f"{result.alpha:.4f}" if result.alpha is not None else "n/a"
-        agreement_table.add_row(criterion, result.status, alpha_text, flag, result.detail)
-    console.print(agreement_table)
+    agreement_statuses = {r.status for r in report.agreement_by_criterion.values()}
+    if report.agreement_by_criterion and len(agreement_statuses) == 1 and agreement_statuses != {"OK"}:
+        # Every criterion shares one non-OK status -- the six-row table
+        # would otherwise repeat the identical boilerplate detail sentence
+        # once per criterion (~40 lines for one fact). Collapsed to a
+        # single line; an "OK" status is never collapsed this way, since
+        # each OK row carries a distinct, meaningful alpha value.
+        only_status = next(iter(agreement_statuses))
+        sample_detail = next(iter(report.agreement_by_criterion.values())).detail
+        criteria_list = ", ".join(sorted(report.agreement_by_criterion))
+        console.print(
+            f"Krippendorff's alpha: all {len(report.agreement_by_criterion)} criteria "
+            f"({criteria_list}) are [bold red]{only_status}[/bold red] -- {sample_detail}"
+        )
+    else:
+        agreement_table = Table(title="Krippendorff's alpha (agreement, not accuracy)")
+        agreement_table.add_column("criterion")
+        agreement_table.add_column("status")
+        agreement_table.add_column("alpha", justify="right")
+        agreement_table.add_column("flag")
+        agreement_table.add_column("detail")
+        for criterion, result in report.agreement_by_criterion.items():
+            # "OK but below threshold" and "not OK at all" are reported as
+            # distinct flags -- a NaN/raised alpha must never be
+            # indistinguishable from "we measured it and agreement is
+            # fine" (see agreement.py).
+            if criterion in report.unmeasurable_criteria:
+                flag = f"[bold red]{result.status}[/bold red]"
+            elif criterion in report.low_agreement_criteria:
+                flag = "[bold yellow]LOW AGREEMENT[/bold yellow]"
+            else:
+                flag = ""
+            alpha_text = f"{result.alpha:.4f}" if result.alpha is not None else "n/a"
+            agreement_table.add_row(criterion, result.status, alpha_text, flag, result.detail)
+        console.print(agreement_table)
 
-    honeypot_table = Table(title="honeypot accuracy (correctness, not agreement)")
-    honeypot_table.add_column("curator")
-    honeypot_table.add_column("accuracy", justify="right")
-    for curator, accuracy in sorted(report.honeypot_accuracy_by_curator.items()):
-        honeypot_table.add_row(curator, f"{accuracy:.4f}" if accuracy is not None else "n/a")
-    console.print(honeypot_table)
+    if not report.honeypot_accuracy_by_curator:
+        # `None` is not `0`: an empty table cannot tell a reader "no
+        # honeypots were scheduled" apart from "the curator scored zero"
+        # (M1's missing-score rule / M2's NOT_RUN, applied to a queue).
+        console.print(
+            f"[dim]honeypot accuracy: no honeypots were scheduled this session "
+            f"({report.total_honeypot_items}/{report.total_queue_items} queue items are "
+            "honeypots) -- nothing to measure curator accuracy against yet.[/dim]"
+        )
+    else:
+        honeypot_table = Table(title="honeypot accuracy (correctness, not agreement)")
+        honeypot_table.add_column("curator")
+        honeypot_table.add_column("accuracy", justify="right")
+        for curator, accuracy in sorted(report.honeypot_accuracy_by_curator.items()):
+            honeypot_table.add_row(curator, f"{accuracy:.4f}" if accuracy is not None else "n/a")
+        console.print(honeypot_table)
 
-    decile_table = Table(title="honeypot accuracy by session decile")
-    decile_table.add_column("decile")
-    decile_table.add_column("accuracy", justify="right")
-    for decile, accuracy in sorted(report.honeypot_accuracy_by_session_decile.items()):
-        decile_table.add_row(str(decile), f"{accuracy:.4f}" if accuracy is not None else "n/a")
-    console.print(decile_table)
+    if any(v is not None for v in report.honeypot_accuracy_by_session_decile.values()):
+        decile_table = Table(title="honeypot accuracy by session decile")
+        decile_table.add_column("decile")
+        decile_table.add_column("accuracy", justify="right")
+        for decile, accuracy in sorted(report.honeypot_accuracy_by_session_decile.items()):
+            decile_table.add_row(str(decile), f"{accuracy:.4f}" if accuracy is not None else "n/a")
+        console.print(decile_table)
+    # else: suppressed entirely -- ten "n/a" rows say nothing an already-
+    # printed "no honeypots were scheduled" line above has not said.
 
     def _flag_text(flag: SessionFlag) -> str:
         return f"{flag.curator_id} session {flag.session_index} (n={flag.n_decisions})"
@@ -315,7 +350,7 @@ def render_curate_report(report: CurateReport, console: Console | None = None) -
         console.print("[dim]content coverage: no --corpus given, skipped[/dim]")
 
     if report.difficulty_correlation:
-        corr_table = Table(title="proposed difficulty vs. measured lexical features (Pearson r)")
+        corr_table = Table(title="proposed difficulty vs. measured features, incl. gold_doc_rank (Pearson r)")
         corr_table.add_column("feature")
         corr_table.add_column("r", justify="right")
         for feature, r in sorted(report.difficulty_correlation.items()):
@@ -323,3 +358,18 @@ def render_curate_report(report: CurateReport, console: Console | None = None) -
         console.print(corr_table)
     else:
         console.print("[dim]difficulty/feature correlation: not enough variation to compute[/dim]")
+
+    obedience = report.generator_obedience
+    if obedience.n_candidates == 0:
+        console.print("[dim]generator obedience: no candidates to measure[/dim]")
+    else:
+        assert obedience.qtype_match_rate is not None
+        assert obedience.difficulty_match_rate is not None
+        assert obedience.cell_match_rate is not None
+        console.print(
+            f"generator obedience (proposed matches the requested target cell), "
+            f"n={obedience.n_candidates}: "
+            f"qtype={obedience.qtype_match_rate:.1%}  "
+            f"difficulty={obedience.difficulty_match_rate:.1%}  "
+            f"cell={obedience.cell_match_rate:.1%}"
+        )

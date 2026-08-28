@@ -43,7 +43,12 @@ from fireassay.curate.serve import (
 from fireassay.filter.config import load_filter_config
 from fireassay.filter.pipeline import run_filter
 from fireassay.generate.models import ResolvedCandidate
-from fireassay.generate.pipeline import generate_candidates, select_chunks_for_target
+from fireassay.generate.pipeline import (
+    DEFAULT_MAX_GENERATION_FAILURE_RATE,
+    GenerationFailureRateExceededError,
+    generate_candidates,
+    select_chunks_for_target,
+)
 from fireassay.integrity import ComparisonRefusedError
 from fireassay.llm.cache import ResponseCache
 from fireassay.llm.ollama import OllamaClient
@@ -729,13 +734,24 @@ def generate(
     chunk_size: int = typer.Option(800, "--chunk-size"),
     chunk_overlap: int = typer.Option(100, "--chunk-overlap"),
     batch_id: str = typer.Option("", "--batch-id", help="defaults to a fresh random id"),
+    max_generation_failure_rate: float = typer.Option(
+        DEFAULT_MAX_GENERATION_FAILURE_RATE,
+        "--max-generation-failure-rate",
+        help="abort if more than this fraction of generation attempts exhaust their retries",
+    ),
 ) -> None:
     """Generate candidate questions from --corpus using --model, via
     Ollama (the only command permitted to call an LLM — M3-SPEC.md §1/§2).
 
-    Every rejection (`NOT_A_QUESTION`, `QUOTE_NOT_FOUND`, `QUOTE_AMBIGUOUS`)
-    is recorded, not silently dropped — see `generate.pipeline` and
-    `curate report`'s funnel.
+    Every rejection (`GENERATION_FAILED`, `NOT_A_QUESTION`,
+    `QUOTE_NOT_FOUND`, `QUOTE_AMBIGUOUS`) is recorded, not silently
+    dropped — see `generate.pipeline` and `curate report`'s funnel. A few
+    `GENERATION_FAILED` discards are normal (some `(chunk, target cell)`
+    pairs are genuinely impossible, e.g. `comparative`/`hard` against a
+    passage with nothing to compare); exceeding
+    `--max-generation-failure-rate` aborts the run instead, on the theory
+    that most attempts failing means something is actually wrong rather
+    than a few unlucky pairings.
     """
     store = Store(db)
     store.migrate()
@@ -749,14 +765,20 @@ def generate(
     model_ref = client.model_ref(model)
 
     resolved_batch_id = batch_id or uuid.uuid4().hex
-    stats = generate_candidates(
-        store, client, model_ref, docs, selected, n_per_chunk=n_per_chunk, batch_id=resolved_batch_id
-    )
+    try:
+        stats = generate_candidates(
+            store, client, model_ref, docs, selected, n_per_chunk=n_per_chunk,
+            batch_id=resolved_batch_id, max_generation_failure_rate=max_generation_failure_rate,
+        )
+    except GenerationFailureRateExceededError as exc:
+        store.close()
+        typer.echo(f"batch_id={resolved_batch_id}  aborted: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
     store.close()
     typer.echo(
         f"batch_id={resolved_batch_id}  generated={stats.generated}  kept={stats.kept}  "
-        f"not_a_question={stats.not_a_question}  quote_not_found={stats.quote_not_found}  "
-        f"quote_ambiguous={stats.quote_ambiguous}"
+        f"generation_failed={stats.generation_failed}  not_a_question={stats.not_a_question}  "
+        f"quote_not_found={stats.quote_not_found}  quote_ambiguous={stats.quote_ambiguous}"
     )
 
 
@@ -765,14 +787,22 @@ def filter_candidates(
     batch: str = typer.Option(..., "--batch", help="a --batch-id from a prior `generate` run"),
     config: Path = typer.Option(..., "--config", help="configs/filter.yaml"),
     corpus: Path = typer.Option(
-        ..., "--corpus", help="corpus JSONL file (required: the `generic` stage needs corpus-wide "
-        "document frequency, which M3-SPEC.md's CLI signature omits but the stage cannot run without)"
+        ..., "--corpus", help="corpus JSONL file (required: the `unretrievable` stage builds a BM25 "
+        "index over it, which M3-SPEC.md's CLI signature omits but the stage cannot run without)"
     ),
     db: Path = typer.Option(..., "--db"),
 ) -> None:
     """Run the deterministic filter pipeline (M3-SPEC.md §3) over every
     candidate generated in --batch, persisting a `filter_result` row for
-    every candidate at every stage it reaches."""
+    every candidate at every stage it reaches.
+
+    The `unretrievable` stage's composition bias (under-represents
+    questions needing semantic rather than lexical matching — see
+    `filter.stages.check_unretrievable`'s docstring and the README) is
+    not printed here; it is a property of the filter, not of one run of
+    it, and belongs in documentation a reader consults once, not in every
+    invocation's stdout.
+    """
     store = Store(db)
     store.migrate()
 

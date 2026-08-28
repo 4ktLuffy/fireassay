@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Literal
 
 from fireassay.curate.models import Decision, QueueItem, RubricVerdict
-from fireassay.generate.models import LexicalFeatures, ResolvedCandidate
+from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 from fireassay.hashing import config_hash as _config_hash
 from fireassay.hashing import suite_hash as _suite_hash
 from fireassay.models import (
@@ -143,6 +143,24 @@ class AgreementAlreadySetError(Exception):
     silently overwrite it — a suite's `agreement_json` is surfaced in
     every report built on that suite, permanently (M3-SPEC.md §4), so it
     must not silently change underneath a reader who already looked at it.
+    """
+
+
+class PreStratificationCandidateError(Exception):
+    """Raised by `_row_to_candidate` when a `candidate` row has no target
+    cell (`target_qtype`/`target_difficulty` both `''`) — a row inserted
+    before migration 0004 added stratified generation.
+
+    Migration 0004's own comment already explains why this is correct
+    behaviour: `''` is not a valid `QType`/`Difficulty`, and no code path
+    ever writes it deliberately. Left unchecked, constructing
+    `ResolvedCandidate` from such a row raises pydantic's own
+    `literal_error` — a ~40-line traceback that buries the actual
+    diagnosis exactly the way an unfiltered Ollama API response once did
+    (see `llm/ollama.py`'s `_api_error`). A response body and a raw
+    traceback are the same mistake: never let the diagnosis be the thing
+    the reader has to decode. This is caught here and re-raised as one
+    short, named sentence instead.
     """
 
 
@@ -958,15 +976,18 @@ class Store:
         happens if a caller genuinely re-submits the same `ResolvedCandidate`
         object, which is safe to no-op."""
         self._conn.execute(
-            "INSERT OR IGNORE INTO candidate (id, batch_id, text, qtype, difficulty, reference_answer, "
-            "quote, source_doc_id, char_start, char_end, features_json, model_digest, prompt_hash, "
-            "created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO candidate (id, batch_id, text, qtype, difficulty, target_qtype, "
+            "target_difficulty, reference_answer, quote, source_doc_id, char_start, char_end, "
+            "features_json, model_digest, prompt_hash, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 candidate.id,
                 candidate.batch_id,
                 candidate.text,
                 candidate.qtype,
                 candidate.difficulty,
+                candidate.target_qtype,
+                candidate.target_difficulty,
                 candidate.reference_answer,
                 candidate.quote,
                 candidate.source_doc_id,
@@ -982,18 +1003,26 @@ class Store:
 
     @staticmethod
     def _row_to_candidate(row: sqlite3.Row) -> ResolvedCandidate:
+        if row["target_qtype"] == "" or row["target_difficulty"] == "":
+            raise PreStratificationCandidateError(
+                f"candidate {row['id']} predates stratified generation (migration 0004): it has "
+                "no target cell. Regenerate this batch; rows created before stratification "
+                "cannot be read back as if they had one."
+            )
         return ResolvedCandidate(
             id=row["id"],
             batch_id=row["batch_id"],
             text=row["text"],
             qtype=row["qtype"],
             difficulty=row["difficulty"],
+            target_qtype=row["target_qtype"],
+            target_difficulty=row["target_difficulty"],
             reference_answer=row["reference_answer"],
             quote=row["quote"],
             source_doc_id=row["source_doc_id"],
             char_start=row["char_start"],
             char_end=row["char_end"],
-            features=LexicalFeatures(**json.loads(row["features_json"])),
+            features=CandidateFeatures(**json.loads(row["features_json"])),
             model_digest=row["model_digest"],
             prompt_hash=row["prompt_hash"],
             created_at=row["created_at"],
