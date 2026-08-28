@@ -15,7 +15,7 @@ from typing import Literal
 
 from fireassay import __version__
 from fireassay.config import MatrixSpec, expand
-from fireassay.models import EvidenceSpan, Question, Run, Score, SystemOutput
+from fireassay.models import Config, EvidenceSpan, Question, Run, Score, Suite, SystemOutput
 from fireassay.score.base import Scorer, ScoringContext
 from fireassay.score.invariants import check_invariants
 from fireassay.store.db import Store
@@ -207,3 +207,91 @@ def run_matrix(
         runs.append(store.get_run(run.id))
 
     return runs
+
+
+def run_once(
+    store: Store,
+    suite: Suite,
+    config: Config,
+    system: System,
+    scorers: Sequence[Scorer],
+    ctx: ScoringContext,
+    questions: Sequence[Question],
+    *,
+    judged_spans_by_doc: Mapping[str, tuple[EvidenceSpan, ...]] | None = None,
+    env_affects_results: Mapping[str, object] | None = None,
+) -> Run:
+    """Execute one already-built `system` against `questions` under
+    `config`/`suite`: persist every result and score, check invariants,
+    seal the run, and return it.
+
+    Added in M2 (this function did not exist in M1). It is the
+    single-execution primitive `run_matrix`'s per-config loop conceptually
+    builds on, factored out so `controls` and `mutation` — both of which
+    need to run an ad hoc, already-built `System` (a control's wrapped
+    system, a mutation operator's degraded system) against a suite, outside
+    the config-matrix abstraction `run_matrix` drives — get the exact same
+    persistence and invariant-checking semantics an ordinary leaderboard
+    run gets, rather than a parallel, drifting reimplementation. `run_matrix`
+    itself is left untouched (its own loop body still duplicates this
+    logic inline) specifically to avoid touching M1's tested control flow;
+    see the M2 delivery notes for why that duplication was accepted instead
+    of refactoring `run_matrix` to call this.
+
+    Unlike `run_matrix`, this function **always** executes and seals a
+    brand new `Run` — it never skips because a complete run already exists
+    for this `(suite_hash, config_hash)`. Every control/mutation run must
+    be freshly, demonstrably executed; silently reusing an old run here
+    would be exactly the kind of unattempted-but-reads-as-fine check M2
+    exists to rule out (M2-SPEC.md §1).
+
+    `judged_spans_by_doc`, if omitted, is computed from `questions` — as
+    `run_matrix` does for a whole suite. A caller scoring a *mutated* or
+    *subset* view of the suite's questions (e.g. `controls.shuffled_gold`
+    permutes evidence spans; `controls.null_questions` scores only the
+    unanswerable subset) should instead pass the suite's true, unmutated
+    judged pool explicitly — the judged pool is a property of the frozen
+    suite, not of whichever questions this one execution happens to score.
+    """
+    if judged_spans_by_doc is None:
+        computed: dict[str, list[EvidenceSpan]] = {}
+        for q in questions:
+            for span in q.evidence_spans:
+                computed.setdefault(span.doc_id, []).append(span)
+        judged_spans_by_doc = {doc_id: tuple(spans) for doc_id, spans in computed.items()}
+
+    env: dict[str, object] = {
+        "python": platform.python_version(),
+        "fireassay": __version__,
+        "affects_results": dict(env_affects_results or {}),
+    }
+    run = store.start_run(suite, config, env)
+    scoring_ctx = ctx.model_copy(
+        update={
+            "judged_spans_by_doc": dict(judged_spans_by_doc),
+            "system_generates_answers": system.generates_answers,
+        }
+    )
+
+    failure_count = 0
+    scores_by_question: dict[str, list[Score]] = {}
+    for question in questions:
+        output, failed = _answer_one(system, question)
+        if failed:
+            failure_count += 1
+        store.put_result(run.id, question.id, output, _cost_usd(output, scoring_ctx))
+
+        scores: list[Score] = []
+        for scorer in scorers:
+            scores.extend(scorer.score(question, output, scoring_ctx))
+        if scores:
+            store.put_scores(run.id, question.id, scores)
+        scores_by_question[question.id] = scores
+
+    violations = check_invariants(scores_by_question)
+    total = len(questions)
+    status: Literal["complete", "failed"] = (
+        "failed" if total > 0 and (failure_count / total) > _FAILURE_THRESHOLD else "complete"
+    )
+    store.finish_run(run.id, status, admissible=not violations, invariant_violations=violations)
+    return store.get_run(run.id)

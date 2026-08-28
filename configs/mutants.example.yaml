@@ -1,0 +1,23 @@
+# Example mutation-operator config for `fireassay mutate --operators`.
+#
+# `detector` configures the M2 ThresholdDetector (mutation/detector.py) —
+# a mutant is "killed" when `metric`'s run mean drops by at least
+# `max_drop` relative to the baseline run's mean for the same metric.
+# M2 ships no statistical test here on purpose (see detector.py's
+# docstring); M5 adds a GateDetector using the real statistical gate.
+detector:
+  metric: retrieval.recall@5
+  max_drop: 0.05
+
+# Each operator wraps the baseline system and degrades it deterministically
+# (seeded from the suite's suite_hash). See mutation/operators.py for the
+# mechanism and equivalence rule of each kind.
+operators:
+  - kind: drop_results
+    n: 2
+  - kind: truncate_topk
+    k: 3
+  - kind: shuffle_topk
+  - kind: corrupt_query
+    pct: 0.5
+  - kind: swap_ranking

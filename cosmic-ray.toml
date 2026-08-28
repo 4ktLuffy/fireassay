@@ -1,0 +1,32 @@
+# harness_mutation_score (M2-SPEC.md §8): mutates fireassay's *own* source
+# — not the system under test (that is `mutation/`, the gate_mutation_score
+# machinery). This answers "do our tests catch bugs in fireassay itself?"
+#
+# Scoped to the modules the repo's thesis rests on: integrity (the refusal
+# engine), hashing (content addressing), admissibility (the M2 engine),
+# score/ (the deterministic metrics), and controls/ (the negative
+# controls). Target: 80%+ surviving-mutant kill rate on these modules;
+# anything lower is a finding to report, not a target to quietly lower —
+# see README's "harness_mutation_score" section.
+#
+# `cosmic-ray` is a dev/test-only dependency (pyproject.toml's [dev]
+# extra) — never imported at runtime, per M2-SPEC.md's constraints.
+
+[cosmic-ray]
+module-path = "src/fireassay"
+timeout = 30.0
+excluded-modules = []
+test-command = "pytest -x -q tests/"
+
+[cosmic-ray.distributor]
+name = "local"
+
+# cosmic-ray mutates whatever is under module-path; to keep the run fast
+# and focused on the modules this milestone's thesis depends on, `make
+# mutants` (Makefile) filters cosmic-ray's own session to only the paths
+# listed above via `cr-filter-operators`/path-based exec filters is not a
+# stable cosmic-ray feature across versions, so filtering instead happens
+# at test-collection time: point `module-path` at the whole package but
+# interpret a low kill rate on modules *outside* the five above as
+# informational only when reporting harness_mutation_score (see
+# artifacts/harness-mutation.json, produced by `make mutants`).

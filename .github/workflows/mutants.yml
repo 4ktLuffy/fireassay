@@ -1,0 +1,26 @@
+# harness_mutation_score (M2-SPEC.md §8) on a schedule, not per-PR — a
+# cosmic-ray run over src/fireassay/{integrity,hashing,admissibility}.py,
+# score/, controls/ is slow, and gating every PR on it would make the
+# check the first thing disabled under time pressure. Publishing the
+# result on a schedule instead keeps it honest without being a bottleneck.
+name: harness mutation score
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # weekly, Monday 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  mutants:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: make mutants
+      - uses: actions/upload-artifact@v4
+        with:
+          name: harness-mutation-score
+          path: artifacts/harness-mutation.json

@@ -1,5 +1,5 @@
-"""Render `ComparabilityReport`/`Leaderboard` objects to the terminal via
-`rich`."""
+"""Render `ComparabilityReport`/`Leaderboard` objects, and (M2) control and
+mutation results, to the terminal via `rich`."""
 
 from __future__ import annotations
 
@@ -9,7 +9,10 @@ from rich.console import Console
 from rich.table import Table
 
 from fireassay.compare import Leaderboard
+from fireassay.controls.base import ControlOutcome
 from fireassay.integrity import RefusalReason
+from fireassay.mutation.score import MutationScoreResult
+from fireassay.store.db import ControlCheckRow, MutantRow, MutationRunRow
 
 
 def render_refusal(reasons: Sequence[RefusalReason], console: Console | None = None) -> None:
@@ -69,3 +72,145 @@ def render_leaderboard(board: Leaderboard, console: Console | None = None) -> No
             )
 
     console.print(table)
+
+
+def _control_row(
+    table: Table, kind: str, status: str, twin_ok: bool, cause_ok: bool, detail: str
+) -> None:
+    status_style = {"PASSED": "green", "FAILED": "bold red", "NOT_RUN": "bold yellow"}.get(status, "")
+    table.add_row(
+        kind,
+        f"[{status_style}]{status}[/{status_style}]" if status_style else status,
+        str(twin_ok),
+        str(cause_ok),
+        detail,
+    )
+
+
+def render_control_outcomes(outcomes: Sequence[ControlOutcome], console: Console | None = None) -> None:
+    """Render freshly-computed `ControlOutcome`s (from `fireassay controls
+    run`, before persistence) as a table. `NOT_RUN` is styled distinctly
+    from `FAILED` for readability, but both are equally inadmissible unless
+    explicitly allowed (M2-SPEC.md §1) — this renderer draws no other
+    distinction between them."""
+    console = console or Console()
+    table = Table(title="fireassay controls")
+    table.add_column("kind")
+    table.add_column("status")
+    table.add_column("twin_ok")
+    table.add_column("cause_assertions all true")
+    table.add_column("detail")
+    for outcome in outcomes:
+        cause_ok = all(outcome.cause_assertions.values()) if outcome.cause_assertions else False
+        _control_row(table, outcome.kind, outcome.status, outcome.twin_ok, cause_ok, outcome.detail)
+    console.print(table)
+
+
+def render_control_checks(checks: Sequence[ControlCheckRow], console: Console | None = None) -> None:
+    """Render `control_check` rows read back from the store (`fireassay
+    controls show --run <run_id>`)."""
+    console = console or Console()
+    table = Table(title="fireassay controls (persisted)")
+    table.add_column("kind")
+    table.add_column("status")
+    table.add_column("twin_ok")
+    table.add_column("cause_assertions all true")
+    table.add_column("checked_at")
+    table.add_column("detail")
+    for check in checks:
+        cause_ok = all(check.cause_assertions.values()) if check.cause_assertions else False
+        status_style = {"PASSED": "green", "FAILED": "bold red", "NOT_RUN": "bold yellow"}.get(
+            check.status, ""
+        )
+        status_text = f"[{status_style}]{check.status}[/{status_style}]" if status_style else check.status
+        table.add_row(
+            check.kind, status_text, str(check.twin_ok), str(cause_ok), check.checked_at, check.detail
+        )
+    console.print(table)
+
+
+_MutantRow = tuple[str, dict[str, object], bool, bool, str | None, str]
+
+
+def _mutant_rows_sorted(rows: Sequence[_MutantRow]) -> list[_MutantRow]:
+    """Survivors (not equivalent, not killed) first, then killed, then
+    equivalent/excluded — M2-SPEC.md §6: "the report lists survivors
+    first."""
+    survivors = [r for r in rows if not r[3] and not r[2]]
+    killed = [r for r in rows if not r[3] and r[2]]
+    equivalent = [r for r in rows if r[3]]
+    return survivors + killed + equivalent
+
+
+def _render_mutation_table(
+    title: str,
+    detector: str,
+    killed: int,
+    total: int,
+    equivalent: int,
+    score: float,
+    rows: Sequence[_MutantRow],
+    console: Console,
+) -> None:
+    console.print(
+        f"[bold]{title}[/bold]  detector={detector}  "
+        f"gate_mutation_score = {killed}/{total - equivalent} = {score:.4f}  "
+        f"(killed={killed}, total={total}, equivalent={equivalent})"
+    )
+    table = Table(title="mutants (survivors first)")
+    table.add_column("operator")
+    table.add_column("params")
+    table.add_column("result")
+    table.add_column("equivalent_reason")
+    table.add_column("detail")
+    for operator, params, killed_flag, equivalent_flag, equivalent_reason, detail in _mutant_rows_sorted(
+        rows
+    ):
+        if equivalent_flag:
+            result = "[dim]EXCLUDED (equivalent)[/dim]"
+        elif killed_flag:
+            result = "[green]KILLED[/green]"
+        else:
+            result = "[bold red]SURVIVED[/bold red]"
+        table.add_row(operator, str(params), result, equivalent_reason or "", detail)
+    console.print(table)
+
+
+def render_mutation_score(result: MutationScoreResult, console: Console | None = None) -> None:
+    """Render a freshly-computed `MutationScoreResult` (from `fireassay
+    mutate`, before persistence)."""
+    console = console or Console()
+    rows: list[_MutantRow] = [
+        (m.operator, m.params, m.killed, m.equivalent, m.equivalent_reason, m.detail) for m in result.mutants
+    ]
+    _render_mutation_table(
+        "fireassay mutate",
+        result.detector,
+        result.killed,
+        result.total,
+        result.equivalent,
+        result.score,
+        rows,
+        console,
+    )
+
+
+def render_mutation_run(
+    run_row: MutationRunRow, mutants: Sequence[MutantRow], console: Console | None = None
+) -> None:
+    """Render a `mutation_run` + its `mutant` rows read back from the store
+    (`fireassay mutation score --mutation-run <id>`)."""
+    console = console or Console()
+    rows: list[_MutantRow] = [
+        (m.operator, m.params, m.killed, m.equivalent, m.equivalent_reason, m.detail) for m in mutants
+    ]
+    _render_mutation_table(
+        f"mutation_run {run_row.id}",
+        run_row.detector,
+        run_row.killed,
+        run_row.total,
+        run_row.equivalent,
+        run_row.score,
+        rows,
+        console,
+    )

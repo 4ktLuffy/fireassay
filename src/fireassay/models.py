@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from fireassay.hashing import question_id as _question_id
 
@@ -211,6 +211,15 @@ class Run(BaseModel):
     same footing as the other refusal codes — a run whose own numbers are
     self-contradictory must not be silently treated as comparable
     evidence.
+
+    `admissibility_json` (added in M2, migration 0002) records the fuller
+    verdict `admissibility.assess` computes once M2 controls have run
+    against this run's suite/config: invariant violations plus control
+    PASSED/FAILED/NOT_RUN results, folded together. It defaults to `{}`
+    (the M1 shape — a run controls have never assessed) so that
+    `store.get_run` and every M1 test constructing a `Run` directly keep
+    working unchanged; only `store.set_admissibility` (M2) ever populates
+    it, exactly once per run.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -226,3 +235,4 @@ class Run(BaseModel):
     status: Literal["running", "complete", "failed"]
     result_count: int = 0
     admissible: bool = True
+    admissibility_json: dict[str, object] = Field(default_factory=dict)

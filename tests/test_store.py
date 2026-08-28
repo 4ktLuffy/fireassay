@@ -7,7 +7,7 @@ import pytest
 
 from fireassay.models import Question, Score, SystemOutput
 from fireassay.score.invariants import InvariantViolation
-from fireassay.store.db import RunSealedError, Store, SuiteExistsError
+from fireassay.store.db import AdmissibilityAlreadySetError, RunSealedError, Store, SuiteExistsError
 
 
 def _question(text: str = "q", **kwargs: object) -> Question:
@@ -142,3 +142,37 @@ def test_run_admissible_false_with_recorded_violations(store: Store) -> None:
     assert len(stored) == 1
     assert stored[0].rule == "range_0_1"
     assert stored[0].question_id == "q1"
+
+
+def test_set_admissibility_is_idempotent_on_identical_verdict(store: Store) -> None:
+    """Admissibility is a derived verdict, not run data: recomputing the
+    identical verdict twice (e.g. a second `controls run` against a
+    matrix whose run was reused by `run_matrix`) must be a silent no-op,
+    not an error -- otherwise the command is unusable in normal
+    iteration."""
+    run_id, _question_id = _start_open_run(store)
+    store.finish_run(run_id, "complete")
+
+    store.set_admissibility(run_id, True, {"admissible": True, "detail": "admissible"})
+    store.set_admissibility(run_id, True, {"admissible": True, "detail": "admissible"})  # no-op, no raise
+
+    run = store.get_run(run_id)
+    assert run.admissible is True
+    assert run.admissibility_json == {"admissible": True, "detail": "admissible"}
+
+
+def test_set_admissibility_raises_on_conflicting_verdict(store: Store) -> None:
+    """A *different* verdict landing on a run that already has one must
+    raise -- a run's recorded admissibility must not silently change
+    underneath a reader who already looked at it."""
+    run_id, _question_id = _start_open_run(store)
+    store.finish_run(run_id, "complete")
+
+    store.set_admissibility(run_id, True, {"admissible": True, "detail": "admissible"})
+    with pytest.raises(AdmissibilityAlreadySetError):
+        store.set_admissibility(run_id, False, {"admissible": False, "detail": "failed control(s): x"})
+
+    # The original verdict must survive the rejected conflicting write.
+    run = store.get_run(run_id)
+    assert run.admissible is True
+    assert run.admissibility_json == {"admissible": True, "detail": "admissible"}

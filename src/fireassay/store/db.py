@@ -19,6 +19,7 @@ import json
 import sqlite3
 import uuid
 from collections.abc import Iterable, Iterator, Mapping, Sequence
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
@@ -29,6 +30,7 @@ from fireassay.models import (
     Config,
     EvidenceSpan,
     Question,
+    RetrievedChunk,
     Run,
     Score,
     Suite,
@@ -37,6 +39,71 @@ from fireassay.models import (
 from fireassay.score.invariants import InvariantViolation
 
 _MIGRATIONS_DIR = Path(__file__).parent / "migrations"
+
+
+@dataclass(frozen=True)
+class ControlCheckRow:
+    """One persisted `control_check` row, read back from the store.
+
+    A plain dataclass (not `controls.base.ControlOutcome`) deliberately:
+    `store/db.py` must not import `fireassay.controls` — every control
+    module imports `Store`, so the reverse import would be a cycle. Callers
+    that want a `ControlOutcome` (e.g. a future renderer) build one from
+    these fields themselves.
+    """
+
+    kind: str
+    status: str
+    observed: dict[str, float]
+    expected: dict[str, object]
+    twin_ok: bool
+    cause_assertions: dict[str, bool]
+    detail: str
+    checked_at: str
+
+
+@dataclass(frozen=True)
+class MutationRunRow:
+    id: str
+    suite_id: str
+    suite_hash: str
+    base_config_id: str
+    detector: str
+    killed: int
+    total: int
+    equivalent: int
+    score: float
+    created_at: str
+
+
+@dataclass(frozen=True)
+class MutantRow:
+    id: str
+    mutation_run_id: str
+    operator: str
+    params: dict[str, object]
+    mutant_run_id: str
+    killed: bool
+    equivalent: bool
+    equivalent_reason: str | None
+    detail: str
+
+
+class AdmissibilityAlreadySetError(Exception):
+    """Raised by `set_admissibility` when a run already has a recorded
+    admissibility verdict that **conflicts** with the one just computed.
+
+    A byte-identical re-assessment (same `admissible`, same canonical
+    `admissibility_json`) is *not* an error — `set_admissibility` is
+    idempotent for that case, since admissibility is a derived verdict and
+    recomputing it (e.g. a second `controls run` against a matrix whose
+    run was reused) is legitimate. This error is specifically for a
+    *different* verdict landing on a run that already has one: mirrors the
+    append-only philosophy that governs `result`/`score` — an admissibility
+    verdict must not silently change underneath a reader who already
+    looked at it. Recompute under a fresh run if the controls or expected
+    bands genuinely changed.
+    """
 
 
 class RunSealedError(Exception):
@@ -261,6 +328,25 @@ class Store:
         self._conn.commit()
         return Config(id=config_id, config_hash=h, label=label, spec=spec_dict)
 
+    def get_config(self, config_id: str) -> Config:
+        """Look up a config by id (its `config_hash`).
+
+        Added in M2 for `fireassay mutate --config <config_id>`
+        (M2-SPEC.md §9), which is handed a config id that was already
+        stored by an earlier `fireassay run`/`controls run`, rather than a
+        fresh spec to insert."""
+        row = self._conn.execute(
+            "SELECT id, config_hash, label, spec_json FROM config WHERE id = ?", (config_id,)
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"no such config: {config_id}")
+        return Config(
+            id=row["id"],
+            config_hash=row["config_hash"],
+            label=row["label"],
+            spec=json.loads(row["spec_json"]),
+        )
+
     def start_run(self, suite: Suite, config: Config, env: Mapping[str, object]) -> Run:
         """Start a new run against a frozen suite and a config.
 
@@ -389,7 +475,7 @@ class Store:
     def get_run(self, run_id: str) -> Run:
         row = self._conn.execute(
             "SELECT id, suite_id, suite_hash, config_id, config_hash, env_json, "
-            "started_at, finished_at, status, admissible FROM run WHERE id = ?",
+            "started_at, finished_at, status, admissible, admissibility_json FROM run WHERE id = ?",
             (run_id,),
         ).fetchone()
         if row is None:
@@ -406,7 +492,259 @@ class Store:
             status=row["status"],
             result_count=self.run_result_count(row["id"]),
             admissible=bool(row["admissible"]),
+            admissibility_json=json.loads(row["admissibility_json"]),
         )
+
+    def run_retrieved(self, run_id: str) -> dict[str, tuple[RetrievedChunk, ...]]:
+        """Return `{question_id: retrieved chunks}` for every result
+        persisted in a run, reconstructed from `result.retrieved_json`.
+
+        Added for M2's `controls` module, which needs to verify retrieval
+        facts directly from what was actually *persisted* — e.g.
+        `no_retrieval`'s `len(retrieved) == 0` cause assertion,
+        `null_questions`' overlap check against the suite's judged pool —
+        rather than trusting the in-memory `SystemOutput` a control's
+        system wrapper happened to produce. Same "prove it was genuinely
+        attempted" principle behind the writable-twin requirement
+        (M2-SPEC.md §2).
+        """
+        rows = self._conn.execute(
+            "SELECT question_id, retrieved_json FROM result WHERE run_id = ?", (run_id,)
+        ).fetchall()
+        return {
+            r["question_id"]: tuple(RetrievedChunk(**c) for c in json.loads(r["retrieved_json"]))
+            for r in rows
+        }
+
+    # -- M2: admissibility --------------------------------------------------
+
+    def set_admissibility(
+        self, run_id: str, admissible: bool, admissibility_json: Mapping[str, object]
+    ) -> None:
+        """Record `admissibility.assess`'s verdict onto `run_id`.
+
+        **Idempotent, not one-shot:** admissibility is a *derived* verdict
+        (controls + invariant violations -> admissible or not), not run
+        data — recomputing it is a legitimate, expected operation, e.g.
+        re-running `controls run` a second time against a matrix where
+        `run_matrix` reused an already-complete run. Calling this again
+        with a verdict that is byte-identical to what is already stored
+        (same `admissible`, same canonical `admissibility_json`) is a
+        silent no-op. Calling it with a *different* verdict for a run that
+        already has one raises `AdmissibilityAlreadySetError` — a run's
+        recorded admissibility must not silently change underneath a
+        reader who already looked at it; that case genuinely needs a fresh
+        run (or investigation into why the same suite/config/controls
+        produced two different answers) rather than a second, quietly
+        overwritten write.
+
+        This is a deliberate, narrow exception to `result`/`score`'s
+        append-only-while-running rule: `run.admissible` was already a
+        second write to the `run` row at `finish_run` time in M1 (recording
+        the invariant-check verdict, which is only known once the run has
+        finished); this is a *third*, later write recording a verdict that
+        is only knowable once controls have been run against this run's
+        suite/config — which can genuinely happen well after the run
+        itself sealed. It does not touch `result`/`score` at all, so the
+        run's own measured numbers remain exactly as append-only as M1 made
+        them.
+        """
+        row = self._conn.execute(
+            "SELECT admissible, admissibility_json FROM run WHERE id = ?", (run_id,)
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"no such run: {run_id}")
+        new_json = json.dumps(dict(admissibility_json), sort_keys=True)
+        if row["admissibility_json"] not in ("{}", None):
+            if bool(row["admissible"]) == admissible and row["admissibility_json"] == new_json:
+                return  # identical re-assessment: idempotent no-op
+            raise AdmissibilityAlreadySetError(
+                f"run {run_id} already has a CONFLICTING admissibility verdict recorded: "
+                f"stored admissible={bool(row['admissible'])!r}, "
+                f"admissibility_json={row['admissibility_json']!r}; "
+                f"new admissible={admissible!r}, admissibility_json={new_json!r}"
+            )
+        self._conn.execute(
+            "UPDATE run SET admissible = ?, admissibility_json = ? WHERE id = ?",
+            (int(admissible), new_json, run_id),
+        )
+        self._conn.commit()
+
+    # -- M2: control_check ---------------------------------------------------
+
+    def put_control_check(
+        self,
+        run_id: str,
+        kind: str,
+        status: str,
+        observed: Mapping[str, float],
+        expected: Mapping[str, object],
+        twin_ok: bool,
+        cause_assertions: Mapping[str, bool],
+        detail: str,
+    ) -> str:
+        """Persist one control's `ControlOutcome` against `run_id`.
+
+        Takes plain fields rather than a `controls.base.ControlOutcome`
+        object so this module never has to import `fireassay.controls`
+        (which imports `Store`) — see `ControlCheckRow`'s docstring.
+        `control_check` rows are append-only (immutable once inserted,
+        enforced by SQL trigger in migration 0002): this method only ever
+        INSERTs, never UPDATEs.
+        """
+        check_id = uuid.uuid4().hex
+        self._conn.execute(
+            "INSERT INTO control_check (id, run_id, kind, status, observed_json, expected_json, "
+            "twin_ok, cause_json, detail, checked_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                check_id,
+                run_id,
+                kind,
+                status,
+                json.dumps(dict(observed), sort_keys=True),
+                json.dumps(dict(expected), sort_keys=True),
+                int(twin_ok),
+                json.dumps(dict(cause_assertions), sort_keys=True),
+                detail,
+                _now(),
+            ),
+        )
+        self._conn.commit()
+        return check_id
+
+    def get_control_checks(self, run_id: str) -> list[ControlCheckRow]:
+        """Return every `control_check` row recorded against `run_id`, in
+        the order they were checked."""
+        rows = self._conn.execute(
+            "SELECT kind, status, observed_json, expected_json, twin_ok, cause_json, detail, checked_at "
+            "FROM control_check WHERE run_id = ? ORDER BY checked_at",
+            (run_id,),
+        ).fetchall()
+        return [
+            ControlCheckRow(
+                kind=r["kind"],
+                status=r["status"],
+                observed=json.loads(r["observed_json"]),
+                expected=json.loads(r["expected_json"]),
+                twin_ok=bool(r["twin_ok"]),
+                cause_assertions=json.loads(r["cause_json"]),
+                detail=r["detail"],
+                checked_at=r["checked_at"],
+            )
+            for r in rows
+        ]
+
+    # -- M2: mutation ---------------------------------------------------------
+
+    def put_mutation_run(
+        self,
+        suite: Suite,
+        base_config: Config,
+        detector: str,
+        killed: int,
+        total: int,
+        equivalent: int,
+        score: float,
+    ) -> str:
+        """Persist the summary row for one `mutate` invocation. `mutant`
+        rows (one per operator) are persisted separately via `put_mutant`,
+        referencing this id."""
+        mutation_run_id = uuid.uuid4().hex
+        self._conn.execute(
+            "INSERT INTO mutation_run (id, suite_id, suite_hash, base_config_id, detector, "
+            "killed, total, equivalent, score, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                mutation_run_id,
+                suite.id,
+                suite.suite_hash,
+                base_config.id,
+                detector,
+                killed,
+                total,
+                equivalent,
+                score,
+                _now(),
+            ),
+        )
+        self._conn.commit()
+        return mutation_run_id
+
+    def put_mutant(
+        self,
+        mutation_run_id: str,
+        operator: str,
+        params: Mapping[str, object],
+        mutant_run_id: str,
+        killed: bool,
+        equivalent: bool,
+        equivalent_reason: str | None,
+        detail: str,
+    ) -> str:
+        """Persist one mutant's result. `equivalent_reason` MUST be set
+        whenever `equivalent` is True (M2-SPEC.md §6: equivalence must be
+        computed and justified, never assumed) — enforced by the caller
+        (`mutation.run.run_mutation`), not here; this method persists
+        whatever it is given."""
+        mutant_id = uuid.uuid4().hex
+        self._conn.execute(
+            "INSERT INTO mutant (id, mutation_run_id, operator, params_json, mutant_run_id, "
+            "killed, equivalent, equivalent_reason, detail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                mutant_id,
+                mutation_run_id,
+                operator,
+                json.dumps(dict(params), sort_keys=True),
+                mutant_run_id,
+                int(killed),
+                int(equivalent),
+                equivalent_reason,
+                detail,
+            ),
+        )
+        self._conn.commit()
+        return mutant_id
+
+    def get_mutation_run(self, mutation_run_id: str) -> MutationRunRow:
+        row = self._conn.execute(
+            "SELECT id, suite_id, suite_hash, base_config_id, detector, killed, total, "
+            "equivalent, score, created_at FROM mutation_run WHERE id = ?",
+            (mutation_run_id,),
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"no such mutation_run: {mutation_run_id}")
+        return MutationRunRow(
+            id=row["id"],
+            suite_id=row["suite_id"],
+            suite_hash=row["suite_hash"],
+            base_config_id=row["base_config_id"],
+            detector=row["detector"],
+            killed=row["killed"],
+            total=row["total"],
+            equivalent=row["equivalent"],
+            score=row["score"],
+            created_at=row["created_at"],
+        )
+
+    def get_mutants(self, mutation_run_id: str) -> list[MutantRow]:
+        rows = self._conn.execute(
+            "SELECT id, mutation_run_id, operator, params_json, mutant_run_id, killed, "
+            "equivalent, equivalent_reason, detail FROM mutant WHERE mutation_run_id = ?",
+            (mutation_run_id,),
+        ).fetchall()
+        return [
+            MutantRow(
+                id=r["id"],
+                mutation_run_id=r["mutation_run_id"],
+                operator=r["operator"],
+                params=json.loads(r["params_json"]),
+                mutant_run_id=r["mutant_run_id"],
+                killed=bool(r["killed"]),
+                equivalent=bool(r["equivalent"]),
+                equivalent_reason=r["equivalent_reason"],
+                detail=r["detail"],
+            )
+            for r in rows
+        ]
 
     def get_run_invariant_violations(self, run_id: str) -> list[InvariantViolation]:
         """Return the invariant violations recorded for a run by

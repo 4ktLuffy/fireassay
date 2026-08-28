@@ -19,6 +19,7 @@ dev = [
     "pytest-cov",
     "ruff",
     "mypy",
+    "cosmic-ray",
 ]
 
 [project.scripts]
@@ -34,6 +35,7 @@ packages = ["src/fireassay"]
 [tool.hatch.build.targets.wheel.force-include]
 "src/fireassay/store/migrations" = "fireassay/store/migrations"
 "src/fireassay/store/schema.sql" = "fireassay/store/schema.sql"
+"src/fireassay/controls/expected.yaml" = "fireassay/controls/expected.yaml"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

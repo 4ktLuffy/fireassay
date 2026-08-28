@@ -1,0 +1,39 @@
+# Version-controlled expected bands for fireassay's four controls that
+# have a real PASSED/FAILED implementation (M2-SPEC.md §4). A band cannot
+# be quietly widened to make a run pass without the change showing up in a
+# diff of this file.
+#
+# judge_calibration and null_questions have no entries here: both always
+# report NOT_RUN (judge_calibration needs a judge, M4; null_questions
+# needs a generating system to measure abstention against, also M4 -- see
+# controls/null_questions.py) and so have no observed metric to check a
+# band against.
+
+no_retrieval:
+  recall_at_k:      {eq: 0.0}
+  retrieved_len:    {eq: 0}
+# shuffled_gold's chance level is NOT a fixed band: chance-level recall
+# under a random gold-span permutation depends on corpus size and top_k
+# (see controls/shuffled_gold.py's docstring -- a fixed 0.05 was correct
+# for a ~1,181-doc corpus and simply wrong for this repo's 12-doc fixture,
+# where chance is closer to 0.38). The control measures its own chance
+# level and spread from n_seeds independent permutations, then compares
+# an *estimate* (the mean of m_primary further, independent permutations)
+# against that measurement using the standard error of the difference
+# between two means -- not a single draw against the raw sample maximum
+# or a raw-sd tolerance interval, both of which were tried and measured to
+# still carry a real false-alarm rate on this fixture's coarse, discrete
+# recall distribution (see controls/shuffled_gold.py's docstring for the
+# full history). These five values configure that measurement, not a
+# pass/fail threshold on the observed recall directly.
+shuffled_gold:
+  min_margin: {eq: 0.05}   # twin recall must exceed measured chance by at least this much
+  n_seeds:    {eq: 50}     # independent calibration permutations (>= 5 required)
+  m_primary:  {eq: 5}      # independent primary permutations averaged into the reported estimate
+  k:          {eq: 5}      # tolerance width, in standard errors of the difference between means
+  sd_floor:   {eq: 0.02}   # minimum sd used in se_diff, so a zero-variance calibration sample
+                           # doesn't collapse the tolerance to an exact-equality test
+corpus_ablation:
+  recall_at_k_drop: {min: 0.15}
+identical_config:
+  max_abs_delta:    {eq: 0.0}
