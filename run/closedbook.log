@@ -1,0 +1,2 @@
+model qwen2.5:7b@845dbda0ea48 quant=Q4_K_M
+sampling 300 of the kept candidates

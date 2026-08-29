@@ -1,0 +1,14 @@
+2364 candidates
+18 configs; indexes built
+  400/2364  385s
+  800/2364  763s
+  1200/2364  1133s
+  1600/2364  1498s
+  2000/2364  1845s
+
+classification of all candidates:
+  dead_all_pass       1263 (53.4%)
+  live                 963 (40.7%)
+  dead_all_fail        114 ( 4.8%)
+  mislabel_suspect      24 ( 1.0%)
+done
