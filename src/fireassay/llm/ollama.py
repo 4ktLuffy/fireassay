@@ -163,25 +163,77 @@ class OllamaClient:
             parameter_size=str(details.get("parameter_size", "")),
         )
 
-    def _generate_raw(self, model: ModelRef, prompt: str, temperature: float) -> str:
-        """One raw `/api/generate` call, JSON-mode, non-streaming. Returns
-        the model's raw text response (not yet parsed/validated) — a
-        separate method from `generate_json` specifically so tests can
-        monkeypatch just this one network-touching call and drive
-        `generate_json`'s retry/exhaustion logic with canned responses."""
-        payload = {
+    def _generate_raw(
+        self, model: ModelRef, prompt: str, temperature: float, *, format_json: bool = True
+    ) -> str:
+        """One raw `/api/generate` call, non-streaming. Returns the model's
+        raw text response (not yet parsed/validated) — a separate method
+        from `generate_json` specifically so tests can monkeypatch just
+        this one network-touching call and drive `generate_json`'s
+        retry/exhaustion logic with canned responses.
+
+        `format_json` defaults to `True` (today's behaviour, unchanged) —
+        it is the flag `generate_json` relies on to request Ollama's
+        JSON-mode. `generate_text` is the only caller that passes `False`;
+        see its docstring for why a free-text judge completion must not be
+        forced into JSON."""
+        payload: dict[str, object] = {
             "model": model.name,
             "prompt": prompt,
-            "format": "json",
             "stream": False,
             "options": {"temperature": temperature},
         }
+        if format_json:
+            payload["format"] = "json"
         result = self._post("/api/generate", payload)
         response = result.get("response")
         if not isinstance(response, str):
             raise ValueError(
                 f"ollama /api/generate response missing a 'response' string field: {result!r}"
             )
+        return response
+
+    def generate_text(self, model: ModelRef, prompt: str, *, temperature: float = 0.0) -> str:
+        """Request a free-text completion from `model` for `prompt` and
+        return it verbatim — no parsing, no schema validation, no retry.
+
+        This exists for judges whose contract is a free-text completion
+        ending in a verdict line (`items.answerability`'s greedy
+        last-match parsing, handbook §9), not a JSON object. Routing that
+        prompt through `generate_json`'s forced `"format": "json"` mode
+        would break two things at once: the greedy-last-match defence
+        against prompt injection, which depends on the completion being
+        free text with the model's own final line at the end, not a value
+        nested inside a JSON string field; and the portability of
+        `items.answerability.Ask` (`Callable[[str], str]`) — a standalone
+        caller with their own model must be able to satisfy that contract
+        with an ordinary text completion, not one shaped by this client's
+        JSON-mode plumbing.
+
+        **Cache-aware, same as `generate_json`** — a hit on `self._cache`
+        (if one is configured) short-circuits before any network call, and
+        a miss is written back after. **Not retried**: an LLM occasionally
+        emitting a malformed *JSON* attempt is `generate_json`'s reason to
+        retry; a free-text completion has no such validity check to fail,
+        so there is nothing here worth retrying on.
+
+        `_CacheProtocol` is keyed on `(model.digest, prompt)` alone, with
+        no notion of "text" vs "JSON" mode — a text call and a JSON call
+        that happen to share a prompt would collide and one would replay
+        the other's response in the wrong shape. This method does not
+        guard against that; the caller must, by never pointing a
+        `generate_text` call and a `generate_json` call at the same cache
+        file. `tools/measure_answerability.py` does this by constructing
+        its own `OllamaClient`/`ResponseCache` pair (`.cache/judge/`),
+        entirely separate from `generate_json`'s generation checkpoint
+        (`.cache/llm/`)."""
+        if self._cache is not None:
+            cached = self._cache.get(model, prompt)
+            if cached is not None:
+                return cached
+        response = self._generate_raw(model, prompt, temperature, format_json=False)
+        if self._cache is not None:
+            self._cache.put(model, prompt, response)
         return response
 
     def generate_json(

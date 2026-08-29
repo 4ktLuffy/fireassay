@@ -89,6 +89,107 @@ def test_generate_json_calls_generate_raw_exactly_max_retries_times_on_total_fai
     assert len(calls) == 4
 
 
+# -- generate_text: the contained-ness of the format_json change -----------
+#
+# generate_json must keep sending "format": "json" exactly as before;
+# generate_text must send no "format" key at all. Pinned here rather than
+# assumed, since a cache keyed on (model, prompt) with no mode would
+# silently return the wrong shape if the two ever collided (see
+# generate_text's docstring).
+
+
+def test_generate_text_sends_no_format_key_while_generate_json_still_does(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _client()
+    captured: list[dict[str, object]] = []
+
+    def fake_post(path: str, payload: dict[str, object]) -> dict[str, object]:
+        captured.append(payload)
+        if "format" in payload:
+            return {"response": '{"value": 1}'}
+        return {"response": "free text ending VERDICT: SUPPORTED"}
+
+    monkeypatch.setattr(client, "_post", fake_post)
+
+    text = client.generate_text(ModelRef(name="m", digest="d"), "prompt")
+    assert text == "free text ending VERDICT: SUPPORTED"
+    assert "format" not in captured[-1]
+
+    result = client.generate_json(ModelRef(name="m", digest="d"), "prompt2", _Answer)
+    assert result.value == 1
+    assert captured[-1]["format"] == "json"
+
+
+def test_generate_text_returns_completion_verbatim_no_parsing(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = _client()
+    monkeypatch.setattr(
+        client,
+        "_generate_raw",
+        lambda model, prompt, temperature, **kwargs: "not json at all -- VERDICT: UNCLEAR",
+    )
+    text = client.generate_text(ModelRef(name="m", digest="d"), "prompt")
+    assert text == "not json at all -- VERDICT: UNCLEAR"
+
+
+def test_generate_text_passes_format_json_false_to_generate_raw(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[bool] = []
+
+    def fake_generate_raw(
+        model: ModelRef, prompt: str, temperature: float, *, format_json: bool = True
+    ) -> str:
+        calls.append(format_json)
+        return "text"
+
+    client = _client()
+    monkeypatch.setattr(client, "_generate_raw", fake_generate_raw)
+    client.generate_text(ModelRef(name="m", digest="d"), "prompt")
+    assert calls == [False]
+
+
+def test_generate_text_cache_hit_short_circuits_generate_raw(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _StubCache:
+        def get(self, model: ModelRef, prompt: str) -> str | None:
+            return "cached completion -- VERDICT: SUPPORTED"
+
+        def put(self, model: ModelRef, prompt: str, response: str) -> None:
+            raise AssertionError("a cache hit must never write back to the cache")
+
+    client = OllamaClient(base_url=_UNREACHABLE, cache=_StubCache())
+
+    def fail(*args: object, **kwargs: object) -> str:
+        raise AssertionError("a cache hit must never call _generate_raw")
+
+    monkeypatch.setattr(client, "_generate_raw", fail)
+
+    text = client.generate_text(ModelRef(name="m", digest="d"), "prompt")
+    assert text == "cached completion -- VERDICT: SUPPORTED"
+
+
+def test_generate_text_cache_miss_calls_generate_raw_and_populates_cache(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    puts: list[tuple[ModelRef, str, str]] = []
+
+    class _StubCache:
+        def get(self, model: ModelRef, prompt: str) -> str | None:
+            return None
+
+        def put(self, model: ModelRef, prompt: str, response: str) -> None:
+            puts.append((model, prompt, response))
+
+    client = OllamaClient(base_url=_UNREACHABLE, cache=_StubCache())
+    monkeypatch.setattr(
+        client,
+        "_generate_raw",
+        lambda model, prompt, temperature, **kwargs: "fresh -- VERDICT: UNCLEAR",
+    )
+
+    text = client.generate_text(ModelRef(name="m", digest="d"), "prompt")
+    assert text == "fresh -- VERDICT: UNCLEAR"
+    assert puts == [(ModelRef(name="m", digest="d"), "prompt", "fresh -- VERDICT: UNCLEAR")]
+
+
 def test_cache_hit_short_circuits_generate_raw_entirely(monkeypatch: pytest.MonkeyPatch) -> None:
     class _StubCache:
         def get(self, model: ModelRef, prompt: str) -> str | None:

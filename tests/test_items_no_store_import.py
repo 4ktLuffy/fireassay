@@ -136,6 +136,37 @@ def test_sanity_the_walker_follows_items_calibrations_own_cross_module_import() 
     assert "fireassay.items.core" in reachable
 
 
+def test_items_answerability_module_graph_excludes_store_and_llm() -> None:
+    """`items.answerability` (gold answerability, handbook §6/§9) is bound
+    by the same store-free rule as `items.core`/`items.calibration`, **and**
+    additionally must not reach `fireassay.llm` at all -- the model arrives
+    as an injected `Ask` callable, never an import (see its module
+    docstring)."""
+    reachable = _reachable_modules("fireassay.items.answerability")
+    leaked_store = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    leaked_llm = {m for m in reachable if m == "fireassay.llm" or m.startswith("fireassay.llm.")}
+    assert not leaked_store, (
+        f"fireassay.items.answerability's module graph reaches {leaked_store} -- "
+        "answerability.py (or something it imports) must not import fireassay.store, see its "
+        "module docstring"
+    )
+    assert not leaked_llm, (
+        f"fireassay.items.answerability's module graph reaches {leaked_llm} -- "
+        "answerability.py (or something it imports) must not import fireassay.llm, see its "
+        "module docstring"
+    )
+
+
+def test_sanity_the_walker_follows_items_answerabilitys_own_cross_module_import() -> None:
+    """`items.answerability` imports `items.core` (for `ItemMeta`) -- the
+    same non-vacuous-pass check as this file's other sanity tests, applied
+    to the new module: confirms the walker traverses `items.answerability`'s
+    real cross-module import rather than only ever returning the start
+    node."""
+    reachable = _reachable_modules("fireassay.items.answerability")
+    assert "fireassay.items.core" in reachable
+
+
 def test_items_adapters_retrieval_module_graph_excludes_store() -> None:
     """`items.adapters.retrieval` (the `lexical_decoy` seed builder) is
     the second module -- alongside `items.adapters.store` -- allowed to

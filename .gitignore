@@ -30,6 +30,13 @@ spike/*.jsonl
 !.cache/llm/
 !.cache/llm/responses.jsonl
 
+# the answerability judge's cache is a separate OllamaClient/cache pair from
+# generate_json's -- it must never collide with .cache/llm/'s checkpoint
+# (same (model, prompt) key, different response shape: free text vs JSON).
+# Not negated: unlike .cache/llm/, it is a disposable re-run cache, not a
+# checkpoint worth committing.
+.cache/judge/
+
 # raw measurement artifacts behind handbook/eval-of-evals.md's claims -
 # a number without a reproducible artifact is an assertion
 !run/item_analysis.json
