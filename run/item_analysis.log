@@ -1,0 +1,8 @@
+panel: 18 configs, 400 questions
+  100/400
+  200/400
+  300/400
+  400/400
+
+corr(D, r_pbis) = 0.938   (literature claims 0.891)
+done

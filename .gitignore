@@ -29,3 +29,8 @@ spike/*.jsonl
 # run - losing it means losing hours of model time. Smoke caches stay ignored.
 !.cache/llm/
 !.cache/llm/responses.jsonl
+
+# raw measurement artifacts behind handbook/eval-of-evals.md's claims -
+# a number without a reproducible artifact is an assertion
+!run/item_analysis.json
+!run/matrix200.json
