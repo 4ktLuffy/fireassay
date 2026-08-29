@@ -1,0 +1,802 @@
+[
+  {
+    "review_id": "r0000",
+    "item_id": "8e3b4d39ffe74093b2039dde0321289c",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0001",
+    "item_id": "0b39cb8fb28d461bbe9294c9b5c8c66d",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0002",
+    "item_id": "751c0e870f7544c886b46496b34222e7",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "swapped_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0003",
+    "item_id": "1ceef22f206c40d5980bb142c377a6c3",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0004",
+    "item_id": "80982a8b7a7346ebb3a7a59e974ddade",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0005",
+    "item_id": "86341385f7354ca9917c8f6b03a1ab93",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0006",
+    "item_id": "f66ea4f5d76148cd85e5e6afba10b194",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "foreign_evidence",
+    "classification": null
+  },
+  {
+    "review_id": "r0007",
+    "item_id": "c7843697e778485194a7f076be58cf5b",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0008",
+    "item_id": "039bf4b1078d4ce1bf1e3a42e6c02054",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0009",
+    "item_id": "20370bcf85754530a5b32768bc5a0ecb",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0010",
+    "item_id": "cca2ca9d54f144d0b8f7df403077fac3",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0011",
+    "item_id": "4ee45ea30818416bb95a41aa6940d7bc",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0012",
+    "item_id": "9a2177533bc248cf8e7dc71b5ea99694",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "negated_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0013",
+    "item_id": "fc213e541af844e4a06c64c5d04e17d4",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0014",
+    "item_id": "86c9e04a51454814bc861fc97fe18e1a",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0015",
+    "item_id": "d7a618c596d74d2396d54d682fc3dcbb",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0016",
+    "item_id": "1eda9cf07fb247bca140fd755c730ca9",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0017",
+    "item_id": "6bd49d3539644f8d984bc9e5222b1a38",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0018",
+    "item_id": "b8c8ea171f3e4ceeb54642b9aa86c0c4",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0019",
+    "item_id": "33bd03cee504400782721dbbdba3f70a",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0020",
+    "item_id": "fa27907a724848f0af3ce7b564eb5a2b",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0021",
+    "item_id": "64e767e5122348cd8fd59ffd52b16359",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0022",
+    "item_id": "b4862ba6a28a409ba8566698025c9f30",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0023",
+    "item_id": "ffb293e947bc42458f8b69622988b3c6",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0024",
+    "item_id": "dd944f6cc5984bffb5e3c704ae839ac0",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0025",
+    "item_id": "f33a9085f2694b888272559b1d1f7d57",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0026",
+    "item_id": "0e355a475dc44d76836007eb6902f91e",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0027",
+    "item_id": "006aa8b658804b79b150ff3b548d28a9",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0028",
+    "item_id": "15eee484c6de494d8b8589c73b6e34fa",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0029",
+    "item_id": "a625903566894887afda442f53f52bea",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0030",
+    "item_id": "a7fff0d258404c28aba60bcc7a219114",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "foreign_evidence",
+    "classification": null
+  },
+  {
+    "review_id": "r0031",
+    "item_id": "05330d4d68b840ac81d6dc16e7dda64b",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0032",
+    "item_id": "8d17cb4a3de946409e097e4ea14b5376",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0033",
+    "item_id": "cd35d1c7bb2d44f0a0d658ed5e0bcfad",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0034",
+    "item_id": "124f72132e15479cb8c5f32faefa7922",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_fail"
+  },
+  {
+    "review_id": "r0035",
+    "item_id": "582f3b20684d4040a39c951edf18a4aa",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0036",
+    "item_id": "c5ee2e9db57c44e1bf89ffd08497bfe5",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0037",
+    "item_id": "26d45273096e4b43b774b9334870f3be",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0038",
+    "item_id": "b0e333fb91be4d3eadec47aaaaaf8e40",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0039",
+    "item_id": "bed7d05464b54f29a84e5eb0ebc13e3a",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0040",
+    "item_id": "87042b9ee9d84d0194d14f1b39a9b271",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0041",
+    "item_id": "cb1a7402610e4c68bdd49f27592bc200",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0042",
+    "item_id": "9ecf840a7b7a41d789532e94d734cef1",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "foreign_evidence",
+    "classification": null
+  },
+  {
+    "review_id": "r0043",
+    "item_id": "7e2ebb81bb704c36843e253663299ac2",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0044",
+    "item_id": "c4d86498f0994cbbb8f1ac585c5ca7a3",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "negated_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0045",
+    "item_id": "f3d6fa415a7e4bb783e1a714820da7ce",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0046",
+    "item_id": "ccb1277ecbbf4d7aa57d73027aaf65e1",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0047",
+    "item_id": "cde197cf15ba4b85999ed672aa180373",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0048",
+    "item_id": "4bb77f152cfc46a3ba5544b0ffdf59f6",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0049",
+    "item_id": "730e470f9359480497d3c858d4f628f6",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0050",
+    "item_id": "a0ee0c0b71d74b928613003418659d87",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0051",
+    "item_id": "dc7deab6fe0e4f7a9097d938f7cea893",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0052",
+    "item_id": "4cdd8aca49bb4ce89ad114e2a71417b8",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0053",
+    "item_id": "2b3dea19b9394dcfb252fbdea5ec34ba",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0054",
+    "item_id": "aeb657b5063f4e9d82177be8577db111",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0055",
+    "item_id": "65704ff7700641e39b51b474c3d2d903",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0056",
+    "item_id": "4bd0a9bea97048639ec6df608149fd5b",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0057",
+    "item_id": "bd29b042917d4a6ab580d9891550f7ec",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0058",
+    "item_id": "2799de0d287b4bd39397edb6fb58c63a",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0059",
+    "item_id": "582e0c38e55742d7a1c74c95808dfdb1",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0060",
+    "item_id": "cde0e0e5033a49df97e8cab6bfe3ee53",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "swapped_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0061",
+    "item_id": "6ce8778752e94d42ba6a941c6c13a6c5",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0062",
+    "item_id": "f71ba03e96c24cfe9de1eaa9bf1d16fc",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0063",
+    "item_id": "d609d3239ba7460ab24fc72500678a47",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0064",
+    "item_id": "bbe5b9ad9e6c439aa72a9a668b2c43f1",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "truncated_question",
+    "classification": null
+  },
+  {
+    "review_id": "r0065",
+    "item_id": "4d181888f3db419199bf7a1e055cfa6f",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "negated_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0066",
+    "item_id": "f38598094c5f4e3fb0892fd9d906a135",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0067",
+    "item_id": "52e0b4a4f04d41dc9bc648ed1c6a34dc",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0068",
+    "item_id": "9d44edda1ba64a44b9d1fcd60afef25d",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0069",
+    "item_id": "697e3b1eb8934dc89983238fdbc5c6e1",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0070",
+    "item_id": "8012d98d3f4940539be83fc0f4a0fa1a",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0071",
+    "item_id": "7bee40fbc64f49e09ead234b1fed9b87",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "negated_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0072",
+    "item_id": "a9039e0cde5e4aa8a013dd6e05c19bc0",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0073",
+    "item_id": "c51c1b08656d4f9b8db9580a69f72b08",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "truncated_question",
+    "classification": null
+  },
+  {
+    "review_id": "r0074",
+    "item_id": "e3fe5de4296b464a9aabefb7b62cbb16",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0075",
+    "item_id": "83c9aadec412479da29c946be73df0d8",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0076",
+    "item_id": "7eb9805f09f14b76bb8bf52745f42b5f",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0077",
+    "item_id": "604c7f3fc48d4013b1f9509b74051986",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0078",
+    "item_id": "9fb410fdff5645f48adb7a230ab8336f",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0079",
+    "item_id": "5cbb7131c3a74733a5753d6e89f55fda",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0080",
+    "item_id": "4d6beb08dc354642a1e06171597ba99c",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0081",
+    "item_id": "054e48dc01944bceac46eac86ca097de",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0082",
+    "item_id": "ba0d50acf32c458aaa9cc253b27acf84",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "truncated_question",
+    "classification": null
+  },
+  {
+    "review_id": "r0083",
+    "item_id": "1a6c63991aa944368e9b84428b509b1d",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0084",
+    "item_id": "7faf68660d334c1da75b5eea4592519b",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "swapped_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0085",
+    "item_id": "53118b029b95462d91d280bf6d2cfce5",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0086",
+    "item_id": "d2033e01c96b4b80bb854c952eb6264a",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "foreign_evidence",
+    "classification": null
+  },
+  {
+    "review_id": "r0087",
+    "item_id": "55f0fb18e52042809f1720e624119288",
+    "source": "unflagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "dead_all_pass"
+  },
+  {
+    "review_id": "r0088",
+    "item_id": "1ae318212a0e41b1b40b6a59ac92b78d",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0089",
+    "item_id": "42f8eed3e85349dd9a8d06d013682fd0",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0090",
+    "item_id": "f512493cdac741e88a3485ebe36e58e1",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0091",
+    "item_id": "afe761ad04b34e2a94e759d5077518c9",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "swapped_reference",
+    "classification": null
+  },
+  {
+    "review_id": "r0092",
+    "item_id": "d9a8a31a02f449de9780684d2cc8365a",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0093",
+    "item_id": "0cbc3677ef494adc9c4f2bdc2253e60d",
+    "source": "seeded",
+    "is_seeded": true,
+    "seed_kind": "truncated_question",
+    "classification": null
+  },
+  {
+    "review_id": "r0094",
+    "item_id": "9f7a515eaffb4274a002788a2ca31647",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0095",
+    "item_id": "4eb44226c462451bb74d8e2f52d0e532",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0096",
+    "item_id": "de87236806644d2ba76021de9d0a7d21",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  },
+  {
+    "review_id": "r0097",
+    "item_id": "783bafe9145c419a8f1922d713362098",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0098",
+    "item_id": "8b4203e22c004420bcfc0536f87ef606",
+    "source": "flagged",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "mislabel_suspect"
+  },
+  {
+    "review_id": "r0099",
+    "item_id": "f31b0d8de1bc466680cc68cc5b7da59d",
+    "source": "calibration",
+    "is_seeded": false,
+    "seed_kind": null,
+    "classification": "live"
+  }
+]

@@ -1,10 +1,11 @@
-2364 real items; seeded 400 corruptions (100 per kind x 4)
+2364 real items; seeded 500 corruptions (100 per kind x 5)
   scored 100/400 seeded
   scored 200/400 seeded
   scored 300/400 seeded
   scored 400/400 seeded
+  scored 100/100 lexical_decoy seeded
 
-panel: 2764 items, reliability 0.289 (too_few_systems)
+panel: 2864 items, reliability 0.284 (too_few_systems)
 
 what the detector saw, by corruption kind:
   swapped_reference    n=100  mislabel_suspect=0    dead_all_fail=2    live=45   dead_all_pass=53  
@@ -35,5 +36,14 @@ what the detector saw, by corruption kind:
                        not the number: a corruption that relocates the gold
                        span to a lexically SIMILAR document produces the
                        ranking inversion the detector looks for.
+  lexical_decoy        n=100  mislabel_suspect=2    dead_all_fail=6    live=70   dead_all_pass=22  
+                       decoys retrieved by >=1 config: 94/100 (diagnostic, not the recall denominator)
+                       note: 6/100 lexical_decoy seed(s) were never retrieved
+                       by any panel config -- their decoy degenerated into
+                       foreign_evidence (nothing could possibly find it). That
+                       is a real result about the seed, kept in the recall
+                       denominator below, not an absence of one to exclude.
+                       recall(mislabel_suspect)=2%   recall(any anomaly)=8%  [PRIMARY -- over all emitted seeds]
+                       recall(mislabel_suspect)=2%   recall(any anomaly)=2%  [conditioned on decoy retrieved by >=1 config -- NOT the headline number]
 
 NOTE: seeded recall is an UPPER BOUND -- synthetic flaws may be easier to spot.

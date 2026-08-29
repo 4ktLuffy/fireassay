@@ -1,0 +1,28 @@
+panel: 54 configs, built in 37s
+  100/400  444s
+  200/400  903s
+  300/400  1346s
+  400/400  1807s
+
+======================================================================
+1. WITHIN-FAMILY NESTING (inherent to top_k, expected to persist)
+   violations 0/7200
+
+2. IS STRENGTH STILL BREADTH?
+   top 15   : Counter({'bm25': 12, 'tfidf': 3})  k=Counter({'k10': 9, 'k5': 4, 'k3': 2})
+   bottom 15: Counter({'coverage': 9, 'tfidf': 6})  k=Counter({'k3': 12, 'k5': 3})
+   by ranker, mean total: bm25=318  coverage=252  tfidf=275
+
+3. DO THE RANKERS ACTUALLY DISAGREE? (same chunking+k, cell differs)
+   bm25      vs coverage  differ on 1552/7200 = 21.6% of cells
+   bm25      vs tfidf     differ on 982/7200 = 13.6% of cells
+   coverage  vs tfidf     differ on 1834/7200 = 25.5% of cells
+
+4. CLASSIFICATION + RELIABILITY
+   dead_all_pass        91 (22.8%)
+   live                283 (70.8%)
+   dead_all_fail        16 (4.0%)
+   mislabel_suspect     10 (2.5%)
+   split_half_reliability 0.485 (too_few_systems), n_used=293
+
+   OLD 18-config panel on 2,364: dead_all_pass 53.4% live 40.4% mislabel 1.4% reliability 0.286
