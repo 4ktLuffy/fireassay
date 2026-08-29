@@ -1,0 +1,19 @@
+2364 real items; seeded 400 corruptions (100 per kind x 4)
+  scored 100/400 seeded
+  scored 200/400 seeded
+  scored 300/400 seeded
+  scored 400/400 seeded
+
+panel: 2764 items, reliability 0.289 (too_few_systems)
+
+what the detector saw, by corruption kind:
+  swapped_reference    n=100  mislabel_suspect=0    dead_all_fail=2    live=45   dead_all_pass=53  
+                       recall(mislabel_suspect)=0%   recall(any anomaly)=2%
+  foreign_evidence     n=100  mislabel_suspect=0    dead_all_fail=100  live=0    dead_all_pass=0   
+                       recall(mislabel_suspect)=0%   recall(any anomaly)=100%
+  truncated_question   n=100  mislabel_suspect=4    dead_all_fail=57   live=30   dead_all_pass=9   
+                       recall(mislabel_suspect)=4%   recall(any anomaly)=61%
+  negated_reference    n=100  mislabel_suspect=0    dead_all_fail=6    live=40   dead_all_pass=54  
+                       recall(mislabel_suspect)=0%   recall(any anomaly)=6%
+
+NOTE: seeded recall is an UPPER BOUND -- synthetic flaws may be easier to spot.
