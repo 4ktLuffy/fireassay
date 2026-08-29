@@ -8,6 +8,7 @@ import pytest
 from fireassay.items.core import ItemMeta
 from fireassay.items.seed import (
     ALL_SEED_KINDS,
+    _seeded_item,
     foreign_evidence,
     negate_reference,
     seed_batch,
@@ -64,6 +65,25 @@ def test_swap_reference_raises_without_a_donor() -> None:
     lone = ItemMeta(item_id="only", reference_answer="X")
     with pytest.raises(ValueError, match="no donor"):
         swap_reference(lone, [lone], seed=0)
+
+
+def test_swap_reference_never_returns_an_item_with_an_unchanged_reference_answer() -> None:
+    """A donor whose `reference_answer` happens to equal the item's own
+    is not a corruption -- it must be excluded, never swapped in
+    unchanged (the `swap_reference` half of the invariant defect)."""
+    same_a = ItemMeta(item_id="same_a", reference_answer="Same answer")
+    same_b = ItemMeta(item_id="same_b", reference_answer="Same answer")
+    # same_a and same_b are each other's only possible donor, and share
+    # the exact same reference_answer -- no valid swap exists
+    with pytest.raises(ValueError, match="no donor"):
+        swap_reference(same_a, [same_a, same_b], seed=0)
+
+    # adding a genuinely different donor makes the swap succeed, and it
+    # is that donor's answer that is picked, never the unchanged one
+    different = ItemMeta(item_id="different", reference_answer="A different answer entirely")
+    seeded = swap_reference(same_a, [same_a, same_b, different], seed=0)
+    assert seeded.reference_answer == "A different answer entirely"
+    assert seeded.reference_answer != same_a.reference_answer
 
 
 # -- foreign_evidence -----------------------------------------------------
@@ -162,6 +182,26 @@ def test_negate_reference_raises_without_a_reference_answer() -> None:
         negate_reference(blank, _POOL, seed=0)
 
 
+def test_negate_reference_bare_no_yields_yes_not_an_unchanged_no() -> None:
+    """A bare `"No"` reference answer used to fall through to being
+    returned unchanged (removing its only word left nothing, and the old
+    code silently returned the input) while still claiming a negation was
+    removed -- see the module docstring."""
+    item = ItemMeta(item_id="bareno", reference_answer="No")
+    seeded = negate_reference(item, _POOL, seed=0)
+    assert seeded.reference_answer == "Yes"
+    assert seeded.reference_answer != "No"
+    assert "substituted" in seeded.detail
+    assert "'Yes'" in seeded.detail
+
+
+def test_negate_reference_bare_lowercase_no_yields_lowercase_yes() -> None:
+    item = ItemMeta(item_id="barenolower", reference_answer="no")
+    seeded = negate_reference(item, _POOL, seed=0)
+    assert seeded.reference_answer == "yes"
+    assert seeded.reference_answer != "no"
+
+
 # -- seed_batch -------------------------------------------------------------
 
 
@@ -190,3 +230,120 @@ def test_seed_batch_skips_items_that_cannot_satisfy_a_kind_rather_than_erroring(
     tiny_pool = [ItemMeta(item_id="only", question="Hi", reference_answer="x")]
     batch = seed_batch(tiny_pool, kinds=("truncated_question",), n_per_kind=3, seed=0)
     assert batch == []
+
+
+# -- invariant: no corruptor may emit an unchanged item ----------------------
+
+
+def _invariant_pool() -> list[ItemMeta]:
+    """A pool built specifically to hit both root causes the invariant
+    fixes: several items whose entire `reference_answer` is exactly
+    `"No"`/`"no"` (the case that broke `_negate_text`), and a pair
+    sharing the exact same `reference_answer` as each other (the case
+    that broke `swap_reference`'s donor filter) -- plus enough ordinary
+    items that every kind has real material to work with."""
+    items = [
+        ItemMeta(
+            item_id=f"item{i}",
+            question=f"Is service {i} available on weekends and during public holidays too",
+            reference_answer=f"Service {i} is available on weekends.",
+            evidence_quote=f"Service {i} operates every day including weekends.",
+            source_doc_id=f"doc{i % 4}",
+        )
+        for i in range(20)
+    ]
+    for i, text in enumerate(["No", "no", "No", "no"]):
+        items.append(
+            ItemMeta(
+                item_id=f"bareno{i}",
+                question=f"Is feature {i} enabled by default in the standard configuration",
+                reference_answer=text,
+                evidence_quote=f"Feature {i} is disabled by default in every configuration.",
+                source_doc_id=f"doc{i % 4}",
+            )
+        )
+    items.append(
+        ItemMeta(
+            item_id="dup1", question="Is the premium tier included at no extra cost",
+            reference_answer="No", evidence_quote="quote for dup1", source_doc_id="docA",
+        )
+    )
+    items.append(
+        ItemMeta(
+            item_id="dup2", question="Is priority support included at no extra cost",
+            reference_answer="No", evidence_quote="quote for dup2", source_doc_id="docA",
+        )
+    )
+    return items
+
+
+def test_no_corruptor_ever_emits_an_unchanged_item() -> None:
+    """The invariant IS the regression test (mirrors how defect 42's own
+    regression test is the padding experiment itself): seed every item
+    with every kind, over many seeds, and assert no emitted `SeededItem`
+    equals its source on all three of question/reference_answer/
+    evidence_quote. Measured on the real 2,364-item pool x 4 kinds
+    (9,456 seeds) before this fix: 47 `negated_reference` and 1
+    `swapped_reference` seed were byte-identical to their source."""
+    pool = _invariant_pool()
+    by_id = {m.item_id: m for m in pool}
+    total_seeded = 0
+    for trial_seed in range(20):
+        batch = seed_batch(pool, n_per_kind=len(pool), seed=trial_seed)
+        total_seeded += len(batch)
+        for seeded in batch:
+            source = by_id[seeded.item_id]
+            unchanged = (
+                seeded.question == source.question
+                and seeded.reference_answer == source.reference_answer
+                and seeded.evidence_quote == source.evidence_quote
+            )
+            assert not unchanged, (
+                f"seed={trial_seed} kind={seeded.kind} item={seeded.item_id} "
+                f"was emitted unchanged from its source"
+            )
+    assert total_seeded > 0  # not a vacuous pass
+
+
+def test_seeded_item_refuses_to_construct_an_unchanged_result() -> None:
+    """The central enforcement point directly: any corruptor -- present
+    or future -- that hands it back the source's own fields raises,
+    naming the item and kind, rather than silently constructing a
+    `SeededItem` that changed nothing."""
+    item = ItemMeta(item_id="x", question="Q", reference_answer="A", evidence_quote="E")
+    with pytest.raises(ValueError, match=r"truncated_question.*'x'.*no change"):
+        _seeded_item(
+            item,
+            kind="truncated_question",
+            question="Q",
+            reference_answer="A",
+            evidence_quote="E",
+            source_doc_id=None,
+            detail="no-op",
+        )
+
+
+def test_seed_batch_skips_an_item_ruled_out_by_the_invariant_rather_than_erroring() -> None:
+    """`same_a`/`same_b` share the exact same `reference_answer` and are
+    each other's only possible donor -- `swap_reference`'s invariant-
+    driven donor filter rules both out for `swapped_reference`, and
+    `seed_batch` must not propagate the resulting `ValueError`, just skip
+    them and continue: `truncated_question` does not depend on
+    `reference_answer` at all, and still succeeds for both in the same
+    call."""
+    same_a = ItemMeta(
+        item_id="same_a",
+        question="Is the refund policy the same for every region worldwide today",
+        reference_answer="Same answer",
+    )
+    same_b = ItemMeta(
+        item_id="same_b",
+        question="Is the return policy identical across every store location today",
+        reference_answer="Same answer",
+    )
+    pool = [same_a, same_b]
+    batch = seed_batch(pool, kinds=("swapped_reference", "truncated_question"), n_per_kind=2, seed=0)
+
+    assert not any(s.kind == "swapped_reference" for s in batch)
+    truncated = {s.item_id for s in batch if s.kind == "truncated_question"}
+    assert truncated == {"same_a", "same_b"}

@@ -37,9 +37,11 @@ def _seeded_key(n: int) -> list[ReviewKeyEntry]:
 
 
 def _labels(review_ids: list[str], n_bad: int) -> list[ReviewLabel]:
-    """The first `n_bad` review_ids are labelled "bad", the rest "ok"."""
+    """The first `n_bad` review_ids are labelled "purge" (the strict-mode
+    bad verdict `score_review`'s default `bad_verdicts` counts), the rest
+    "keep"."""
     return [
-        ReviewLabel(review_id=rid, verdict="bad" if i < n_bad else "ok")
+        ReviewLabel(review_id=rid, verdict="purge" if i < n_bad else "keep")
         for i, rid in enumerate(review_ids)
     ]
 

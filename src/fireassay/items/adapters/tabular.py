@@ -37,6 +37,16 @@ These three shapes are the public contract for standalone use: any tool
 that can emit a CSV or JSONL in this shape can be analysed by
 `fireassay items analyse --matrix ...` without ever touching a fireassay
 store.
+
+**Every JSONL reader here iterates the open file handle; none ever calls
+`read_text().splitlines()`.** The gov.uk corpus contains a U+2028 LINE
+SEPARATOR character, which `str.splitlines()` treats as a line break even
+though JSON permits it raw inside a string -- splitting on it silently
+truncates one JSONL record into two unparseable halves. Iterating the file
+object instead only splits on the newline conventions Python's text-mode
+line iteration recognises (`\\n`, `\\r\\n`, `\\r`), leaving a U+2028 inside a
+JSON string value alone. `items.calibration`'s own JSONL persistence
+follows this same rule, for the same reason.
 """
 
 from __future__ import annotations

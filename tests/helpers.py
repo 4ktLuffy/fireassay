@@ -7,9 +7,12 @@ Not itself a `test_*.py` module — pytest does not collect it.
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import sys
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
+from types import ModuleType
 
 from fireassay.controls.base import ControlContext, build_control_context
 from fireassay.controls.expected import Band, load_expected_bands
@@ -27,6 +30,54 @@ from fireassay.system.corpus import Doc, chunk_corpus, load_corpus
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 EXPECTED_PATH = Path(__file__).parent.parent / "src" / "fireassay" / "controls" / "expected.yaml"
+_TOOLS_DIR = Path(__file__).parent.parent / "tools"
+
+#: Cache for `load_measure_detector_recall` -- one module object, loaded
+#: once per test session and reused, rather than a fresh `exec_module`
+#: (and a fresh `sys.modules` registration under the same name) per
+#: caller. See that function's docstring for why registration itself is
+#: required at all.
+_measure_detector_recall_module: ModuleType | None = None
+
+
+def load_measure_detector_recall() -> ModuleType:
+    """`tools/` is a scripts directory, not an importable package (no
+    `tools/__init__.py`, deliberately -- see `tools/measure_detector_
+    recall.py`'s own docstring) -- load the real module by file path so
+    tests exercise the actual `tools/measure_detector_recall.py` code
+    path (`instrument_inputs`/`reached_instrument`/`count_reached_
+    instrument`/`verdict_for_kind`/`lexical_decoy_report`/...), never a
+    copy of its logic. Shared here, the one place fireassay's tests load
+    this module, rather than each test file (there were briefly two)
+    running its own `spec_from_file_location` under a name of its own
+    choosing -- two different module names for the same file is exactly
+    what makes `mypy --strict` see it as reachable under two identities
+    and fail asking for `--explicit-package-bases`.
+
+    **Registers the module in `sys.modules` under its spec name BEFORE
+    `exec_module` runs.** This is the actual fix, not a formality --
+    without it, `tools/measure_detector_recall.py`'s `@dataclass
+    class LexicalDecoyReport` (or any future dataclass in that module)
+    fails to import at all: `dataclasses` resolves a class's own module
+    via `sys.modules.get(cls.__module__)` to read its (possibly
+    string/forward-referenced) annotations, and with the module absent
+    from `sys.modules` that lookup returns `None`, then
+    `AttributeError: 'NoneType' object has no attribute '__dict__'`. Do
+    not "simplify" this back out -- it was silently fine only because
+    nothing loaded this way had used `@dataclass` yet."""
+    global _measure_detector_recall_module
+    if _measure_detector_recall_module is not None:
+        return _measure_detector_recall_module
+
+    spec = importlib.util.spec_from_file_location(
+        "measure_detector_recall", _TOOLS_DIR / "measure_detector_recall.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module  # must precede exec_module -- see docstring above
+    spec.loader.exec_module(module)
+    _measure_detector_recall_module = module
+    return module
 
 
 def load_fixture_docs() -> list[Doc]:

@@ -29,6 +29,15 @@ Four corruption kinds (M-ITEMS-SPEC.md §4):
 | `truncated_question` | question cut mid-clause |
 | `negated_reference` | reference answer's polarity mechanically flipped |
 
+A fifth kind, `lexical_decoy` (evidence relocated into the corpus document a
+retriever ranks highest for the item's question, excluding the item's own
+source document), is declared in `SeedKind` below but has no corruptor
+here and is **not** in `ALL_SEED_KINDS` -- picking a decoy needs a
+retriever, which `items/` itself must stay dependency-free of (same rule
+that keeps `fireassay.store` out, see `items.core`'s module docstring).
+It is built by `items.adapters.retrieval.build_lexical_decoy_seeds`
+instead, the sanctioned place `items/` meets the rest of fireassay.
+
 Each corruptor raises `ValueError` when the source item lacks the field it
 needs (e.g. `truncated_question` on an item with no `question`, or
 `foreign_evidence` when no other item in the pool comes from a different
@@ -36,6 +45,22 @@ needs (e.g. `truncated_question` on an item with no `question`, or
 to the next candidate, since seeding is a best-effort augmentation over
 whatever metadata happens to be complete enough to corrupt, not a
 guarantee every item can satisfy every kind.
+
+**A corruption that changes nothing is not a known-bad.** Measured on the
+real 2,364-item pool x 4 kinds (9,456 seeds): 47 `negated_reference` seeds
+(2.0%) and 1 `swapped_reference` seed were byte-identical to their source
+item -- a bare `"No"` reference answer whose only negation word, once
+removed, left nothing, silently returned unchanged by the old
+`_negate_text`; and a donor whose `reference_answer` happened to already
+equal the item's own. A sound item presented as a known-bad is not a
+harder seed, it is a *wrong* one: a reviewer who correctly calls it `keep`
+gets counted as a recall miss, silently biasing the one number this module
+exists to produce. Every corruptor therefore builds its `SeededItem`
+through `_seeded_item` below, never `SeededItem(...)` directly -- it
+refuses (raises `ValueError`, caught the same as any other
+can't-corrupt-this-item failure) to emit a `SeededItem` whose
+`question`/`reference_answer`/`evidence_quote` all equal the source
+`ItemMeta`'s.
 """
 
 from __future__ import annotations
@@ -49,8 +74,14 @@ from pydantic import BaseModel, ConfigDict
 
 from fireassay.items.core import ItemMeta
 
-SeedKind = Literal["swapped_reference", "foreign_evidence", "truncated_question", "negated_reference"]
+#: `lexical_decoy` is a declared kind with no corruptor in this module --
+#: see the module docstring's "a fifth kind" paragraph.
+SeedKind = Literal[
+    "swapped_reference", "foreign_evidence", "truncated_question", "negated_reference", "lexical_decoy"
+]
 
+#: The kinds `seed_batch` can produce -- deliberately still the original
+#: four; `lexical_decoy` is built elsewhere (see the module docstring).
 ALL_SEED_KINDS: tuple[SeedKind, ...] = (
     "swapped_reference",
     "foreign_evidence",
@@ -84,15 +115,103 @@ def _stable_seed(*parts: object) -> int:
     return int.from_bytes(hashlib.sha256(raw).digest()[:8], "big")
 
 
-def swap_reference(item: ItemMeta, pool: Sequence[ItemMeta], seed: int) -> SeededItem:
-    """`swapped_reference`: `reference_answer` taken from a different item
-    in `pool`, chosen deterministically from `seed`."""
-    donors = [m for m in pool if m.item_id != item.item_id and m.reference_answer]
-    if not donors:
-        raise ValueError(f"swap_reference: no donor with a reference_answer for item {item.item_id!r}")
-    donor = donors[_stable_seed(seed, item.item_id, "swapped_reference") % len(donors)]
+def stable_seed(*parts: object) -> int:
+    """Public forwarder to `_stable_seed` -- exposed for the same reason
+    `seeded_item` is: `items.adapters.retrieval` needs a deterministic
+    integer to seed `random.Random` with (`random.Random` does not accept
+    a tuple -- only `None`/`int`/`float`/`str`/`bytes`/`bytearray`), and
+    must not invent a second hashing scheme of its own for it."""
+    return _stable_seed(*parts)
+
+
+def _seeded_item(
+    item: ItemMeta,
+    *,
+    kind: SeedKind,
+    question: str | None,
+    reference_answer: str | None,
+    evidence_quote: str | None,
+    source_doc_id: str | None,
+    detail: str,
+) -> SeededItem:
+    """The single constructor every corruptor must build its `SeededItem`
+    through -- see the module docstring's "a corruption that changes
+    nothing is not a known-bad" rule. Centralised here rather than
+    checked per-corruptor so the invariant holds regardless of which of
+    the four (or a future fifth) corruptor is doing the constructing:
+    refuses to emit a `SeededItem` whose `question`/`reference_answer`/
+    `evidence_quote` all equal the source `ItemMeta`'s, the same
+    `ValueError`-per-item, `seed_batch`-skips-and-continues contract every
+    other can't-corrupt-this-item failure already uses."""
+    if (
+        question == item.question
+        and reference_answer == item.reference_answer
+        and evidence_quote == item.evidence_quote
+    ):
+        raise ValueError(
+            f"{kind}: corruption of item {item.item_id!r} produced no change at all -- "
+            "question/reference_answer/evidence_quote all equal the source; refusing to "
+            "emit an unchanged item as a known-bad seed"
+        )
     return SeededItem(
         item_id=item.item_id,
+        kind=kind,
+        question=question,
+        reference_answer=reference_answer,
+        evidence_quote=evidence_quote,
+        source_doc_id=source_doc_id,
+        detail=detail,
+    )
+
+
+def seeded_item(
+    item: ItemMeta,
+    *,
+    kind: SeedKind,
+    question: str | None,
+    reference_answer: str | None,
+    evidence_quote: str | None,
+    source_doc_id: str | None,
+    detail: str,
+) -> SeededItem:
+    """Public forwarder to `_seeded_item` (see its docstring for the
+    invariant it enforces) -- exposed so `items.adapters.retrieval`,
+    which lives outside this module and must not duplicate the
+    never-emit-an-unchanged-item check, can build a `lexical_decoy`
+    `SeededItem` through the exact same enforcement point every corruptor
+    in this module already uses, rather than re-deriving the rule."""
+    return _seeded_item(
+        item,
+        kind=kind,
+        question=question,
+        reference_answer=reference_answer,
+        evidence_quote=evidence_quote,
+        source_doc_id=source_doc_id,
+        detail=detail,
+    )
+
+
+def swap_reference(item: ItemMeta, pool: Sequence[ItemMeta], seed: int) -> SeededItem:
+    """`swapped_reference`: `reference_answer` taken from a different item
+    in `pool`, chosen deterministically from `seed`. Donors whose
+    `reference_answer` is exactly equal to this item's own (compared
+    exactly, no normalisation -- an answer differing only in case or
+    trailing punctuation is still a genuinely different string a reviewer
+    would read as wrong) are excluded: swapping in an identical answer is
+    not a corruption at all."""
+    donors = [
+        m
+        for m in pool
+        if m.item_id != item.item_id and m.reference_answer and m.reference_answer != item.reference_answer
+    ]
+    if not donors:
+        raise ValueError(
+            f"swap_reference: no donor with a reference_answer different from item "
+            f"{item.item_id!r}'s own"
+        )
+    donor = donors[_stable_seed(seed, item.item_id, "swapped_reference") % len(donors)]
+    return _seeded_item(
+        item,
         kind="swapped_reference",
         question=item.question,
         reference_answer=donor.reference_answer,
@@ -119,8 +238,8 @@ def foreign_evidence(item: ItemMeta, pool: Sequence[ItemMeta], seed: int) -> See
             f"evidence_quote for item {item.item_id!r}"
         )
     donor = donors[_stable_seed(seed, item.item_id, "foreign_evidence") % len(donors)]
-    return SeededItem(
-        item_id=item.item_id,
+    return _seeded_item(
+        item,
         kind="foreign_evidence",
         question=item.question,
         reference_answer=item.reference_answer,
@@ -151,8 +270,8 @@ def truncate_question(item: ItemMeta, pool: Sequence[ItemMeta], seed: int) -> Se
     hi = max(lo + 1, (2 * len(words)) // 3)
     cut = lo + _stable_seed(seed, item.item_id, "truncated_question") % (hi - lo)
     truncated = " ".join(words[:cut])
-    return SeededItem(
-        item_id=item.item_id,
+    return _seeded_item(
+        item,
         kind="truncated_question",
         question=truncated,
         reference_answer=item.reference_answer,
@@ -183,13 +302,32 @@ def _negate_text(text: str) -> tuple[str, str]:
     exists to make a reference answer reliably WRONG for a known-bad seeded
     item, not to produce fluent negation. Returns `(negated_text,
     rule_applied)` so `SeededItem.detail` can record exactly which rule
-    fired."""
+    fired.
+
+    **A removal that would leave nothing is not a negation.** `text`
+    being exactly the single word `"No"`/`"no"` (common in this corpus's
+    reference answers) used to fall through to returning `text`
+    unchanged while still claiming to have removed a negation word -- see
+    the module docstring. `"No"`/`"no"` alone is substituted with its
+    affirmative counterpart instead, preserving the original word's
+    capitalisation; any other bare negation word (rare, and not one this
+    corpus's answers use standalone) falls through to the "insert"/
+    "prefix" rules below, which always produce a genuinely different
+    string."""
     words = text.split()
     lowered = [w.strip(".,!?").lower() for w in words]
     for i, w in enumerate(lowered):
         if w in _NEGATION_WORDS:
             remaining = words[:i] + words[i + 1 :]
-            return (" ".join(remaining) if remaining else text), f"removed negation word {words[i]!r}"
+            if remaining:
+                return " ".join(remaining), f"removed negation word {words[i]!r}"
+            if w == "no":
+                affirmative = "Yes" if words[i][:1].isupper() else "yes"
+                return affirmative, (
+                    f"{words[i]!r} was the entire text -- removing it would leave nothing, "
+                    f"substituted {affirmative!r}"
+                )
+            break
     for i, w in enumerate(lowered):
         if w in _AUX_VERBS:
             new_words = words[: i + 1] + ["not"] + words[i + 1 :]
@@ -207,8 +345,8 @@ def negate_reference(item: ItemMeta, pool: Sequence[ItemMeta], seed: int) -> See
     if not item.reference_answer:
         raise ValueError(f"negate_reference: item {item.item_id!r} has no reference_answer to negate")
     negated, rule = _negate_text(item.reference_answer)
-    return SeededItem(
-        item_id=item.item_id,
+    return _seeded_item(
+        item,
         kind="negated_reference",
         question=item.question,
         reference_answer=negated,

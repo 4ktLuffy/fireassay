@@ -13,6 +13,7 @@ from fireassay.compare import Leaderboard
 from fireassay.controls.base import ControlOutcome
 from fireassay.curate.report import CurateReport, SessionFlag
 from fireassay.integrity import RefusalReason
+from fireassay.items.calibration import DetectorEvaluation, Estimate
 from fireassay.items.core import ItemStats, PanelStats
 from fireassay.items.review import DetectorScore
 from fireassay.mutation.score import MutationScoreResult
@@ -473,3 +474,71 @@ def render_items_score(score: DetectorScore, console: Console | None = None) -> 
     table.add_row("recall (of seeded items, UPPER BOUND)", recall_text, recall_ci_text, str(score.recall_n))
 
     console.print(table)
+
+
+#: How each `DetectorEvaluation.stratum_estimator` value is described in
+#: the "computed over" column -- printed alongside every row so the choice
+#: of formula (`items.calibration.evaluate_detector`'s module docstring)
+#: is visible at the point of use, not only to a reader who opens that
+#: docstring.
+_STRATUM_ESTIMATOR_TEXT = {
+    "random_stratum_only": "random stratum only",
+    "stratified": "stratified (census + sample)",
+}
+
+_ESTIMATE_VERDICT_STYLE = {
+    "measured": "green",
+    "too_few_labels": "bold yellow",
+    "no_denominator": "dim",
+    "needs_sampling_design": "bold red",
+}
+
+
+def render_detector_evaluation(evaluation: DetectorEvaluation, console: Console | None = None) -> None:
+    """Render `fireassay items detector-score`'s output: every statistic
+    with its value, 95% CI, `n`, and `verdict` -- never a bare value --
+    and which formula computed `recall`/`fpr`/`base_rate` (`"random
+    stratum only"` vs `"stratified (census + sample)"`), so
+    `evaluate_detector`'s stratum rule (pooling the flagged census with
+    the random calibration draw for anything but `precision` over-weights
+    the census and misreports the suite's real defect rate) is visible at
+    the point of use. When `verdict == "needs_sampling_design"`, an
+    explicit warning follows the table -- a reader must never mistake a
+    structurally-unmeasurable recall/fpr for a detector with zero false
+    positives (see `evaluate_detector`'s docstring on the disjoint-stratum
+    trap)."""
+    console = console or Console()
+    table = Table(title="detector evaluation (calibration labels)")
+    table.add_column("statistic")
+    table.add_column("value", justify="right")
+    table.add_column("95% CI", justify="right")
+    table.add_column("n", justify="right")
+    table.add_column("verdict")
+    table.add_column("computed over")
+
+    stratum_text = _STRATUM_ESTIMATOR_TEXT[evaluation.stratum_estimator]
+    for name in ("precision", "recall", "fpr", "base_rate"):
+        estimate: Estimate = getattr(evaluation, name)
+        value_text = f"{estimate.value:.4f}" if estimate.value is not None else "n/a"
+        ci_text = f"[{estimate.ci[0]:.4f}, {estimate.ci[1]:.4f}]" if estimate.ci is not None else "n/a"
+        style = _ESTIMATE_VERDICT_STYLE.get(estimate.verdict, "")
+        verdict_text = f"[{style}]{estimate.verdict}[/{style}]" if style else estimate.verdict
+        computed_over = "all labelled flagged items, any stratum" if name == "precision" else stratum_text
+        table.add_row(name, value_text, ci_text, str(estimate.n), verdict_text, computed_over)
+    console.print(table)
+
+    if evaluation.recall.verdict == "needs_sampling_design":
+        console.print(
+            "[bold red]needs_sampling_design[/bold red]: the random (calibration) stratum "
+            "contains none of this detector's flagged items, so recall and FPR cannot be "
+            "computed from it directly -- this is NOT a detector with zero false positives. "
+            "Supply --pool-size and --flagged-size to enable the stratified "
+            "(census + sample) estimator."
+        )
+
+    console.print(
+        f"n_labels={evaluation.n_labels}  n_random_stratum={evaluation.n_random_stratum}  "
+        f"n_flagged_total={evaluation.n_flagged_total}  "
+        f"n_flagged_labelled={evaluation.n_flagged_labelled}  "
+        f"n_flagged_unlabelled={evaluation.n_flagged_unlabelled}"
+    )

@@ -61,6 +61,7 @@ bottom-scoring systems (`discrimination_d < 0`).
 
 from __future__ import annotations
 
+import math
 import random
 from collections.abc import Mapping, Sequence
 from typing import Literal
@@ -400,3 +401,20 @@ def analyse(
     )
 
     return item_stats, panel_stats
+
+
+def wilson_ci(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95% Wilson score interval for a binomial proportion -- chosen over
+    the normal (Wald) approximation because it stays inside `[0, 1]` and
+    stays sane at the small `n` a review batch typically has, where Wald
+    routinely produces a nonsensical interval (e.g. a negative lower bound
+    when `successes` is 0 or `n`)."""
+    if n == 0:
+        return (0.0, 1.0)
+    p = successes / n
+    denom = 1 + z**2 / n
+    centre = p + z**2 / (2 * n)
+    margin = z * math.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))
+    lo = (centre - margin) / denom
+    hi = (centre + margin) / denom
+    return (max(0.0, lo), min(1.0, hi))

@@ -112,3 +112,50 @@ def test_sanity_the_walker_detects_a_real_store_import() -> None:
     reachable = _reachable_modules("fireassay.items.adapters.store")
     leaked = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
     assert leaked
+
+
+def test_items_calibration_module_graph_excludes_store() -> None:
+    """`items.calibration` (the calibration-consumer module) is bound by
+    the same store-free rule as `items.core` -- see its module
+    docstring."""
+    reachable = _reachable_modules("fireassay.items.calibration")
+    leaked = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    assert not leaked, (
+        f"fireassay.items.calibration's module graph reaches {leaked} -- items/calibration.py "
+        "(or something it imports) must not import fireassay.store, see its module docstring"
+    )
+
+
+def test_sanity_the_walker_follows_items_calibrations_own_cross_module_import() -> None:
+    """`items.calibration` imports `items.core` (for `wilson_ci`) -- the
+    same non-vacuous-pass check as this file's other sanity tests, applied
+    to the new module: confirms the walker traverses `items.calibration`'s
+    real cross-module import rather than only ever returning the start
+    node."""
+    reachable = _reachable_modules("fireassay.items.calibration")
+    assert "fireassay.items.core" in reachable
+
+
+def test_items_adapters_retrieval_module_graph_excludes_store() -> None:
+    """`items.adapters.retrieval` (the `lexical_decoy` seed builder) is
+    the second module -- alongside `items.adapters.store` -- allowed to
+    reach outside `items/` at all, but it must not be the second module
+    allowed to reach `fireassay.store`: that stays `adapters/store.py`'s
+    alone (see `items.adapters.retrieval`'s module docstring)."""
+    reachable = _reachable_modules("fireassay.items.adapters.retrieval")
+    leaked = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    assert not leaked, (
+        f"fireassay.items.adapters.retrieval's module graph reaches {leaked} -- "
+        "retrieval.py (or something it imports) must not import fireassay.store"
+    )
+
+
+def test_sanity_the_walker_follows_items_adapters_retrievals_own_cross_module_import() -> None:
+    """`items.adapters.retrieval` imports `items.core`/`items.seed` (for
+    `ItemMeta`/`SeededItem`/`seeded_item`) and `fireassay.system.bm25` --
+    the same non-vacuous-pass check as this file's other sanity tests,
+    applied to the new module."""
+    reachable = _reachable_modules("fireassay.items.adapters.retrieval")
+    assert "fireassay.items.core" in reachable
+    assert "fireassay.items.seed" in reachable
+    assert "fireassay.system.bm25" in reachable

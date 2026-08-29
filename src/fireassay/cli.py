@@ -15,6 +15,7 @@ report, not a command failure (M2-SPEC.md §9).
 
 from __future__ import annotations
 
+import csv
 import json
 import uuid
 from collections.abc import Callable, Mapping, Sequence
@@ -53,11 +54,20 @@ from fireassay.integrity import ComparisonRefusedError
 from fireassay.items.adapters.store import load_matrix as items_load_matrix
 from fireassay.items.adapters.store import load_meta as items_load_meta
 from fireassay.items.adapters.tabular import load_meta_jsonl, load_responses_csv, load_responses_jsonl
+from fireassay.items.calibration import (
+    CalibrationLabel,
+    SamplingDesign,
+    Stratum,
+    append_calibration_jsonl,
+    evaluate_detector,
+    load_calibration_jsonl,
+)
 from fireassay.items.core import ItemMeta, ItemResponses
 from fireassay.items.core import analyse as run_item_analysis
 from fireassay.items.review import (
     ReviewKeyEntry,
     ReviewLabel,
+    ReviewSource,
     build_review_batch,
     build_review_key,
     score_review,
@@ -73,6 +83,7 @@ from fireassay.report.text import (
     render_control_checks,
     render_control_outcomes,
     render_curate_report,
+    render_detector_evaluation,
     render_items_analysis,
     render_items_score,
     render_leaderboard,
@@ -1003,6 +1014,85 @@ def _load_matrix_file(path: Path) -> list[ItemResponses]:
     raise typer.BadParameter(f"--matrix must be .csv or .jsonl, got {path.suffix!r}")
 
 
+def _load_labels_file(path: Path) -> list[ReviewLabel]:
+    """`--labels` accepts either a hand-authored JSONL of `{review_id,
+    verdict}`, or the CSV `items review build --worksheet` writes -- a
+    filled-in worksheet is itself a valid labels file. CSV needs only
+    `review_id`/`verdict` columns; any other column (question,
+    reference_answer, evidence_quote) is ignored. A row with an empty or
+    whitespace-only verdict is skipped entirely -- unlabelled, not a
+    fourth verdict -- so it stays excluded from both `score_review`'s
+    numerator and denominator, the same as a `review_id` with no matching
+    label at all."""
+    if path.suffix == ".csv":
+        labels: list[ReviewLabel] = []
+        with open(path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            if reader.fieldnames is None or not {"review_id", "verdict"} <= set(reader.fieldnames):
+                raise typer.BadParameter(
+                    f"--labels: {path}: CSV must have 'review_id' and 'verdict' columns, "
+                    f"got {reader.fieldnames!r}"
+                )
+            for line_no, row in enumerate(reader, start=2):  # header occupies line 1
+                review_id = row["review_id"]
+                verdict = (row.get("verdict") or "").strip()
+                if not verdict:
+                    continue
+                # Validated explicitly, one literal at a time, rather than
+                # passed straight through to `ReviewLabel`: pydantic checks
+                # `verdict` against its Literal type at runtime regardless,
+                # but mypy cannot narrow a CSV cell's `str` to that Literal
+                # on its own, and a bare pydantic ValidationError would not
+                # say which worksheet row a typo like "purged"/"ok" is on.
+                if verdict == "keep":
+                    labels.append(ReviewLabel(review_id=review_id, verdict="keep"))
+                elif verdict == "rewrite":
+                    labels.append(ReviewLabel(review_id=review_id, verdict="rewrite"))
+                elif verdict == "purge":
+                    labels.append(ReviewLabel(review_id=review_id, verdict="purge"))
+                else:
+                    raise typer.BadParameter(
+                        f"--labels: {path}: line {line_no}: verdict {verdict!r} for "
+                        f"review_id {review_id!r} is not one of 'keep', 'rewrite', 'purge'"
+                    )
+        return labels
+    if path.suffix in (".jsonl", ".ndjson"):
+        with open(path, encoding="utf-8") as f:
+            return [ReviewLabel(**json.loads(line)) for line in f if line.strip()]
+    raise typer.BadParameter(f"--labels must be .csv or .jsonl, got {path.suffix!r}")
+
+
+def _load_flags_file(path: Path) -> list[str]:
+    """`--flags` for `items detector-score`: a plain text file, one
+    `item_id` per line -- deliberately not fireassay-specific, so any
+    detector, in any language, can emit one. Blank lines and lines
+    starting with `#` are ignored."""
+    ids: list[str] = []
+    with open(path, encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            ids.append(line)
+    return ids
+
+
+def _source_to_stratum(source: ReviewSource) -> Stratum:
+    """`ReviewKeyEntry.source` has one more value (`"seeded"`) than
+    `calibration.Stratum` -- the caller must have already dropped every
+    `is_seeded` entry (Change 1's rule) before calling this."""
+    if source == "flagged":
+        return "flagged"
+    if source == "unflagged":
+        return "unflagged"
+    if source == "calibration":
+        return "calibration"
+    raise AssertionError(
+        f"_source_to_stratum: unexpected source {source!r} -- seeded entries must be "
+        "skipped before this is called"
+    )
+
+
 @items_app.command("analyse")
 def items_analyse(
     matrix: Path | None = typer.Option(
@@ -1063,37 +1153,108 @@ def items_analyse(
 
 @items_review_app.command("build")
 def items_review_build(
-    db: Path = typer.Option(..., "--db"),
-    suite: str = typer.Option(..., "--suite"),
-    metric: str = typer.Option(..., "--metric", help="see `items analyse --db`'s docstring"),
-    threshold: float = typer.Option(..., "--threshold"),
+    matrix: Path | None = typer.Option(
+        None, "--matrix", help="CSV or JSONL response matrix (standalone mode -- no store touched)"
+    ),
+    meta: Path | None = typer.Option(
+        None,
+        "--meta",
+        help=(
+            "ItemMeta JSONL, keyed on item_id -- REQUIRED in standalone mode (unlike "
+            "`items analyse`): a review batch with no question or reference answer text is "
+            "nothing a human can review"
+        ),
+    ),
+    db: Path | None = typer.Option(None, "--db", help="fireassay store (in-project mode)"),
+    suite: str | None = typer.Option(None, "--suite", help="name@version (in-project mode)"),
+    metric: str | None = typer.Option(
+        None, "--metric", help="in-project mode: see `items analyse --db`'s docstring"
+    ),
+    threshold: float | None = typer.Option(
+        None, "--threshold", help="in-project mode: item is correct iff metric value > threshold"
+    ),
     out: Path = typer.Option(..., "--out", help="ReviewItem batch, JSONL -- what a reviewer opens"),
     key: Path = typer.Option(..., "--key", help="ground-truth key, JSON -- reviewer never sees this"),
+    worksheet: Path | None = typer.Option(
+        None,
+        "--worksheet",
+        help=(
+            "optional CSV a human can fill in directly -- columns review_id,verdict,question,"
+            "reference_answer,evidence_quote, verdict left empty"
+        ),
+    ),
     n_flagged: int = typer.Option(..., "--n-flagged", help="max mislabel_suspect items to include"),
     n_unflagged: int = typer.Option(..., "--n-unflagged", help="max non-flagged items to include"),
+    n_calibration: int = typer.Option(
+        0, "--n-calibration", help="items sampled uniformly from the whole pool, for calibration"
+    ),
     n_seeded_per_kind: int = typer.Option(
         0, "--n-seeded-per-kind", help="known-bad seeded items per corruption kind; 0 disables seeding"
+    ),
+    exclude: Path | None = typer.Option(
+        None,
+        "--exclude",
+        help=(
+            "plain text, one item_id per line (same format as --flags) -- excluded from "
+            "every pool, including seeded items whose source item_id matches, for a later "
+            "review pass drawing only from items nobody has labelled yet"
+        ),
     ),
     reliability_floor: float = typer.Option(0.5, "--reliability-floor"),
     n_splits: int = typer.Option(200, "--n-splits"),
     seed: int = typer.Option(0, "--seed"),
 ) -> None:
-    """Build a blind review batch (M-ITEMS-SPEC.md §3) over `--suite`'s own
-    runs: flagged (`mislabel_suspect`) items, unflagged items sampled from
-    every other classification, and (if `--n-seeded-per-kind` > 0)
-    deterministically corrupted known-bad items, mixed into one shuffled
-    batch. `--out` carries only question/reference/evidence -- no
-    classification, statistic, or seeded flag (`items.review`'s leak
-    rule); `--key` is the ground-truth mapping and must be kept away from
-    the reviewer.
+    """Build a blind review batch (M-ITEMS-SPEC.md §3), via either
+    `--matrix`/`--meta` (standalone -- usable with no fireassay store at
+    all) or `--db`/`--suite`/`--metric`/`--threshold` (in-project, over a
+    suite's own runs): flagged (`mislabel_suspect`) items, unflagged items
+    sampled from every other classification, calibration items sampled
+    uniformly from the whole pool (if `--n-calibration` > 0), and (if
+    `--n-seeded-per-kind` > 0) deterministically corrupted known-bad
+    items, mixed into one shuffled batch with no `item_id` appearing
+    twice (`items.review._plan_batch`'s claim order). `--out` carries
+    only question/reference/evidence -- no classification, statistic,
+    source, or seeded flag (`items.review`'s leak rule); `--key` is the
+    ground-truth mapping and must be kept away from the reviewer.
+    `--worksheet`, if given, writes the same batch as a CSV a human can
+    fill `verdict` in directly (`review_id,verdict,question,
+    reference_answer,evidence_quote`) -- see `items review score`'s
+    `--labels` for reading it back. `--exclude`, if given, removes those
+    item_ids from every pool, including `seeded` (`_plan_batch`'s
+    docstring on why the seeded case is the one that matters) -- pass a
+    prior pass's reviewed item_ids to accumulate the calibration set
+    (handbook §8) across passes without re-drawing an already-labelled
+    item.
     """
-    store = Store(db)
-    name, _, version = suite.partition("@")
-    suite_row = store.get_suite(name, version)
-    runs = store.runs_for_suite(suite_row.id)
-    responses = items_load_matrix(store, runs, metric=metric, threshold=threshold)
-    item_meta = items_load_meta(store, suite_row.id)
-    store.close()
+    if matrix is not None and db is not None:
+        typer.echo("items review build: pass either --matrix or --db, not both", err=True)
+        raise typer.Exit(code=1)
+
+    item_meta: dict[str, ItemMeta]
+    if matrix is not None:
+        if meta is None:
+            typer.echo(
+                "items review build --matrix requires --meta -- a review batch with no "
+                "question or reference answer text is nothing a human can review",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        responses = _load_matrix_file(matrix)
+        item_meta = load_meta_jsonl(meta)
+    elif db is not None:
+        if suite is None or metric is None or threshold is None:
+            typer.echo("items review build --db requires --suite, --metric, and --threshold", err=True)
+            raise typer.Exit(code=1)
+        store = Store(db)
+        name, _, version = suite.partition("@")
+        suite_row = store.get_suite(name, version)
+        runs = store.runs_for_suite(suite_row.id)
+        responses = items_load_matrix(store, runs, metric=metric, threshold=threshold)
+        item_meta = items_load_meta(store, suite_row.id)
+        store.close()
+    else:
+        typer.echo("items review build: one of --matrix or --db is required", err=True)
+        raise typer.Exit(code=1)
 
     item_stats, _panel_stats = run_item_analysis(
         responses, item_meta, reliability_floor=reliability_floor, n_splits=n_splits, seed=seed
@@ -1103,11 +1264,15 @@ def items_review_build(
         if n_seeded_per_kind > 0
         else []
     )
+    exclude_ids = _load_flags_file(exclude) if exclude is not None else []
+    exclude_set = frozenset(exclude_ids)
     batch = build_review_batch(
-        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged, seeded=seeded_items, seed=seed
+        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged,
+        n_calibration=n_calibration, seeded=seeded_items, seed=seed, exclude=exclude_set,
     )
     key_entries = build_review_key(
-        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged, seeded=seeded_items, seed=seed
+        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged,
+        n_calibration=n_calibration, seeded=seeded_items, seed=seed, exclude=exclude_set,
     )
 
     with open(out, "w", encoding="utf-8") as f:
@@ -1117,26 +1282,174 @@ def items_review_build(
     with open(key, "w", encoding="utf-8") as f:
         json.dump([entry.model_dump() for entry in key_entries], f, indent=2)
 
+    if worksheet is not None:
+        with open(worksheet, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["review_id", "verdict", "question", "reference_answer", "evidence_quote"])
+            for review_item in batch:
+                writer.writerow(
+                    [
+                        review_item.review_id,
+                        "",
+                        review_item.question or "",
+                        review_item.reference_answer or "",
+                        review_item.evidence_quote or "",
+                    ]
+                )
+
+    flagged_n = sum(1 for e in key_entries if e.source == "flagged")
+    seeded_n = sum(1 for e in key_entries if e.source == "seeded")
+    unflagged_n = sum(1 for e in key_entries if e.source == "unflagged")
+    calibration_n = sum(1 for e in key_entries if e.source == "calibration")
+    seeded_dropped = len(seeded_items) - seeded_n
+    seeded_text = f"seeded {seeded_n}"
+    if seeded_dropped > 0:
+        seeded_text += f" ({seeded_dropped} dropped: source item already in the deck)"
+    exclude_text = f"\n  excluded {len(exclude_ids)} already-reviewed item(s)" if exclude is not None else ""
+
     typer.echo(
-        f"wrote {len(batch)} review item(s) to {out}; key -> {key}  "
+        f"wrote {len(batch)} review item(s) to {out}; key -> {key}\n"
+        f"  flagged {flagged_n}  {seeded_text}\n"
+        f"  unflagged {unflagged_n}  calibration {calibration_n}"
+        f"{exclude_text}\n"
         "(seeded recall is an UPPER BOUND -- seeded flaws may be easier to spot than natural ones)"
     )
 
 
 @items_review_app.command("score")
 def items_review_score(
-    labels: Path = typer.Option(..., "--labels", help="reviewer verdicts, JSONL of {review_id, verdict}"),
+    labels: Path = typer.Option(
+        ..., "--labels", help="reviewer verdicts -- .jsonl of {review_id, verdict}, or a filled-in .csv"
+    ),
     key: Path = typer.Option(..., "--key", help="the ground-truth key from `items review build --key`"),
 ) -> None:
     """Score a completed blind review against its key (M-ITEMS-SPEC.md
     §3): precision from the flagged items, recall (an upper bound) from
     the seeded items, each with a 95% confidence interval."""
-    with open(labels, encoding="utf-8") as f:
-        label_list = [ReviewLabel(**json.loads(line)) for line in f if line.strip()]
+    label_list = _load_labels_file(labels)
     with open(key, encoding="utf-8") as f:
         key_list = [ReviewKeyEntry(**entry) for entry in json.load(f)]
     score = score_review(label_list, key_list)
     render_items_score(score)
+
+
+@items_app.command("detector-score")
+def items_detector_score(
+    flags: Path = typer.Option(
+        ..., "--flags", help="plain text, one item_id per line -- '#' comments and blank lines ignored"
+    ),
+    calibration: Path = typer.Option(
+        ..., "--calibration", help="CalibrationLabel JSONL (see `items review export-calibration`)"
+    ),
+    bad_verdicts: str = typer.Option(
+        "purge", "--bad-verdicts", help="comma-separated verdicts counted as bad, e.g. 'purge,rewrite'"
+    ),
+    reviewer: str | None = typer.Option(
+        None, "--reviewer", help="restrict to one reviewer's labels; omit to use all reviewers' labels"
+    ),
+    min_denominator: int = typer.Option(
+        10, "--min-denominator", help="below this n, an Estimate's verdict is 'too_few_labels'"
+    ),
+    pool_size: int | None = typer.Option(
+        None, "--pool-size", help="items in the suite the labels were drawn from (with --flagged-size)"
+    ),
+    flagged_size: int | None = typer.Option(
+        None, "--flagged-size", help="size of the flagged stratum in the suite (with --pool-size)"
+    ),
+) -> None:
+    """Score any detector's flagged-items list against accumulated human
+    calibration labels (`items.calibration.evaluate_detector`) -- works for
+    any detector that can emit a plain-text list of item_ids, including one
+    fireassay never built. `--bad-verdicts` deliberately has no canonical
+    default beyond the strict `purge` reading -- pass `purge,rewrite` for
+    the lenient one; which matters is the reader's call.
+
+    `--pool-size`/`--flagged-size` enable the stratified estimator for
+    recall/fpr/base_rate when the calibration stratum is structurally
+    disjoint from the detector's flagged items (see
+    `items.calibration`'s module docstring on the disjoint-stratum trap)
+    -- both or neither, never one alone."""
+    if (pool_size is None) != (flagged_size is None):
+        typer.echo(
+            "items detector-score: --pool-size and --flagged-size must be given together, "
+            f"or neither (got --pool-size={pool_size!r}, --flagged-size={flagged_size!r})",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    design: SamplingDesign | None = None
+    if pool_size is not None and flagged_size is not None:
+        design = SamplingDesign(pool_size=pool_size, flagged_size=flagged_size)
+
+    flagged_ids = _load_flags_file(flags)
+    label_list = load_calibration_jsonl(calibration)
+    bad_verdict_set = frozenset(v.strip() for v in bad_verdicts.split(",") if v.strip())
+    evaluation = evaluate_detector(
+        flagged_ids,
+        label_list,
+        bad_verdicts=bad_verdict_set,
+        min_denominator=min_denominator,
+        reviewer=reviewer,
+        design=design,
+    )
+    render_detector_evaluation(evaluation)
+
+
+@items_review_app.command("export-calibration")
+def items_review_export_calibration(
+    labels: Path = typer.Option(
+        ..., "--labels", help="reviewer verdicts -- .jsonl of {review_id, verdict}, or a filled-in .csv"
+    ),
+    key: Path = typer.Option(..., "--key", help="the ground-truth key from `items review build --key`"),
+    reviewer: str = typer.Option(..., "--reviewer", help="name of the reviewer who produced --labels"),
+    batch_id: str = typer.Option(..., "--batch-id", help="identifier for this review batch/pass"),
+    out: Path = typer.Option(
+        ..., "--out", help="CalibrationLabel JSONL -- appended, never rewritten (accumulates across passes)"
+    ),
+) -> None:
+    """Turn one completed blind-review pass into `CalibrationLabel`s any
+    detector can later be scored against (`fireassay items detector-score`)
+    -- the export boundary that enforces `items.calibration`'s rule that a
+    seeded item must never become a `CalibrationLabel`: every `is_seeded`
+    key entry is dropped here, counted but never exported."""
+    label_list = _load_labels_file(labels)
+    with open(key, encoding="utf-8") as f:
+        key_list = [ReviewKeyEntry(**entry) for entry in json.load(f)]
+    key_by_id = {entry.review_id: entry for entry in key_list}
+
+    calibration_labels: list[CalibrationLabel] = []
+    skipped_seeded = 0
+    for label in label_list:
+        entry = key_by_id.get(label.review_id)
+        if entry is None:
+            typer.echo(
+                f"items review export-calibration: review_id {label.review_id!r} (from {labels}) "
+                f"is absent from --key {key}",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        if entry.is_seeded:
+            skipped_seeded += 1
+            continue
+        calibration_labels.append(
+            CalibrationLabel(
+                item_id=entry.item_id,
+                verdict=label.verdict,
+                stratum=_source_to_stratum(entry.source),
+                reviewer=reviewer,
+                batch_id=batch_id,
+            )
+        )
+
+    n_written = append_calibration_jsonl(calibration_labels, out)
+
+    per_stratum: dict[str, int] = {}
+    for cl in calibration_labels:
+        per_stratum[cl.stratum] = per_stratum.get(cl.stratum, 0) + 1
+
+    typer.echo(
+        f"exported {n_written} calibration label(s) to {out} (skipped {skipped_seeded} seeded)\n"
+        f"  by stratum: {per_stratum}"
+    )
 
 
 if __name__ == "__main__":
