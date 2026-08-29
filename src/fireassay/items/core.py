@@ -403,6 +403,36 @@ def analyse(
     return item_stats, panel_stats
 
 
+class Estimate(BaseModel):
+    """A single statistic, never reported as a bare number.
+
+    `value`/`ci` are `None` **only** when `n == 0` (`verdict ==
+    "no_denominator"`) -- never a fabricated `0.0`. When `0 < n` but below
+    whatever floor the caller judges reasonable, `value`/`ci` are still
+    reported -- they are not wrong, only wide -- but `verdict ==
+    "too_few_labels"` so no reader can quote the point estimate as settled.
+    `verdict == "needs_sampling_design"` is specific to
+    `items.calibration.evaluate_detector`'s disjoint-stratum trap (see that
+    module's docstring) -- a producer with no such trap (e.g. `items.ppi`,
+    whose guard rails turn every degenerate input into a raised `ValueError`
+    before an `Estimate` is ever constructed) simply never emits it.
+    `"measured"` is the ordinary case: a real value/ci, no caveat attached
+    beyond whatever `n` itself tells the reader.
+
+    Shared across `items.calibration` (human-label rates against a review
+    batch) and `items.ppi` (the PPI/PPI++ point estimate and its interval) --
+    lives here, in the foundational module, rather than in whichever one
+    happened to define it first (the same reasoning that put `wilson_ci`
+    just below in this module rather than in its first caller)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    value: float | None
+    ci: tuple[float, float] | None
+    n: int
+    verdict: Literal["measured", "too_few_labels", "no_denominator", "needs_sampling_design"]
+
+
 def wilson_ci(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
     """95% Wilson score interval for a binomial proportion -- chosen over
     the normal (Wald) approximation because it stays inside `[0, 1]` and

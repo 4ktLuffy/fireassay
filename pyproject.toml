@@ -22,6 +22,7 @@ dev = [
     "ruff",
     "mypy",
     "cosmic-ray",
+    "ppi-py",
 ]
 
 [project.scripts]

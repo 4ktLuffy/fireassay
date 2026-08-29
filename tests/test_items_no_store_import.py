@@ -190,3 +190,30 @@ def test_sanity_the_walker_follows_items_adapters_retrievals_own_cross_module_im
     assert "fireassay.items.core" in reachable
     assert "fireassay.items.seed" in reachable
     assert "fireassay.system.bm25" in reachable
+
+
+def test_items_ppi_module_graph_excludes_store_and_llm() -> None:
+    """`items.ppi` (Prediction-Powered Inference, handbook §9b) is bound by
+    the same store-free rule as `items.core`/`items.calibration`/
+    `items.answerability`, and additionally must not reach `fireassay.llm`
+    at all -- it has nothing to do with calling a model, only combining two
+    already-produced prediction arrays (see its module docstring)."""
+    reachable = _reachable_modules("fireassay.items.ppi")
+    leaked_store = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    leaked_llm = {m for m in reachable if m == "fireassay.llm" or m.startswith("fireassay.llm.")}
+    assert not leaked_store, (
+        f"fireassay.items.ppi's module graph reaches {leaked_store} -- ppi.py (or something it "
+        "imports) must not import fireassay.store, see its module docstring"
+    )
+    assert not leaked_llm, (
+        f"fireassay.items.ppi's module graph reaches {leaked_llm} -- ppi.py (or something it "
+        "imports) must not import fireassay.llm, see its module docstring"
+    )
+
+
+def test_sanity_the_walker_follows_items_ppis_own_cross_module_import() -> None:
+    """`items.ppi` imports `items.core` (for `Estimate`) -- the same
+    non-vacuous-pass check as this file's other sanity tests, applied to
+    the new module."""
+    reachable = _reachable_modules("fireassay.items.ppi")
+    assert "fireassay.items.core" in reachable

@@ -13,8 +13,8 @@ from fireassay.compare import Leaderboard
 from fireassay.controls.base import ControlOutcome
 from fireassay.curate.report import CurateReport, SessionFlag
 from fireassay.integrity import RefusalReason
-from fireassay.items.calibration import DetectorEvaluation, Estimate
-from fireassay.items.core import ItemStats, PanelStats
+from fireassay.items.calibration import DetectorEvaluation
+from fireassay.items.core import Estimate, ItemStats, PanelStats
 from fireassay.items.review import DetectorScore
 from fireassay.mutation.score import MutationScoreResult
 from fireassay.store.db import ControlCheckRow, MutantRow, MutationRunRow

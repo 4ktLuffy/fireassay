@@ -25,7 +25,8 @@ only signal (`ReviewKeyEntry.is_seeded`) that could identify it.
 
 ## `Estimate` -- no statistic is ever a bare number
 
-`value`/`ci` are `None` **only** when `n == 0` (`verdict ==
+`Estimate` itself is defined in `items.core` (shared with `items.ppi`) --
+imported here, not redefined. `value`/`ci` are `None` **only** when `n == 0` (`verdict ==
 "no_denominator"`) -- never a fabricated `0.0`, the same discipline
 `DetectorScore` already applies in `items.review` and fireassay's scorers
 apply throughout. When `0 < n < min_denominator`, `value`/`ci` are still
@@ -215,7 +216,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
 
-from fireassay.items.core import wilson_ci
+from fireassay.items.core import Estimate, wilson_ci
 
 Stratum = Literal["flagged", "unflagged", "calibration"]
 
@@ -258,18 +259,6 @@ class SamplingDesign(BaseModel):
                 f"flagged_size ({self.flagged_size})"
             )
         return self
-
-
-class Estimate(BaseModel):
-    """A single statistic, never reported as a bare number -- see the
-    module docstring's `Estimate` section."""
-
-    model_config = ConfigDict(frozen=True)
-
-    value: float | None
-    ci: tuple[float, float] | None
-    n: int
-    verdict: Literal["measured", "too_few_labels", "no_denominator", "needs_sampling_design"]
 
 
 class DetectorEvaluation(BaseModel):
