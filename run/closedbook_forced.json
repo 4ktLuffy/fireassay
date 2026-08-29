@@ -1,0 +1,1199 @@
+[
+ {
+  "id": "3ee86858ce484ff0bbe4f2656065c784",
+  "question": "Which of the following is NOT a country or territory offering additional notarial and document services according to the passage?",
+  "reference": "France",
+  "closed_book": "Hong Kong",
+  "matches": false,
+  "reason": "The reference is about France, a country in Europe, while the candidate is about Hong Kong, a special administrative region of China. They refer to different geographical and political entities."
+ },
+ {
+  "id": "33730a5b444244a2a645158df0896164",
+  "question": "Under what circumstances can the first condition regarding residence be waived?",
+  "reference": "If you cannot meet it due to certain reasons.",
+  "closed_book": "The first condition regarding residence can often be waived in cases of diplomatic immunity, where foreign diplomats are allowed to reside outside their host country's jurisdiction. Additionally, temporary absences due to official duties or personal emergencies might sometimes allow for a waiver, but this would depend on specific local laws and regulations.",
+  "matches": false,
+  "reason": "The reference statement is much more general, simply mentioning that certain reasons can prevent meeting a condition. The candidate provides specific examples of when conditions might be waived, such as diplomatic immunity and temporary absences for official duties or personal emergencies."
+ },
+ {
+  "id": "fb3d990cc8f54bff8dae5c134a8bdd43",
+  "question": "When does the governing body of a school become responsible for the Apprenticeship Levy?",
+  "reference": "If a school becomes a voluntary-aided school, foundation school, free school or academy part way through a tax year.",
+  "closed_book": "The governing body of a school becomes responsible for the Apprenticeship Levy when the school meets certain criteria, primarily related to its pay bill. Specifically, if an organization's annual payroll exceeds \u00a33 million, it is required to contribute to the Apprenticeship Levy and use those funds to support apprenticeships. Schools that meet this threshold would be subject to this requirement.",
+  "matches": false,
+  "reason": "The reference discusses a school's status change regarding tax year obligations, while the candidate describes criteria for paying the Apprenticeship Levy based on payroll size. These are different topics and do not convey the same factual content."
+ },
+ {
+  "id": "c5a0717e8cbf4fa0956f0391d716a9b6",
+  "question": "Under what specific circumstances might a student applying for an undergraduate course with an integrated Masters year still require ATAS clearance?",
+  "reference": "If the subject area of the combined course has a Common Aggregator Hierarchy (CAH3) code, then ATAS clearance may be required.",
+  "closed_book": "A student applying for an undergraduate course with an integrated Masters year might require ATAS (Academic Technology Approval Scheme) clearance if the course involves study in a subject area that is covered by the ATAS scheme. This typically includes subjects such as engineering, information technology, physical sciences, and some life sciences. The specific circumstances would be when the course content or modules fall under these regulated areas, even if they are part of an integrated undergraduate-Masters program.",
+  "matches": false,
+  "reason": "While both statements refer to the requirement for ATAS clearance in certain subject areas, the candidate answer provides additional details and context that are not present in the reference. The reference is more concise and directly states the condition under which ATAS clearance may be required without specifying the types of subjects or programs involved."
+ },
+ {
+  "id": "e4e136264c9044aa85b40a04465f30ce",
+  "question": "What must be true for a couple to transfer their unused basic threshold?",
+  "reference": "the couple were married or in a civil partnership when the first death occurred",
+  "closed_book": "For a couple to transfer their unused basic threshold, they must first have an estate or inheritance tax situation where such a threshold is applicable. Typically, this would involve one spouse passing away and leaving behind assets that exceed the basic threshold amount allowed for tax-free transfer. Additionally, specific legal actions or agreements may need to be in place to facilitate the transfer between the surviving spouse and potentially other heirs or beneficiaries.",
+  "matches": false,
+  "reason": "The reference statement focuses on a couple being married or in a civil partnership at the time of the first death. The candidate answer discusses the conditions for transferring an unused basic threshold in estate or inheritance tax situations, which is unrelated to the marital status at the time of death."
+ },
+ {
+  "id": "24313c05b17548d1b0a7c8f5ce8485c8",
+  "question": "Can a homeowner who runs a business from their home but does not employ anyone be exempt from paying business rates?",
+  "reference": "No, they may still need to pay business rates if the property is used for both domestic and business purposes.",
+  "closed_book": "It depends on the local regulations of the area where the business is operated. In some regions, homeowners running businesses from their homes may be eligible for exemptions or reduced business rates if they do not employ any staff and meet certain criteria. However, these rules can vary significantly between different jurisdictions. For example, in the UK, a home-based business that does not have employees might qualify for a small business rate discount, but this is subject to change and local authority discretion.",
+  "matches": false,
+  "reason": "The reference statement directly addresses the situation where property used for both domestic and business purposes may still incur business rates. The candidate answer discusses the variability of regulations across different regions and provides specific examples, which introduces additional details not present in the reference."
+ },
+ {
+  "id": "ca0cfb2aa54e4c20bd68e7eaab3faa7b",
+  "question": "In which months of the year are you not allowed to fish for coarse fish in rivers in England and Wales?",
+  "reference": "from 15 March to 15 June",
+  "closed_book": "March and August",
+  "matches": false,
+  "reason": "The reference period is from 15 March to 15 June, which covers a specific three-month span. The candidate answer mentions March and August, which are different months and do not match the timeframe given in the reference."
+ },
+ {
+  "id": "68de87a9d64c4659ac0665a330161006",
+  "question": "How do the fees shown in the video tutorials compare to those listed in the Fees section?",
+  "reference": "The fees referred to in the video tutorials are for demonstration purposes only. Refer to the Fees section for current fees.",
+  "closed_book": "Based on my best guess without any specific reference documents, I would say that the fees shown in the video tutorials are likely to be more detailed and up-to-date compared to those listed in the general Fees section. Video tutorials often provide current pricing information as part of their content updates, whereas static sections might not get updated as frequently.",
+  "matches": false,
+  "reason": "The reference clearly states that the fees in the video tutorials are for demonstration purposes and to refer to the Fees section for current fees. The candidate, however, suggests that the fees shown in the video tutorials are likely more detailed and up-to-date compared to those listed in the general Fees section, which contradicts the reference."
+ },
+ {
+  "id": "60b36d9be5d24252b52a727ea32ceaa5",
+  "question": "If you had multiple jobs during your most recent stay, how should you determine the salary to consider for visa extension eligibility?",
+  "reference": "only include the highest earning salary",
+  "closed_book": "To determine the salary to consider for visa extension eligibility when having multiple jobs, you should calculate a weighted average of the salaries from all jobs based on the percentage of time or effort spent on each job. This provides an accurate representation of your overall earnings during that period.",
+  "matches": false,
+  "reason": "The reference instructs to include only the highest earning salary, while the candidate suggests calculating a weighted average of all salaries based on time or effort spent. These two approaches are fundamentally different in their methodology and outcome."
+ },
+ {
+  "id": "ce7ad59479004bb98ad1972bd5f94155",
+  "question": "What might happen if you do not contact Companies House before the time limit?",
+  "reference": "the company will be struck off",
+  "closed_book": "If you do not contact Companies House before the time limit, it could result in your company being struck off the register. This may lead to legal and financial consequences, such as losing the right to use the company name, facing fines, and having difficulties in settling any outstanding debts or liabilities.",
+  "matches": false,
+  "reason": "While both statements convey that a company could be struck off, the candidate provides additional details about potential consequences, which are not present in the reference."
+ },
+ {
+  "id": "b415644d47ae4a3cabdfcb1ba7dcf976",
+  "question": "What happens if your current permission expires before a decision is made on your application?",
+  "reference": "Your current permission will continue under section 3C leave.",
+  "closed_book": "If your current permission expires before a decision is made on your application, the status of your activities or operations that require that permission may become uncertain or potentially illegal. You might need to cease those activities until a new permission is granted or an alternative arrangement is made. It's advisable to communicate with the relevant authority to understand any interim measures or extensions that might be available.",
+  "matches": false,
+  "reason": "The reference statement conveys a simple fact about the continuation of current permission under section 3C leave. The candidate answer discusses potential issues if the current permission expires and advises on what to do in such a scenario. While both relate to the same general topic, they do not convey the same factual content."
+ },
+ {
+  "id": "14bc1f750b964b019cd52cd7eef57d94",
+  "question": "What must the photo of your passport include?",
+  "reference": "the whole photo page of your passport",
+  "closed_book": "The photo in a passport must include a clear, recent, color photograph of the applicant facing the camera with a neutral expression, wearing their usual attire without hats or glasses that cover the eyes. The background should be plain and the image should show the full face from approximately the shoulders up.",
+  "matches": false,
+  "reason": "The reference refers to the entire photo page of a passport, which includes the photograph, while the candidate describes specific requirements for the photograph itself. The scope and focus are different."
+ },
+ {
+  "id": "7ceb7c7e345e4f8a903dd0b746cb588a",
+  "question": "Compare the types of creative organizations that can invite you to visit the UK.",
+  "reference": "creative organisation, such as a gallery, university arts faculty, school or events venue",
+  "closed_book": "The types of creative organizations that might invite you to visit the UK include arts councils, galleries, museums, theaters, film studios, music venues, publishing houses, design firms, and digital media companies. Additionally, there are various festivals, conferences, and workshops focused on creativity and innovation that could offer such invitations.",
+  "matches": false,
+  "reason": "The reference focuses specifically on galleries, universities arts faculties, and events venues, while the candidate includes a broader range of creative organizations such as arts councils, museums, theaters, film studios, music venues, publishing houses, design firms, digital media companies, festivals, conferences, and workshops."
+ },
+ {
+  "id": "869540e51b604d1ba1a3158e358b8006",
+  "question": "Can ISA investments be transferred to a surviving spouse\u2019s or civil partner\u2019s ISA?",
+  "reference": "Yes, but only if they have the same ISA provider as you.",
+  "closed_book": "Yes, ISA investments can generally be transferred to a surviving spouse's or civil partner's ISA. Upon the death of the original ISA holder, the ISA can usually be transferred to their spouse or civil partner without incurring any tax penalties. However, it is important to note that the surviving spouse or civil partner may need to notify the ISA provider and possibly provide proof of the relationship and the deceased's ISA details.",
+  "matches": false,
+  "reason": "While both statements convey that an ISA can be transferred to a surviving spouse or civil partner, the reference specifies that this is only possible if they have the same ISA provider. The candidate answer does not include this condition."
+ },
+ {
+  "id": "4695c781f7f44f68a91e0c3e8ad92491",
+  "question": "What is the difference between the fish that must be released and those that can be taken?",
+  "reference": "You must release any eels you catch (except conger eels) alive, while there are no such restrictions for minor or \u2018tiddler\u2019 species, non-native species, and ornamental varieties of native species.",
+  "closed_book": "The difference between the fish that must be released and those that can be taken primarily lies in their size, species, or conservation status. Fish that must be released are typically smaller specimens of a species that is overfished or requires protection to maintain healthy populations. These regulations aim to ensure sustainable fishing practices. On the other hand, larger or specific species may have quotas allowing them to be taken by anglers for personal consumption or sale. Conservation efforts and local fishery management policies determine which species can be kept and which must be released back into the water.",
+  "matches": false,
+  "reason": "The reference specifically mentions eels and conger eels, while the candidate discusses a broader range of fish species based on size, conservation status, and fishing regulations. The focus and specific examples differ significantly between the two."
+ },
+ {
+  "id": "31cfa1ecfb544333b413724327ee2bf9",
+  "question": "Under what circumstances might local planning authorities agree with lead local flood authorities on the requirement for site-specific flood risk assessments?",
+  "reference": "Local planning authorities may find it helpful to agree with lead local flood authorities the circumstances and locations where site specific flood risk assessments will be required due to surface water drainage.",
+  "closed_book": "Local planning authorities might agree with lead local flood authorities on the requirement for site-specific flood risk assessments when there is a high likelihood of flooding in the area, existing development has shown issues related to flooding, or new developments could exacerbate flood risks. Additionally, if specific topographical features or historical data indicate that certain sites are particularly vulnerable to flooding, both parties might agree on conducting detailed assessments to ensure appropriate mitigation measures are implemented.",
+  "matches": false,
+  "reason": "While both statements discuss the agreement between local planning authorities and lead local flood authorities regarding site-specific flood risk assessments, the candidate answer provides more specific conditions under which such assessments might be required. The reference is more general in its description."
+ },
+ {
+  "id": "be925626ae044d518e48a27137c21c0f",
+  "question": "If a child over 18 is added to the application, what must be true for them?",
+  "reference": "The eligibility criteria are different for children under or over 18.",
+  "closed_book": "If a child over 18 is added to the application, they must no longer be considered a dependent and should have their own income or assets.",
+  "matches": false,
+  "reason": "The reference statement discusses eligibility criteria based on age, while the candidate statement provides specific conditions for children over 18 in an application context. The substance does not match."
+ },
+ {
+  "id": "6eafc20940be4779b22dd1aa61e7ee49",
+  "question": "Can input tax on legal fees be fully recovered?",
+  "reference": "Yes, if the legal fees relate wholly to the transfer of the business.",
+  "closed_book": "The recoverability of input tax on legal fees can vary depending on the country's tax laws. In many jurisdictions, such as in the European Union under VAT rules, legal fees are considered a business expense and thus the input tax can be fully recovered. However, this is not always the case for all types of legal services or in all countries. For instance, some countries may allow recovery only up to a certain limit or exclude certain legal services from input tax recovery.",
+  "matches": false,
+  "reason": "The reference statement is specific to the recoverability of input tax on legal fees relating solely to the transfer of a business. The candidate answer discusses the general variability in the recoverability of input tax on legal fees across different countries and types of services, which does not match the specific context provided in the reference."
+ },
+ {
+  "id": "dbf990aba7fc4509927e8407f0b5112a",
+  "question": "What happens if a relief or exemption from the Community Infrastructure Levy is granted but not followed by serving a Commencement Notice?",
+  "reference": "a surcharge penalty is applied instead of losing the exemption.",
+  "closed_book": "If a relief or exemption from the Community Infrastructure Levy (CIL) is granted but no Commencement Notice is served, the development would typically still be subject to CIL. The granting of relief or exemption does not automatically negate the requirement for a Commencement Notice to officially trigger the application of that relief or exemption. Without serving the Commencement Notice, the developer may still be required to pay the full CIL, as the project has commenced without the necessary formal acknowledgment of the granted relief.",
+  "matches": false,
+  "reason": "The reference statement discusses a surcharge penalty being applied instead of losing an exemption. The candidate answer does not mention any surcharge or penalty and focuses on the requirement for a Commencement Notice to apply relief or exemption from CIL."
+ },
+ {
+  "id": "672c8de8d4754821bee092822847b01f",
+  "question": "How does the deduction rate for rent or service charges compare to the deduction rates for other benefits?",
+  "reference": "The deduction rate for rent or service charges is higher, ranging between 10% and 15%, compared to 5% from Universal Credit for each debt and \u00a34.80 a week for other benefits.",
+  "closed_book": "The deduction rate for rent or service charges typically varies based on local tax laws and regulations. Generally, it can be lower compared to other business expenses like supplies or marketing costs. For example, in some regions, rental expenses might have a maximum deductible amount set by the government, whereas other benefits such as employee salaries or health insurance may not have such limitations. However, specific rates can differ significantly depending on the country and local tax policies.",
+  "matches": false,
+  "reason": "The reference provides specific deduction rate ranges for rent or service charges (10% to 15%) compared to Universal Credit (5%), while the candidate discusses general tax laws and regulations without providing concrete numerical values. The candidate also introduces unrelated topics such as business expenses and employee benefits that are not present in the reference."
+ },
+ {
+  "id": "1adf93bf6fb04ccca8d4992b3408e1f9",
+  "question": "What specific type of insulation is not eligible for the relief and why?",
+  "reference": "Curtains and carpets are not usually installed simply as insulation.",
+  "closed_book": "Reflective insulation, such as foil-faced bubble wrap or radiant barrier systems, is not typically eligible for tax relief. This is because it primarily reduces heat transfer through radiation rather than conduction or convection, which are the mechanisms targeted by most energy efficiency incentives and rebates.",
+  "matches": false,
+  "reason": "The reference statement discusses curtains and carpets in relation to insulation, while the candidate answer talks about reflective insulation and tax relief. The subjects and contexts are different."
+ },
+ {
+  "id": "43b753a4734c4c3c85135fc5bbc93247",
+  "question": "Can a UK undisclosed agent invoice for their own services in domestic supplies?",
+  "reference": "Yes, they may adopt the alternative VAT treatment set out in this section.",
+  "closed_book": "Yes, an undisclosed agent in the UK can invoice for their own services in domestic supplies. However, it is crucial that the terms of engagement and any relevant agreements clearly outline the nature of the relationship between the principal (the party receiving the goods or services) and the agent. Additionally, proper documentation should be maintained to ensure compliance with tax and legal requirements.",
+  "matches": false,
+  "reason": "The reference statement is about adopting alternative VAT treatment, while the candidate answer discusses invoicing for services by an undisclosed agent in the UK and outlines additional requirements. The core topic does not match."
+ },
+ {
+  "id": "f828c68e7ad94e27895cc9c7bdc0421b",
+  "question": "When can you use your eVisa instead of a visa vignette in an expired passport?",
+  "reference": "In most cases, you can use your eVisa in place of your visa vignette.",
+  "closed_book": "You cannot use your eVisa instead of a visa vignette in an expired passport. An eVisa is typically issued electronically and linked to your biometric data, while a visa vignette is physically placed inside the passport. If your passport expires before traveling, you will need to obtain a new passport with a valid visa vignette or apply for a new eVisa if the country supports electronic visas.",
+  "matches": false,
+  "reason": "The reference statement is simpler and conveys that an eVisa can generally replace a visa vignette. The candidate answer provides additional details about expired passports and the nature of eVisas and visa vignettes, which changes the core message."
+ },
+ {
+  "id": "c74bae7ed0bd400f8cf6902ae61e85f6",
+  "question": "What should you do if your SC1 application was submitted before 28 April 2023 and has not been approved?",
+  "reference": "You will need to use the link that was emailed to you.",
+  "closed_book": "If your SC1 application was submitted before 28 April 2023 and has not been approved, you should check the status of your application through the relevant government portal or contact the immigration department directly for updates. Ensure all required documents are complete and up-to-date, as missing information can delay processing. If necessary, seek advice from a legal professional specializing in immigration matters.",
+  "matches": false,
+  "reason": "The reference statement is about needing to use an emailed link, while the candidate text provides instructions for checking application status and ensuring completeness of documents. The core information does not match."
+ },
+ {
+  "id": "f7b530f636524a7ab47ff2347365ffae",
+  "question": "Under what condition will a partner or child's visa not automatically extend even if the primary holder extends their Innovator Founder visa?",
+  "reference": "If they do not extend their visa.",
+  "closed_book": "A partner or child's visa may not automatically extend even if the primary holder extends their Innovator Founder visa if there are issues with the supporting documents, such as missing evidence of the relationship or financial support. Additionally, if there have been breaches of Australian immigration laws or conditions by the primary visa holder or family members, this could lead to a refusal of extension for the dependent visas.",
+  "matches": false,
+  "reason": "The reference statement is simpler and only mentions that the dependent's visa may not extend if the primary holder does not extend their visa. The candidate answer provides more detailed reasons for why an extension might be refused, including issues with supporting documents and breaches of immigration laws."
+ },
+ {
+  "id": "0f2a344afa2647e28869b4c6edee85b1",
+  "question": "When can a conservatory be installed in relation to the main construction of a house for sale?",
+  "reference": "Before the Certificate of Completion is issued.",
+  "closed_book": "A conservatory can typically be installed during various stages of the main construction process. It is often added after the initial structure of the house is complete, but before or during the finishing touches. In some cases, it might even be integrated into the design phase if planned from the beginning. The timing depends on factors such as local building regulations, the seller's plans, and the specific needs of the buyer.",
+  "matches": false,
+  "reason": "The reference statement is about when a Certificate of Completion is issued, while the candidate text discusses the timing of conservatory installation during house construction. These are different topics and do not convey the same factual content."
+ },
+ {
+  "id": "5c1d227acdd14a67ae715f0b1607a453",
+  "question": "When can you start including VAT on your invoices compared to when you need to account for it?",
+  "reference": "You cannot include VAT on your invoices until you get your VAT registration number, but you can increase your prices to account for the VAT you\u2019ll need to pay to HMRC.",
+  "closed_book": "You need to start accounting for VAT (Value Added Tax) in your financial records from the moment you are required to register for VAT, which is typically when your business exceeds the VAT registration threshold set by your country's tax authority. You should begin including VAT on your invoices at the same time you start accounting for it in your books and records.",
+  "matches": false,
+  "reason": "The reference discusses not including VAT on invoices until registration is obtained and adjusting prices accordingly. The candidate answer talks about starting to account for VAT when required by the tax authority and includes VAT on invoices at that time. These are different points and do not convey the same factual content."
+ },
+ {
+  "id": "cda156ca9fb440ac852524590c977778",
+  "question": "Which counties are listed in the passage?",
+  "reference": "Kent, Surrey, East Sussex, West Sussex",
+  "closed_book": "I'm sorry, but I cannot provide an answer as no passage has been given for reference. Could you please provide the relevant text or details?",
+  "matches": false,
+  "reason": "The reference provides a list of geographic locations in England (Kent, Surrey, East Sussex, West Sussex), while the candidate does not address any content related to the given reference."
+ },
+ {
+  "id": "b2d16d6b354b46539cb138d1c42e3f0a",
+  "question": "What must happen before you are officially appointed as an appointee?",
+  "reference": "DWP will send Form BF57 confirming you\u2019ve been formally appointed to act for the claimant.",
+  "closed_book": "Before you are officially appointed as an appointee, a decision or selection process must take place where the appropriate authority chooses you for the position. This typically involves evaluating your qualifications, experience, and suitability for the role. Once selected, formal documentation or an official announcement will be made to confirm your appointment.",
+  "matches": false,
+  "reason": "The reference statement directly mentions that DWP will send Form BF57 to confirm the formal appointment. The candidate answer describes a general process of selection and confirmation without specifying the form or exact method used by DWP."
+ },
+ {
+  "id": "595ec5c904774df9adba171436333b77",
+  "question": "Who needs to pay Apprenticeship Levy?",
+  "reference": "employers",
+  "closed_book": "In the UK, businesses with a payroll of at least \u00a33 million per year are required to pay the Apprenticeship Levy. This includes companies in both the public and private sectors.",
+  "matches": false,
+  "reason": "The reference 'employers' is a broad term that refers to any entity or individual that hires employees. The candidate text specifically discusses businesses in the UK required to pay the Apprenticeship Levy based on their payroll size and sector. While both terms are related to employment, they do not convey the same factual content."
+ },
+ {
+  "id": "1e84e8f6ec444667ac7d59ad997c51d9",
+  "question": "What must you hold if you are renewing your close protection licence or held one within the last 3 years, compared to what is required for a first-time application with an older qualification less than 3 years old?",
+  "reference": "For a first-time application with an older qualification less than 3 years old, you only need one of the current or older qualifications. For renewing your close protection licence or holding one within the last 3 years, you must hold both a full licence-linked qualification and the \u2018Level 2 Award for Close Protection Operatives in the Private Security Industry (Refresher)\u2019 qualification.",
+  "closed_book": "If you are renewing your close protection licence and have held one within the last 3 years, you must hold evidence of continuous professional development (CPD) in close protection. This typically includes documentation of training courses, seminars, or other relevant experiences that demonstrate ongoing competence and knowledge in the field. For a first-time application with an older qualification less than 3 years old, you would need to provide proof of your initial qualification and background check results, but not necessarily continuous CPD evidence.",
+  "matches": false,
+  "reason": "The reference and candidate answers differ in the requirements for renewing a close protection licence. The reference states that both a full licence-linked qualification and a specific refresher award are required, while the candidate answer mentions only continuous professional development (CPD) evidence."
+ },
+ {
+  "id": "b38ac7b1d97949cba8b90620bd998ba4",
+  "question": "How many rods can you use for salmon, sea trout and non-migratory trout in reservoirs, lakes and ponds?",
+  "reference": "up to 2 rods",
+  "closed_book": "The number of rods that can be used for salmon, sea trout, and non-migratory trout in reservoirs, lakes, and ponds varies by location and local fishing regulations. In the UK, for example, there is typically no limit on the number of rods you can use for these species in a private water body, but public waters may have restrictions. It's important to check with the relevant fisheries management authority or local angling club for specific rules.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical limit (up to 2 rods) without context, while the candidate offers more detailed information about regulations and variations by location. The substance does not match as the candidate does not specify any particular number of rods."
+ },
+ {
+  "id": "45f8ce58b4cf415f8fd228e990e588f1",
+  "question": "What will HMRC\u2019s Making Tax Digital for Income Tax engagement team do after you complete the online form?",
+  "reference": "promote awareness of the Making Tax Digital for Income Tax products to you, offer education on Making Tax Digital for Income Tax, help guide you through the steps to sign up to Making Tax Digital for Income Tax, and help you understand the legal requirements.",
+  "closed_book": "After you complete the online form, HMRC's Making Tax Digital for Income Tax engagement team will review your submission. If all details are correct and complete, they may follow up with additional questions or request supporting documents to verify the information provided. Once verified, your registration will be processed, and you will receive a confirmation that you are now required to keep digital records of certain income sources as per HMRC's Making Tax Digital requirements.",
+  "matches": false,
+  "reason": "The reference focuses on promoting awareness, offering education, guiding through the sign-up process, and explaining legal requirements. The candidate describes the review process by HMRC's engagement team after submission of an online form, verification steps, and confirmation of registration."
+ },
+ {
+  "id": "d6ed8a34b38f4b828bb44b1b9e887e76",
+  "question": "What specific caution should boaters take when navigating near the bridge damaged by a vehicle?",
+  "reference": "Be cautious of falling debris.",
+  "closed_book": "Boaters should exercise extreme caution when navigating near a bridge that has been damaged by a vehicle. Specific precautions include reducing speed, maintaining a safe distance from the bridge structure, and avoiding any sudden movements or maneuvers that could cause instability in the boat. Additionally, boaters should be aware of potential debris in the water and follow any navigational advisories or instructions provided by local authorities.",
+  "matches": false,
+  "reason": "The reference statement 'Be cautious of falling debris' is a general warning about potential hazards. The candidate answer provides specific advice for boaters navigating near a damaged bridge and does not directly address the issue of falling debris."
+ },
+ {
+  "id": "0d6cae65e40d4dd69015c40f8b430fd4",
+  "question": "Which type of passport application requires a signature from a countersignatory?",
+  "reference": "first adult passport, first child passport, replacement for a lost, stolen or damaged passport, renewal of a passport for a child aged 11 or under, renewal of a passport if your appearance has changed and you cannot be recognised from your existing passport",
+  "closed_book": "Passports for minors often require a signature from a countersignatory, typically a parent or legal guardian.",
+  "matches": false,
+  "reason": "The reference text lists specific scenarios for obtaining different types of passports and passport renewals, while the candidate statement discusses a general requirement for minors' passports."
+ },
+ {
+  "id": "20140d6d39604f9a8cf0d1a34d9cbcbf",
+  "question": "Under what circumstances can Child Benefit be paid weekly?",
+  "reference": "If you\u2019re a single parent or getting certain other benefits, such as Universal Credit.",
+  "closed_book": "Child Benefit in the UK is typically paid monthly by direct credit or bank transfer to a parent's account. However, it can be paid weekly under specific circumstances, such as when a claimant requests it and agrees to a higher tax deduction to cover the additional administration costs.",
+  "matches": false,
+  "reason": "The reference text discusses eligibility for certain benefits related to being a single parent or receiving Universal Credit. The candidate answer talks about how Child Benefit is typically paid and under what circumstances it can be paid weekly. These are different topics and do not convey the same factual content."
+ },
+ {
+  "id": "78a90846a2ef4cdead8c98e41dbfbcc2",
+  "question": "Compare the types of incidents that need to be reported with those that do not require reporting.",
+  "reference": "Report a serious safeguarding risk if it involves abuse or mistreatment (alleged or actual) resulting in significant harm, whereas other incidents may not necessarily require immediate reporting to the Commission.",
+  "closed_book": "{\"Incidents Requiring Reporting\": [\"Security Breaches\", \"Data Loss or Theft\", \"System Crashes or Downtime\", \"Unauthorized Access Attempts\", \"Phishing Attacks\", \"Malware Infections\", \"Network Intrusions\", \"Physical Security Incidents (e.g., unauthorized entry)\", \"Compliance Violations\", \"Customer Data Exposure\"], \"Incidents Not Requiring Reporting\": [\"Routine Maintenance Activities\", \"Software Updates\", \"Scheduled Downtime for Upgrades\", \"Normal System Performance Variations\", \"User Error or Misconfiguration Issues\", \"Non-critical Software Bugs\", \"Minor Network Congestion Issues\", \"Temporary Connectivity Problems\"]}",
+  "matches": false,
+  "reason": "The reference focuses on the reporting of serious safeguarding risks involving abuse or mistreatment resulting in significant harm. The candidate answer lists categories of incidents that do require or not require reporting but does not specifically address the context of safeguarding risks related to abuse or mistreatment."
+ },
+ {
+  "id": "627191b16418454da96719a1931d910c",
+  "question": "Which benefits are exempt from valuation and reporting to HMRC in a salary sacrifice arrangement?",
+  "reference": "payments into pension schemes, employer provided pensions advice, workplace nurseries, childcare vouchers and directly contracted employer pr",
+  "closed_book": "In a salary sacrifice arrangement, certain benefits may be exempt from valuation and reporting to HMRC. Specifically, the following benefits are generally considered exempt under such arrangements:",
+  "matches": false,
+  "reason": "The reference text discusses various employer-provided benefits such as pension schemes, advice, nurseries, childcare vouchers, and directly contracted services. The candidate answer talks about salary sacrifice arrangements and tax-exempt benefits under such arrangements, which are different topics."
+ },
+ {
+  "id": "7c2fb6c042e940a9a529171cf8863664",
+  "question": "Under what condition should Certificate C be used instead of Certificate B?",
+  "reference": "This should be completed if the applicant is not the sole owner, or if there are agricultural tenants, and the applicant knows the names and addresses of some but not all other owners and/or agricultural tenants.",
+  "closed_book": "Certificate C should be used instead of Certificate B when a higher level of encryption is required. Certificate C typically supports stronger encryption algorithms or longer key lengths, providing enhanced security for sensitive data and high-risk environments.",
+  "matches": false,
+  "reason": "The reference text discusses conditions under which a specific form should be completed related to ownership and agricultural tenants. The candidate answer talks about using different certificates for encryption purposes. These are unrelated topics."
+ },
+ {
+  "id": "0115d8623fd14c14945ff1318fc04df7",
+  "question": "What evidence is needed if you are a dependent relative but not a spouse, civil partner, unmarried partner, child, grandchild or dependent parent or grandparent?",
+  "reference": "you will need to show evidence that you\u2019re one of the following: dependent on the \u2018specified relevant person of Northern Ireland\u2019 or on their spouse or civil partner; a member of their household; in need of their personal care because of a serious or permanent health condition",
+  "closed_book": "If you are a dependent relative but do not fall into the specified categories (spouse, civil partner, unmarried partner, child, grandchild, or dependent parent or grandparent), the evidence needed would typically include documents that demonstrate your relationship and dependency on the individual. This could involve providing proof of residence, financial dependence, and familial ties. Specific examples might include:",
+  "matches": false,
+  "reason": "The reference specifies exact categories (dependent on the \u2018specified relevant person of Northern Ireland\u2019 or their spouse or civil partner; a member of their household; in need of their personal care because of a serious or permanent health condition) while the candidate answer discusses a broader category of 'dependent relative' without specifying the exact categories and does not mention the specific conditions for eligibility."
+ },
+ {
+  "id": "55ec775860cf4d12b52a5f625e115240",
+  "question": "Under which conditions are UK hen eggs considered to present a very low risk of Salmonella according to the Food Standards Agency?",
+  "reference": "Eggs produced under the British lion code and Laid in Britain assurance schemes.",
+  "closed_book": "UK hen eggs that meet the Red Tractor Farm Assurance Scheme standards, which include specific hygiene and welfare requirements for egg producers, are considered to present a very low risk of Salmonella. Additionally, eggs from flocks managed under the Lion Quality scheme, which focuses on farm management practices and biosecurity measures, also fall into this category.",
+  "matches": false,
+  "reason": "While both statements refer to egg production standards in the UK, the reference specifically mentions the British lion code and Laid in Britain assurance schemes. The candidate answer includes additional information about the Red Tractor Farm Assurance Scheme and its focus on hygiene and welfare requirements, as well as the Lion Quality scheme's emphasis on farm management practices and biosecurity measures. These details go beyond the scope of the reference."
+ },
+ {
+  "id": "2bcdd3f12e2346a9b4cf50b41a0d4423",
+  "question": "Under what circumstance can a jobseeker avoid contacting the DWP after applying for JSA?",
+  "reference": "If you have not heard anything from the DWP more than 14 days after your application.",
+  "closed_book": "A jobseeker can generally avoid contacting the DWP (Department for Work and Pensions) after applying for Job Seekers Allowance (JSA) if they are self-employed with minimal income, have no other earnings, and their business is not generating any turnover. However, this situation may vary depending on individual circumstances and changes in policy. It's advisable to check the latest guidance from the DWP or consult a benefits advisor for accurate information.",
+  "matches": false,
+  "reason": "The reference statement is about the timeframe after which one should expect communication from the DWP regarding their application. The candidate answer discusses conditions under which a jobseeker might not need to contact the DWP and includes additional context that is not present in the reference."
+ },
+ {
+  "id": "8c97f666bdb74364ad0aa7bb62a64918",
+  "question": "What are the differences in fire safety requirements for a regular private rental property compared to a large house in multiple occupation (HMO)?",
+  "reference": "In a HMO, the landlord must provide fire alarms and extinguishers, whereas this is not mentioned as a requirement for other properties.",
+  "closed_book": "The fire safety requirements for a regular private rental property versus a large house in multiple occupation (HMO) can differ significantly due to the nature and occupancy of each type of property. Here are some key differences based on typical UK regulations, though specific requirements may vary by local authority or country within the UK:",
+  "matches": false,
+  "reason": "The reference specifically mentions that landlords in HMOs must provide fire alarms and extinguishers, which is a direct requirement. The candidate answer does not explicitly state this requirement for HMOs but instead provides general information about the differences between regular private rental properties and HMOs regarding fire safety requirements."
+ },
+ {
+  "id": "4149b0be86c647abbd7342825f838876",
+  "question": "How does the presence of a project in a sensitive area affect its screening requirement compared to meeting the thresholds or criteria?",
+  "reference": "Projects listed in Schedule 2 which are located in, or partly in, a sensitive area also need to be screened, even if they are below the thresholds or do not meet the criteria.",
+  "closed_book": "The presence of a project in a sensitive area often necessitates additional screening requirements beyond standard thresholds or criteria. Sensitive areas may include locations near critical infrastructure, protected habitats, historical sites, or regions with high environmental sensitivity. In such cases, the project must undergo more rigorous evaluation to assess potential impacts and ensure compliance with local, national, or international regulations. This could involve conducting detailed environmental impact assessments (EIAs), obtaining special permits, engaging in public consultations, and implementing enhanced mitigation measures. The screening process may also require collaboration with multiple regulatory bodies and stakeholders to address the unique challenges posed by the project's location.",
+  "matches": false,
+  "reason": "While both statements discuss the need for additional screening of projects in sensitive areas, the candidate answer provides more detailed information about specific types of sensitive areas and the associated requirements. The reference statement is more general and focuses solely on the need for screening regardless of thresholds or criteria."
+ },
+ {
+  "id": "3356af0cc24649fb91ae637c99c690ea",
+  "question": "What happens if you have not paid enough tax compared to paying too much tax?",
+  "reference": "If you have not paid enough tax, you\u2019ll stay on the emergency tax code until you\u2019ve paid the correct tax for the year. If you\u2019ve paid too much tax, you can get a tax refund.",
+  "closed_book": "If you have not paid enough tax, you may owe the government additional money. The Internal Revenue Service (IRS) in the United States or equivalent tax authorities in other countries will send you a bill for the underpayment. You are generally required to pay any outstanding taxes within 21 days of receiving the notice to avoid penalties and interest on the unpaid amount. If you cannot pay the full amount immediately, you may be able to set up a payment plan with the IRS or equivalent authority. On the other hand, if you have paid too much tax, you will likely receive a refund from the government. This can happen through your annual tax return or during the year via estimated tax payments.",
+  "matches": false,
+  "reason": "While both statements address the scenarios of underpayment and overpayment of taxes, the candidate answer provides more detailed information about the consequences and actions involved. The reference is more concise and focuses on the core outcomes without delving into payment plans or penalties."
+ },
+ {
+  "id": "d473fc6a36f94ab7ad43083569aa3019",
+  "question": "What happens if you pay Class 2 contributions for the previous tax year?",
+  "reference": "You pay the original rate for those tax years.",
+  "closed_book": "If you pay Class 2 National Insurance contributions (NICs) for a previous tax year, it is likely that these payments will be treated as if they were made in the correct period. This means that you may receive credit towards your entitlement to a State Pension or other benefits based on these contributions. However, any overpayment might need to be claimed back through HMRC's system.",
+  "matches": false,
+  "reason": "The reference statement is about paying the original rate for tax years, while the candidate discusses Class 2 National Insurance contributions and potential overpayment claims. The subjects are different."
+ },
+ {
+  "id": "b5dc641270f3483185bfb5926e055a29",
+  "question": "What are the consequences of not returning form WCA50 or not attending the Work Capability Assessment?",
+  "reference": "You will not receive New Style ESA.",
+  "closed_book": "Not returning a form WCA50 or not attending a Work Capability Assessment (WCA) can have several consequences. You may lose your eligibility for certain benefits, such as Employment and Support Allowance (ESA). The Department for Work and Pensions (DWP) might also issue a penalty notice, which could result in a fine. Additionally, your case may be closed or transferred to a different benefit type that offers less support. It's important to respond promptly to any correspondence from the DWP regarding assessments.",
+  "matches": false,
+  "reason": "The reference statement specifically mentions not receiving New Style ESA, while the candidate answer discusses potential consequences of not attending a Work Capability Assessment (WCA) and losing eligibility for Employment and Support Allowance (ESA). The candidate answer does not directly state that you will not receive New Style ESA."
+ },
+ {
+  "id": "a7b34791bee84b6e93e029096ce24e65",
+  "question": "What information must be included in the first report?",
+  "reference": "confirm your gender dysphoria diagnosis and the clinical history this was based on, including: who made the diagnosis, when the diagnosis was made, what evidence was used to make the diagnosis",
+  "closed_book": "The specific content of the first report depends on the context or industry. However, a general set of information that should typically be included in most initial reports is: project overview, objectives and goals, methodology, data sources, key findings, recommendations, and limitations.",
+  "matches": false,
+  "reason": "The reference focuses on the details of a gender dysphoria diagnosis and its clinical history, including who made the diagnosis, when it was made, and what evidence was used. The candidate, however, discusses general information that should be included in an initial report for various contexts or industries. These topics are unrelated."
+ },
+ {
+  "id": "82a6b55cfa8f4d9e863264f27815c8e5",
+  "question": "How can a building be reconstructed if only part of it will be used for a qualifying purpose, and what must be considered when determining the zero-rated element?",
+  "reference": "You may reconstruct a building where only part of it will be used for a qualifying purpose. When determining if at least 60% of the work could be zero-rated as \u2018approved alterations\u2019, all of the work to the building should be considered. But only those alterations to the qualifying parts can count towards the zero-rated element.",
+  "closed_book": "When reconstructing a building where only part is to be used for a qualifying purpose, the zero-rated element (the portion that qualifies for VAT exemption) can be determined based on the proportion of the total area or value that will be used for the qualifying activity. Key considerations include: 1) The specific use of each section of the building; 2) The layout and function of the spaces within the building; 3) Any structural changes required to separate the areas; 4) The impact on energy efficiency and accessibility; 5) Compliance with local building codes and regulations. It's important to consult with a tax advisor or accountant familiar with VAT rules for specific guidance.",
+  "matches": false,
+  "reason": "While both statements discuss the zero-rating of alterations in relation to building reconstruction and qualifying purposes, the candidate answer provides additional details about considerations beyond just the proportion of work that could be zero-rated. The reference focuses specifically on the percentage of work (60%) that can be considered for zero-rating and clarifies that only alterations to the qualifying parts count towards this."
+ },
+ {
+  "id": "0ebd2b919b0b455f90aec01c9f8eac7b",
+  "question": "When creating a Defra account for reporting waste, how does the process differ between organizations with existing Government Gateway or GOV.UK One Login accounts and those without?",
+  "reference": "Organizations with existing Government Gateway or GOV.UK One Login accounts can log in directly to create a Defra account, while those without must first create their own Government Gateway or GOV.UK One Login account before creating the Defra account.",
+  "closed_book": "When creating a Defra account for reporting waste, the process differs based on whether an organization already has a Government Gateway or GOV.UK One Login account. For organizations with existing Government Gateway or GOV.UK One Login accounts, they can use their existing credentials to log in and access the necessary services for reporting waste. This streamlines the process as they do not need to create new login details. On the other hand, for organizations without these pre-existing accounts, they will need to go through a registration process where they must provide relevant information about their organization and complete identity verification steps before gaining access to Defra's services for waste reporting.",
+  "matches": false,
+  "reason": "While both statements convey the need for organizations to have a Government Gateway or GOV.UK One Login account to create a Defra account, the candidate answer provides additional details about the process of registration and identity verification for organizations without existing accounts. The reference statement does not mention these steps."
+ },
+ {
+  "id": "807436f5ff984c9d8a87b840f3a5c70e",
+  "question": "How can a tenant transfer their tenancy?",
+  "reference": "complete a \u2018request to assign tenancy\u2019 form",
+  "closed_book": "A tenant can typically transfer their tenancy through subletting or assignment. Subletting involves the current tenant finding a new tenant to take over part of their lease obligations, while assignment allows the original tenant to transfer all remaining lease obligations to a third party. Both methods usually require landlord approval and adherence to local rental laws.",
+  "matches": false,
+  "reason": "The reference focuses on completing a specific form ('request to assign tenancy'), while the candidate discusses the processes of subletting and assignment in general terms without mentioning any form."
+ },
+ {
+  "id": "4bb77f152cfc46a3ba5544b0ffdf59f6",
+  "question": "What are the two main types of private pension schemes?",
+  "reference": "defined contribution and defined benefit",
+  "closed_book": "The two main types of private pension schemes are defined contribution (DC) plans and defined benefit (DB) plans.",
+  "matches": true,
+  "reason": "Both the reference and candidate answers convey the same factual content by mentioning the two main types of private pension schemes: defined contribution (DC) and defined benefit (DB)."
+ },
+ {
+  "id": "ea50e36d89924ac5ab0eebb47fbccbfa",
+  "question": "When can an employee start their Paternity Leave from their first day of employment?",
+  "reference": "From 6 April 2026.",
+  "closed_book": "The ability to take paternity leave on the first day of employment varies by country and company policy. In some places, such as Iceland, Norway, and Sweden, new fathers can start their leave immediately after the birth or adoption of a child. However, in many other countries, including the United States, there is no federal mandate requiring employers to offer paternity leave, and it typically starts after several weeks of employment. For specific details, an employee should check their company's policy or local labor laws.",
+  "matches": false,
+  "reason": "The reference provides a specific date (6 April 2026) which is not mentioned in the candidate answer. The candidate answer discusses paternity leave policies in general and does not specify any particular date."
+ },
+ {
+  "id": "2fc7d4a36dfb4df3afc86785d54b44ec",
+  "question": "What should you do if you have a type of money, savings or investment not listed in the options provided?",
+  "reference": "You can let us know using the \u2018other savings and investments\u2019 option.",
+  "closed_book": "If you have a type of money, savings or investment not listed in the options provided, it's important to first understand what that specific form of financial instrument is. You should research its nature and characteristics, such as how it works, potential risks, returns, and any associated fees. Consulting with a financial advisor or doing thorough online research can provide insights. Additionally, ensure you have a diversified investment portfolio to manage risk effectively.",
+  "matches": false,
+  "reason": "The reference simply suggests using the 'other savings and investments' option, while the candidate provides detailed instructions on understanding and researching specific types of financial instruments before selecting an option. The substance does not match."
+ },
+ {
+  "id": "bc072ebfc31b46c8857ba281f993f144",
+  "question": "When can a building be excluded from the effect of an option to tax?",
+  "reference": "when construction begins",
+  "closed_book": "A building can generally be excluded from the effect of an option to tax if it is sold or leased in its entirety and used exclusively for commercial purposes. However, specific conditions and exclusions may apply depending on local tax laws and regulations.",
+  "matches": false,
+  "reason": "The reference text 'when construction begins' is a brief phrase indicating the start of building work. The candidate text discusses conditions for excluding buildings from option to tax based on sale or lease and usage. These topics are unrelated."
+ },
+ {
+  "id": "281982de6aad407aa095430afa4154d3",
+  "question": "Under what circumstances must you contact HMRC before 31 March of the following tax year?",
+  "reference": "If you go over your savings allowance and do not receive a letter by 31 March of the following tax year, you must contact HMRC.",
+  "closed_book": "You must contact HMRC before 31 March of the following tax year if you are self-employed and your trading profits exceed \u00a3100,000 or if you have a capital gain that needs to be declared.",
+  "matches": false,
+  "reason": "The reference statement discusses the requirement to contact HMRC by 31 March of the following tax year after exceeding your savings allowance. The candidate statement refers to self-employment and specific income thresholds related to trading profits and capital gains, which are different conditions."
+ },
+ {
+  "id": "6983e8c03fd346129bfd4b644f0f4acb",
+  "question": "What must occur before a Local Development Order can grant planning permission for development that might affect European Sites without being directly connected to the site's management?",
+  "reference": "a competent authority has given consent, permission, or other authorisation in accordance with regulation 63 of the Conservation of Habitats and Species Regulations 2017 (as amended)",
+  "closed_book": "Before a Local Development Order can grant planning permission for development that might affect European Sites without being directly connected to the site's management, an Environmental Impact Assessment (EIA) must be carried out and its findings considered. This assessment is required to evaluate the potential environmental impacts of the proposed development on European Sites.",
+  "matches": false,
+  "reason": "The reference text discusses a competent authority granting consent under specific regulations, while the candidate text describes the requirement for an Environmental Impact Assessment before granting planning permission. The subjects and contexts are different."
+ },
+ {
+  "id": "bbd2a072c3f74b1b8d9ea7050fb63c2a",
+  "question": "How should you handle VAT invoices for zero-rated or exempt supplies?",
+  "reference": "you must make sure that those items show clearly",
+  "closed_book": "For zero-rated or exempt supplies, VAT invoices should be handled in a way that accurately reflects the nature of the transaction. Specifically, if the supply is zero-rated, no VAT should be charged or shown on the invoice. If it's an exempt supply, typically no VAT would also apply and thus not appear on the invoice. However, it\u2019s important to ensure that all necessary details are still included in the invoice such as the supplier's details, the recipient's details, a description of the goods/services, and any other relevant information required by local tax authorities. It is crucial to maintain proper records for audit purposes and to comply with local VAT regulations.",
+  "matches": false,
+  "reason": "The reference statement focuses on ensuring items show clearly, while the candidate answer discusses the handling of VAT invoices for zero-rated or exempt supplies. The substance does not match."
+ },
+ {
+  "id": "8435d77e028e49baa7a6c4477d639d2e",
+  "question": "How should you value items worth over \u00a31,500 for the inheritance tax form?",
+  "reference": "You may have to get a professional valuation.",
+  "closed_book": "For items worth over \u00a31,500, it is recommended to obtain a professional valuation from an independent expert. This could be an auctioneer, jeweler, or appraiser depending on the type of item. The valuation should include details such as the item's condition, age, and any other relevant factors that might affect its value. It\u2019s important to provide this detailed information when completing the inheritance tax form.",
+  "matches": false,
+  "reason": "The reference simply suggests getting a professional valuation without specifying any monetary threshold or providing details on what the valuation should include. The candidate answer provides more specific guidance, including a monetary threshold (\u00a31,500), recommended professionals (auctioneer, jeweler, appraiser), and additional information that should be included in the valuation."
+ },
+ {
+  "id": "2ad3d734d60d4f368bff24e1db1e766c",
+  "question": "How does the contact method for alternative formats differ from other inquiries?",
+  "reference": "You can call the Sure Start Maternity Grant helpline to ask for alternative formats, such as braille, large print or audio CD.",
+  "closed_book": "The contact method for alternative formats typically differs from other inquiries in that it often requires specialized processes or departments to handle requests. For example, a library might have a specific department or person responsible for converting materials into accessible formats like Braille, large print, or audio books. These requests may need to be submitted through a dedicated form or by contacting a specific email address or phone number rather than the general inquiry line. Additionally, there could be longer processing times and more detailed information required in the request.",
+  "matches": false,
+  "reason": "The reference specifically mentions calling a 'Sure Start Maternity Grant helpline' for alternative formats such as braille, large print or audio CD. The candidate, on the other hand, discusses general processes for requesting accessible formats through specialized departments and forms, without mentioning the Sure Start Maternity Grant helpline or specific formats."
+ },
+ {
+  "id": "9324067db7f4445dadafdbeccb069fbd",
+  "question": "Where can teachers be employed without QTS in the English state school sector?",
+  "reference": "academy schools and free schools",
+  "closed_book": "Teachers can be employed without QTS (Qualified Teacher Status) in certain circumstances or roles within the English state school sector. For example, they might work as supply teachers, teaching assistants, or in roles such as teaching associates or learning mentors. Additionally, some schools may employ teachers from overseas who are not required to have QTS if they can demonstrate equivalent qualifications and experience.",
+  "matches": false,
+  "reason": "The reference mentions 'academy schools' and 'free schools', which are types of non-fee-paying independent schools in England. The candidate text discusses the employment conditions for teachers within the English state school sector, focusing on the lack of requirement for QTS in certain roles or circumstances. While both texts relate to education in England, they do not convey the same factual content."
+ },
+ {
+  "id": "83b8e758cd714895b9b2552ffeafa7b3",
+  "question": "What must be included in the consultation process for the Community Infrastructure Levy?",
+  "reference": "Working with neighbourhood forums, theme specific groups, local businesses, and ward councillors.",
+  "closed_book": "The consultation process for the Community Infrastructure Levy (CIL) typically requires the local planning authority to engage with relevant stakeholders, including landowners, developers, and community groups. Key elements that must be included are: identification of the area affected by the CIL; details on how the levy will be calculated and applied; information on proposed infrastructure projects funded by the levy; opportunities for public comment and feedback; and a timeline for the consultation period.",
+  "matches": false,
+  "reason": "The reference focuses on engaging with neighbourhood forums, theme specific groups, local businesses, and ward councillors, while the candidate discusses the consultation process for the Community Infrastructure Levy (CIL) involving landowners, developers, and community groups. The contexts and stakeholders are different."
+ },
+ {
+  "id": "699fcdeb027a47438cf683b63e4c5499",
+  "question": "What happens if you miss an appointment without a good reason?",
+  "reference": "Your Universal Credit payment will be reduced.",
+  "closed_book": "Missing an appointment without a good reason can have various consequences depending on the context. You might receive a reminder or warning from the service provider, face additional charges for rescheduling, or experience inconvenience in future scheduling due to your unavailability. In some professional settings, repeated no-shows could impact your standing with the organization.",
+  "matches": false,
+  "reason": "The reference statement discusses a reduction in Universal Credit payment, while the candidate answer talks about potential consequences of missing an appointment. The topics are different and do not convey the same factual content."
+ },
+ {
+  "id": "c57aac5bfe2d4b1aa6c9790522dd1f3e",
+  "question": "If a Swiss citizen with settled status has been away from the UK for more than 4 years, what additional requirement must they meet to apply for British citizenship?",
+  "reference": "They need to apply for a Returning Resident visa.",
+  "closed_book": "If a Swiss citizen with settled status in the UK has been away for more than 4 years, they must demonstrate that they have maintained their residence rights and can prove ties to the UK. This typically involves showing evidence of continued employment, property ownership, or other significant connections to the UK during their absence.",
+  "matches": false,
+  "reason": "The reference statement is simpler and directly states that they need to apply for a Returning Resident visa. The candidate answer provides more detailed information about the conditions under which a Swiss citizen might need to demonstrate their ties to the UK after being away for more than 4 years. While both mention the need for some form of application or demonstration, the substance differs in terms of detail and specificity."
+ },
+ {
+  "id": "4be1fbb4780247b7b2b94c6693c3c5bb",
+  "question": "What should a tax agent do if they cannot access the Charities for Agents online service?",
+  "reference": "Contact online services support for more help.",
+  "closed_book": "If a tax agent encounters issues accessing the Charities for Agents online service, they should first check their internet connection and ensure they are using a supported browser. Next, they can try clearing their browser cache or logging out and back into the system. If the problem persists, the agent should contact the support team for the service directly, providing details about the issue and any error messages received. Additionally, checking if there are any known maintenance periods or system updates that might be affecting access could also help resolve the issue.",
+  "matches": false,
+  "reason": "The reference simply suggests contacting online services support, while the candidate provides a detailed step-by-step guide on troubleshooting before reaching out for support. The core action (contacting support) is similar but the substance of the advice differs significantly."
+ },
+ {
+  "id": "52b6ff3d65244d2eaa8886eacf7d5b9b",
+  "question": "What are the possible outcomes of a court hearing and how might they differ in terms of immediate action required by the tenant?",
+  "reference": "The judge may adjourn the case, dismiss your claim, make an outright possession order, or make a suspended possession order. An outright possession order requires immediate action from the tenant to vacate the property, while a suspended possession order does not.",
+  "closed_book": "The possible outcomes of a court hearing related to a tenant can vary widely depending on the specific circumstances. Here are some common scenarios and the potential immediate actions required by the tenant after each outcome:",
+  "matches": false,
+  "reason": "While both statements discuss possible outcomes related to a tenant's case in court, the candidate answer does not specifically mention the judge's role or the exact types of orders (outright possession order and suspended possession order) as detailed in the reference. Instead, it provides a more general description of potential scenarios without specifying the immediate actions required by the tenant."
+ },
+ {
+  "id": "cc60f0ad440a42589fcfae3979909c81",
+  "question": "What should a non-profit organization do if it is not eligible for charitable rate relief but believes it might still receive some form of assistance?",
+  "reference": "Contact your local council to find out.",
+  "closed_book": "A non-profit organization that is not eligible for charitable rate relief but hopes to receive other forms of assistance should consider the following steps: \n\n1. Review its eligibility criteria for other types of grants or subsidies, such as those provided by government agencies, foundations, or private donors.\n2. Network with other organizations and industry groups to explore potential partnerships or collaborations that could provide mutual benefits.\n3. Seek professional advice from consultants or advisors who specialize in nonprofit management and funding.\n4. Explore alternative revenue streams, such as fundraising events, merchandise sales, or providing services on a fee-for-service basis.\n5. Apply for loans or lines of credit if the organization has a strong financial history and can demonstrate its ability to repay.",
+  "matches": false,
+  "reason": "The reference simply suggests contacting the local council, while the candidate provides detailed steps for non-profit organizations seeking alternative forms of assistance. The substance and advice given are different."
+ },
+ {
+  "id": "32d96433a9194d21b51e9da5c2f22f35",
+  "question": "Can you apply for an HPI visa if you have already been given a Graduate visa?",
+  "reference": "No",
+  "closed_book": "It's possible that applying for an HPI visa after having a Graduate visa may be complex or even prohibited, depending on the specific circumstances and policies of the country in question. Generally, each type of visa is designed to serve a particular purpose, and switching from one to another might require ending your current status legally before applying for a new one. It's advisable to consult with the relevant immigration authorities or seek legal advice to understand the exact rules and procedures applicable to your situation.",
+  "matches": false,
+  "reason": "The reference statement 'No' does not convey any factual content about visa applications or policies. The candidate answer provides information on the complexity of applying for an HPI visa after a Graduate visa and advises consulting relevant authorities, which is different in substance from a simple 'No'."
+ },
+ {
+  "id": "fe2282fcdb504f74bf00f880ddabec0f",
+  "question": "Can you claim a refund if you have not overpaid but still want to check your tax account?",
+  "reference": "No, the passage only mentions claiming for a refund if you think you've made an overpayment.",
+  "closed_book": "No, typically you cannot claim a refund if you have not overpaid taxes. However, you can still check your tax account for accuracy and ensure that the correct amount has been paid or credited. It's advisable to review any discrepancies or contact the relevant tax authority for clarification.",
+  "matches": false,
+  "reason": "The reference statement is more specific about refund claims being related only to overpayments, while the candidate answer discusses a broader context of tax payments and credits, and does not strictly match the given reference."
+ },
+ {
+  "id": "dbfaa6aa76a84690aecae6965cea5abf",
+  "question": "What should the local planning authority do before amending the description of development?",
+  "reference": "discuss any revised wording with the applicant or their agent",
+  "closed_book": "Before amending the description of development, the local planning authority should conduct a thorough review of the current development plans and zoning regulations. They should also assess any potential impacts on the surrounding area, including environmental, social, and economic factors. Additionally, public consultation with affected parties and stakeholders is crucial to gather input and ensure transparency. Finally, they should prepare an impact assessment and seek approval from higher authorities if required.",
+  "matches": false,
+  "reason": "The reference text focuses on the process of discussing revised wording with the applicant or their agent. In contrast, the candidate answer describes a more comprehensive and detailed process involving local planning authority actions such as reviewing development plans, assessing impacts, public consultation, and preparing an impact assessment."
+ },
+ {
+  "id": "9793ded1aa51473fa3da822690c7fdf3",
+  "question": "How can someone who is deaf or cannot use a phone get help from emergency services?",
+  "reference": "Register with the emergencySMS by texting REGISTER to 999.",
+  "closed_book": "Someone who is deaf or hard of hearing and unable to use a standard telephone can still contact emergency services through several methods. They can use text telephones (TTY) where the caller types their message, which is then relayed to the emergency operator who speaks it out loud. Alternatively, they can call 911 using a TTY device or software that allows them to type messages on a computer or mobile device and have those messages sent directly to the emergency dispatcher. In some areas, there are also specialized services like the Telecommunications Relay Service (TRS) where a relay operator helps facilitate communication between the caller and the emergency responder. Additionally, many regions offer direct access numbers for people with hearing impairments that connect them directly to emergency dispatchers who are trained to handle text-based communications.",
+  "matches": false,
+  "reason": "The reference provides a specific instruction on how to register with emergencySMS by texting 'REGISTER' to 999. The candidate answer discusses various methods for people who are deaf or hard of hearing to contact emergency services but does not mention the emergencySMS service or the registration process."
+ },
+ {
+  "id": "8847f6101c8041a5958fa0be6acac7f5",
+  "question": "How long does it usually take to get a decision for fast track endorsement compared to peer reviewed application?",
+  "reference": "2 weeks vs 5 weeks",
+  "closed_book": "Fast track endorsement typically takes several weeks to a few months, whereas peer-reviewed applications can take several months to over a year or more. The exact duration can vary depending on the specific process and workload of the reviewing body.",
+  "matches": false,
+  "reason": "The reference specifically mentions 2 weeks vs 5 weeks, which are concrete time frames. The candidate answer does not mention these exact time frames and instead provides a broader range of several weeks to a few months for fast track endorsement, and several months to over a year or more for peer-reviewed applications."
+ },
+ {
+  "id": "66c4198f85f940c4a9e61897e7b1a837",
+  "question": "Compare the conditions for making exempt supplies under points b and c.",
+  "reference": "b) you make exempt supplies, but intend or expect the input tax incurred on your capital expenditure on the property that is attributed to those exempt supplies, including any subsequent adjustments to initial input tax deduction, will not exceed \u00a35,000\nc. you expect to be entitled to full credit for all the input tax incurred on your capital expenditure on the property as a result of the application of section 33(2) of the Value Added Tax Act 1994.",
+  "closed_book": "Based on my knowledge of GST (Goods and Services Tax) in Canada, which uses similar concepts to differentiate between taxable and exempt supplies, I will compare the conditions for making exempt supplies under points b and c. However, please note that this is a hypothetical comparison as specific details may vary by jurisdiction or tax regime.\n\n{\"answer\":\"{\n  \"b\": \"Supplies made in the course of a business where the supplier does not charge any consideration from the recipient, such as donations to registered charities or non-profit organizations. The supply must be gratuitous and intended for charitable purposes.\",\n  \"c\": \"Supplies that are provided free of charge by a government entity, such as public services like education or healthcare. These supplies are considered part of the government's duty to provide essential services to its citizens.\"}\n\"}",
+  "matches": false,
+  "reason": "The candidate answer does not convey the same factual content as the reference. The reference discusses conditions for making exempt supplies related to input tax deductions and credit entitlements under specific VAT regulations in a UK context. In contrast, the candidate answer provides hypothetical examples of exempt supplies under GST in Canada, which are unrelated to the input tax deduction rules mentioned in the reference."
+ },
+ {
+  "id": "4d3a7e8c3baf42d7a70ca6c3c0f9ec98",
+  "question": "What should you do if you cannot resolve your complaint with the VAT officer?",
+  "reference": "follow HMRC\u2019s complaints procedure",
+  "closed_book": "If you cannot resolve your complaint with the VAT officer, you can escalate the matter to a higher authority within the tax department or seek assistance from an external body. Here are some steps you might consider:",
+  "matches": false,
+  "reason": "The reference focuses solely on following HMRC\u2019s complaints procedure, while the candidate provides additional information about escalating to a higher authority or seeking external assistance. The core substance does not match."
+ },
+ {
+  "id": "2d6e99c1588542a4ab5702078d63fbb3",
+  "question": "What can you use to keep your records?",
+  "reference": "on paper, digitally or as part of a software program (like book-keeping software)",
+  "closed_book": "A filing cabinet or a digital storage system such as cloud services can be used to keep your records.",
+  "matches": false,
+  "reason": "The reference mentions paper, digital, and software programs specifically for book-keeping. The candidate includes filing cabinets and cloud services but does not mention the specific context of record-keeping or book-keeping."
+ },
+ {
+  "id": "f1e6ebc98618456c8c8a244b27326879",
+  "question": "What is the telephone number for contacting the Environment Agency outside of the UK?",
+  "reference": "+44 (0) 114 282 5312",
+  "closed_book": "I'm unable to provide a specific telephone number for contacting the Environment Agency outside of the UK, as this information can vary by country. For international inquiries, it's best to search local contact details or visit the relevant national environmental agency website.",
+  "matches": false,
+  "reason": "The reference provides a specific telephone number (+44 (0) 114 282 5312), while the candidate does not provide any specific number and instead gives general advice on how to find contact details for international inquiries."
+ },
+ {
+  "id": "8646233abf4e4ed4b68759c835802b49",
+  "question": "For which countries must you check the specific insurance requirements before driving, and what is a potential consequence of not doing so?",
+  "reference": "You may need to carry a green card to prove you have the minimum insurance cover required by the country you\u2019re driving in. This includes: Israel, Morocco, Tunisia.",
+  "closed_book": "For many countries, it's crucial to check specific insurance requirements before driving. This includes countries like the United States, Canada, Australia, New Zealand, and various European nations such as Germany, France, and Italy. Not adhering to these requirements can result in fines, impoundment of your vehicle, or even legal action against you upon return to your home country.",
+  "matches": false,
+  "reason": "The reference specifically mentions the need for a green card to prove minimum insurance cover in certain countries (Israel, Morocco, Tunisia), while the candidate discusses general insurance requirements across multiple countries without mentioning a green card or these specific nations."
+ },
+ {
+  "id": "5588dea69545450e9ab2418b5e361643",
+  "question": "How does the additional rate for electric or zero-emission vehicles with a list price over \u00a350,000 differ from the standard rate in terms of application period?",
+  "reference": "The additional rate applies for 5 years, starting from the second year of vehicle tax.",
+  "closed_book": "The additional rate for electric or zero-emission vehicles with a list price over \u00a350,000 is applied for the first 4 years of ownership. After this period, it reverts to the standard rate.",
+  "matches": false,
+  "reason": "The reference states that an additional rate applies for 5 years starting from the second year, while the candidate describes a different condition and duration related to electric or zero-emission vehicles with a specific price threshold."
+ },
+ {
+  "id": "96f8a1f1164147b9b0852c1046e2754b",
+  "question": "How long does it take for a new driving licence to arrive after applying by post?",
+  "reference": "Your driving licence will usually arrive within 3 weeks.",
+  "closed_book": "The time it takes for a new driving licence to arrive after applying by post can vary depending on the country and specific circumstances. In many countries, including the UK, it typically takes around 3-5 working days for a replacement or new driving licence to be processed and sent out. However, during busy periods or if additional verification is required, this time frame may extend to up to 10 working days.",
+  "matches": false,
+  "reason": "The reference statement indicates that a driving licence will usually arrive within 3 weeks, while the candidate answer provides a range of 3-5 working days for processing and sending out a new or replacement driving licence. The timeframes do not match, and the candidate answer includes additional details about variability based on country and circumstances."
+ },
+ {
+  "id": "9d85fd99e7024049be08e4f26852ae37",
+  "question": "What happens if you stay outside the UK for more than 2 years compared to staying within 2 years?",
+  "reference": "You can lose your indefinite leave to remain if you stay outside the UK for more than 2 years at a time.",
+  "closed_book": "If you stay outside the UK for more than 2 years, it can affect your right of residence and immigration status. After being out of the country for over 2 years, you may need to apply for readmission rights or a new visa upon returning to the UK. Staying within 2 years typically does not result in such restrictions on re-entry.",
+  "matches": false,
+  "reason": "While both statements address staying outside the UK for more than 2 years and its impact on immigration status, the reference specifically mentions losing indefinite leave to remain, whereas the candidate suggests a broader effect on right of residence and immigration status. The candidate also includes additional information about readmission rights and new visa applications upon return."
+ },
+ {
+  "id": "74c413bba7734d9ead9d5cf754962c8d",
+  "question": "How can you check if your degree is officially recognised in England?",
+  "reference": "the higher education institute can award degrees - you can check on the Office for Students (OfS) Register",
+  "closed_book": "To check if your degree is officially recognized in England, you can visit the Higher Education Statistics Agency (HESA) website. HESA maintains a register of higher education institutions and their qualifications. You can search for your institution and qualification on their website to verify its recognition. Additionally, contacting the institution where you earned your degree or the UK National Recognition Information Centre (UK NARIC) directly can provide official confirmation.",
+  "matches": false,
+  "reason": "While both statements refer to verifying the recognition of a higher education qualification, the REFERENCE specifically mentions checking with the Office for Students (OfS) Register. The CANDIDATE suggests using the Higher Education Statistics Agency (HESA) website and provides additional methods such as contacting the institution or UK NARIC directly, which are not mentioned in the REFERENCE."
+ },
+ {
+  "id": "ef5f31e751204657a225f39d943c83b1",
+  "question": "What happens if you apply for Tax-Free Childcare after using up your 90-day window to inform your employer?",
+  "reference": "You cannot rejoin their voucher scheme or their directly contracted childcare scheme.",
+  "closed_book": "If you apply for Tax-Free Childcare after using up the 90-day window to inform your employer, you may not be eligible for support. The 90-day period is a critical time frame during which employers can make necessary arrangements and adjustments. After this period, the opportunity to claim Tax-Free Childcare benefits might no longer be available, depending on the policies of the specific childcare provider or scheme in place.",
+  "matches": false,
+  "reason": "The reference statement is about not being able to rejoin a voucher scheme or directly contracted childcare scheme, while the candidate answer discusses eligibility for Tax-Free Childcare after the 90-day window. The core factual content does not match."
+ },
+ {
+  "id": "68ad8caf34b343afaded5febe1cb7a49",
+  "question": "Can I use this service to file a tax return for a partnership?",
+  "reference": "no",
+  "closed_book": "It depends on the specific service you are referring to. Many online tax preparation services allow individuals to file tax returns for partnerships, but it's important to check if the service supports partnership tax returns specifically. Some services may require additional information or have limitations. Consider reviewing the service\u2019s features or contacting their support team for confirmation.",
+  "matches": false,
+  "reason": "The reference states 'no', indicating a clear and direct negative response without any conditions or specifics. The candidate answer provides detailed information about online tax preparation services and their potential limitations, which does not match the simple 'no' in the reference."
+ },
+ {
+  "id": "e1685b6d4bb941f69f7501136b7d4257",
+  "question": "Under what circumstances can a deactivation certificate issued before the new regulations take effect still be valid?",
+  "reference": "When the owner of a previously deactivated firearm seeks to transfer it.",
+  "closed_book": "A deactivation certificate issued before the new regulations take effect can still be valid if it meets certain conditions. Specifically, it would need to be issued under the old regulations and not have any clauses or stipulations that conflict with the new regulations. Additionally, if the new regulations explicitly state that certificates issued prior to their implementation remain valid for a specific period or until certain activities are completed, then those certificates could still be considered valid during that time frame.",
+  "matches": false,
+  "reason": "The reference focuses on the scenario where an owner of a previously deactivated firearm seeks to transfer it. The candidate answer discusses deactivation certificates and their validity under new regulations, which is not directly related to the transfer of deactivated firearms."
+ },
+ {
+  "id": "2e3b2784211443ba82b823d4fabe15db",
+  "question": "What should you do if your vehicle needs taxing in the next 4 weeks and you want to change its address on the V5C?",
+  "reference": "You need to tax your vehicle online using your current V5C before changing your address.",
+  "closed_book": "You should visit the Vehicle and Operator Services Agency (VOSA) website or contact them directly to check for any specific requirements. Generally, you can apply to change the address on your V5C document through their online service or by post. Ensure you have all necessary documents ready, such as proof of the new address and evidence of ownership. After updating the address, you will need to arrange a new tax disc if your vehicle is due for taxation within the next 4 weeks.",
+  "matches": false,
+  "reason": "The reference only mentions taxing the vehicle online using the current V5C before changing the address. The candidate provides more detailed steps and additional information about checking with VOSA, applying to change the address, and arranging a new tax disc if needed."
+ },
+ {
+  "id": "cae3b0af6c8b4365923b008d623b8f7e",
+  "question": "What could happen if a PSC fails to provide their identity verification details within the 14-day period?",
+  "reference": "You may be committing an offence and have to pay a financial penalty or fine. We will also display a note against your name on the public register.",
+  "closed_book": "If a PSC (Person with Significant Control) fails to provide their identity verification details within the 14-day period, the company may face legal consequences. The company could be considered non-compliant with the Companies Act 2006 or equivalent legislation in other jurisdictions. This might result in fines for the company and its directors, as well as potential restrictions on the PSC's ability to influence the company's operations until compliance is achieved.",
+  "matches": false,
+  "reason": "The reference text discusses potential financial penalties for an individual, while the candidate text talks about legal consequences and non-compliance for a company and its PSC. The contexts and subjects are different."
+ },
+ {
+  "id": "2f5ddf88ae254308805f5892b4333bdc",
+  "question": "What must be sent to the German municipal or other competent authority at least 15 days before departure, along with the pupils\u2019 authorisations and parents\u2019 identity documents?",
+  "reference": "The form",
+  "closed_book": "A school trip notification",
+  "matches": false,
+  "reason": "The reference mentions 'the form,' which is a general term that could refer to various types of documents. In contrast, the candidate specifies 'a school trip notification,' which is a more specific type of document. Therefore, the substance does not match."
+ },
+ {
+  "id": "28ea8887ca9445ada15f038efb46d19f",
+  "question": "Under what conditions can a 'self-build' house or flat be exempt from the Community Infrastructure Levy, and how must this exemption be applied for?",
+  "reference": "'self-build' houses and flats, which are built by \u2018self-builders\u2019 where an exemption has been applied for and obtained prior to commencement of the development;",
+  "closed_book": "A self-build house or flat may be exempt from the Community Infrastructure Levy (CIL) if it meets certain conditions. Typically, such exemptions are granted to ensure that individuals who build their own homes do not face additional financial burdens. However, specific criteria can vary depending on local authorities and the nature of the project. Generally, an application for exemption must be made at the planning stage or before submitting a planning application. The applicant should provide evidence demonstrating that they are building the property as their primary residence and intend to occupy it upon completion. Additionally, some local authorities may require proof of self-build status through documentation such as contracts with builders or architects. It is advisable for applicants to consult with their local authority's planning department for detailed guidance on applying for CIL exemptions in their area.",
+  "matches": false,
+  "reason": "The reference focuses solely on 'self-build' houses and flats where an exemption has been applied for and obtained prior to commencement of the development. The candidate provides additional context about the Community Infrastructure Levy (CIL), specific conditions for exemptions, and details on the application process, which goes beyond the scope of the reference."
+ },
+ {
+  "id": "1ed8b0c160ab4d628474856028703944",
+  "question": "What is the total cost for a 24-hour stay in The Hague, Netherlands including room rate?",
+  "reference": "117.50 euros",
+  "closed_book": "The cost for a 24-hour stay in The Hague, Netherlands, including a room rate can vary significantly depending on the type of accommodation and its location. For instance, a budget hostel might charge around \u20ac15-30 per night, while a luxury hotel could be over \u20ac300. Without specific details, it's difficult to provide an exact figure. A mid-range hotel or guesthouse might cost approximately \u20ac70-120 for one night.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value of 117.50 euros, while the candidate offers a range and context about hotel costs in The Hague without specifying an exact figure."
+ },
+ {
+  "id": "28e0aed2a2c440158f57ce51261a09b3",
+  "question": "What documents must be submitted before a compliance statement can be made?",
+  "reference": "an up to date copy of the memorandum and articles of association, the information memorandum, prospectus or other documents used to explain the fundraising proposal to your investors, details of any other agreements between your company and the shareholder, a list of the amounts, dates and venture capital schemes under which you\u2019ve previously received investment, any other documents to show you meet the qualifying conditions",
+  "closed_book": "The specific documents that must be submitted before a compliance statement can be made vary depending on the industry and regulatory requirements. However, common documents typically include audit reports, risk assessments, internal controls documentation, policy manuals, training records, and any relevant certifications or licenses. For example, in healthcare, a HIPAA compliance statement might require a Privacy and Security Risk Assessment Report, while in software development, it could involve code reviews and security testing reports.",
+  "matches": false,
+  "reason": "The reference focuses on documents related to fundraising and investor information, whereas the candidate discusses general compliance documents required for making a compliance statement in various industries. The content does not match in substance."
+ },
+ {
+  "id": "9f3022c8bf614d36bfde635d0cb012fe",
+  "question": "What is the standard amount for a fractured jaw bone with multiple fractures (e.g., Le Fort fractures types 2 and 3) under continuing significant disability?",
+  "reference": "\u00a311,000",
+  "closed_book": "The specific monetary value for a fractured jawbone with multiple fractures, such as Le Fort fractures types 2 and 3, under continuing significant disability can vary widely depending on the jurisdiction, the severity of the injury, the extent of ongoing treatment, and other factors. In many legal systems, this type of injury could be considered a severe case, potentially leading to compensation in the range of tens of thousands to hundreds of thousands of dollars. However, without specific legal or medical details, it's impossible to provide an exact figure.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value (\u00a311,000), while the candidate answer discusses a range of potential compensation values and does not specify any single amount."
+ },
+ {
+  "id": "6bd49d3539644f8d984bc9e5222b1a38",
+  "question": "What type of visa holders are eligible to apply for protection if they are victims of modern slavery or human trafficking?",
+  "reference": "Overseas Domestic Worker visa, on a Domestic Worker in a Private Household visa, or as a private servant of a diplomat",
+  "closed_book": "Visa holders who are victims of modern slavery or human trafficking may be eligible to apply for humanitarian protection, such as a victim care visa or special leave to remain, depending on the country's immigration policies. In many countries, including the United States and the United Kingdom, individuals in these situations can seek assistance through specialized programs designed to protect them from deportation and provide support services.",
+  "matches": false,
+  "reason": "The reference text discusses specific types of visas for domestic workers, while the candidate text talks about visa holders who are victims of modern slavery or human trafficking. The topics do not match in substance."
+ },
+ {
+  "id": "ffb293e947bc42458f8b69622988b3c6",
+  "question": "What must you have before the loan can be paid in full?",
+  "reference": "a National Insurance number",
+  "closed_book": "You must have sufficient funds or completed payments to cover the entire remaining balance of the loan before it can be paid in full.",
+  "matches": false,
+  "reason": "The reference refers to a National Insurance number, which is a unique identifier used by the UK government for tax and social security purposes. The candidate statement discusses loan payments and funds required to cover a remaining balance, which is unrelated to National Insurance numbers."
+ },
+ {
+  "id": "88fbb5681cd64bf2901271a0458a4b25",
+  "question": "What is the difference between a UK residence card or BRC and a biometric residence permit (BRP)?",
+  "reference": "A UK residence card or BRC is different from a \u2018biometric residence permit\u2019 (BRP).",
+  "closed_book": "The UK residence card, also known as Biometric Residence Card (BRC), and the biometric residence permit (BRP) are both documents issued by the UK government to individuals who have been granted permission to live in the UK. However, there are some key differences between them:",
+  "matches": false,
+  "reason": "The reference statement clearly states that a UK residence card or BRC is different from a biometric residence permit (BRP). However, the candidate answer incorrectly suggests that there are some key differences between them, which implies they might be similar in nature. This contradicts the information provided in the reference."
+ },
+ {
+  "id": "008ce2362c9f4489ad3bda7433ffbec2",
+  "question": "Who can be granted 'leave in line'?",
+  "reference": "a child who is under the protection of someone granted \u2018Section 67 leave\u2019, or a child of someone granted \u2018Calais leave\u2019 to remain",
+  "closed_book": "Leave in line",
+  "matches": false,
+  "reason": "The reference specifically mentions 'Section 67 leave' and 'Calais leave', which are distinct from the general term 'Leave in line' used in the candidate answer. The candidate answer does not convey the same specific factual content as the reference."
+ },
+ {
+  "id": "368a12b1d53447dbafdda342914d266f",
+  "question": "What should you do if a message from a verified social media account asks for personal information, compared to an unverified one?",
+  "reference": "If the account is verified, you should not ignore it and need to contact HMRC directly.",
+  "closed_book": "If a message from a verified social media account requests personal information, approach it with caution. Verify the request by contacting the official customer service of the platform or visiting their website directly (not through any links in the message). Compare the requested information to what they typically ask for and check if the language and format seem legitimate. If unsure, do not provide any personal details. For unverified accounts, avoid sharing any personal information altogether as these requests are more likely to be fraudulent. Always prioritize privacy and security.",
+  "matches": false,
+  "reason": "The reference statement focuses on the importance of not ignoring a verified account and contacting HMRC directly, while the candidate answer provides detailed guidance on how to handle requests from social media accounts, including steps for verification and what to do with unverified accounts. The core message about verifying before responding is present in both but the context and specific actions differ significantly."
+ },
+ {
+  "id": "2cf8ed037d0f4e85a415eb07b41371b5",
+  "question": "What should a pregnant employee do if their employer disagrees about the risk and refuses to take action?",
+  "reference": "Talk to their health and safety or trade union representative, or contact the Health and Safety Executive.",
+  "closed_book": "A pregnant employee facing such a situation should consider several steps. First, they should document all communications with their employer regarding safety concerns and any actions taken or refused by the employer. Next, they can seek advice from a healthcare provider who understands workplace safety for pregnant employees. Additionally, contacting a labor union representative (if applicable) or consulting with an employment lawyer specializing in pregnancy discrimination could be beneficial. If necessary, filing a complaint with the relevant government agency, such as the Equal Employment Opportunity Commission (EEOC) in the United States, might also be an option.",
+  "matches": false,
+  "reason": "While both the reference and candidate answers discuss seeking advice or assistance related to workplace safety concerns for pregnant employees, the candidate answer provides more detailed steps and additional resources beyond what is mentioned in the reference. The reference specifically mentions contacting a health and safety representative or the Health and Safety Executive, whereas the candidate includes documentation of communications, consulting healthcare providers, labor unions, employment lawyers, and government agencies like the EEOC."
+ },
+ {
+  "id": "37f921998a934972a8412b69a6ded4f3",
+  "question": "Where can I find live traffic information for major roads in England?",
+  "reference": "National Highways website",
+  "closed_book": "You can find live traffic information for major roads in England through several online platforms. Some specific options include the official government site, gov.uk, which provides real-time traffic updates. Additionally, websites like Google Maps and TomTom offer detailed traffic conditions across the country. For more specialized services, consider using apps such as Highways England's Traffic Alerts or other dedicated traffic apps that provide up-to-date information on road closures, accidents, and congestion.",
+  "matches": false,
+  "reason": "The reference specifically mentions the National Highways website, which is not directly referenced in the candidate answer. The candidate answer provides a broader overview of multiple platforms that offer traffic information, without singling out the National Highways website."
+ },
+ {
+  "id": "30463b1741d448669b0af0d504af2258",
+  "question": "How can you sign in to the service?",
+  "reference": "with the security code in your letter from DWP or DfC, or with GOV.UK One Login",
+  "closed_book": "To sign in to a service, typically you would visit the login page of the service website or open the app. Enter your username or email address and password when prompted. If it's a new device or account, you might need to verify your identity through additional steps like receiving a code via SMS or using biometric authentication. Some services also offer alternative sign-in methods such as social media accounts or security keys.",
+  "matches": false,
+  "reason": "The reference provides specific instructions on how to access a service with a security code from DWP or DfC, or GOV.UK One Login. The candidate text describes general steps for signing into a service and does not mention the security codes or specific login methods mentioned in the reference."
+ },
+ {
+  "id": "641f519e0aa24f38a0a9792331ea7e81",
+  "question": "When must feedback on the members lists be submitted?",
+  "reference": "Friday 12 August 2022",
+  "closed_book": "The specific deadline for submitting feedback on member lists varies depending on the organization or context. Typically, it should be submitted by the end of the evaluation period, which could be quarterly, annually, or based on other cycles defined by the relevant body. For precise dates, check the guidelines provided by your organization or the responsible authority.",
+  "matches": false,
+  "reason": "The reference provides a specific date (Friday 12 August 2022), while the candidate does not mention any particular date and instead discusses general guidelines for submitting feedback."
+ },
+ {
+  "id": "178e443e6dd946a2b514fa4e0f422d5f",
+  "question": "Who can get more than the Local Housing Allowance shared accommodation rate?",
+  "reference": "are a care leaver and under 25, have previously lived in a hostel for homeless people for at least 3 months in total, are an ex-offender managed under an active Multi-Agency Public Protection Agreement (MAPPA), are getting the daily liv",
+  "closed_book": "Students in university halls of residence or similar arrangements, individuals with a disability that requires additional space, and those living in areas with particularly high housing costs may be able to get more than the Local Housing Allowance shared accommodation rate.",
+  "matches": false,
+  "reason": "The reference describes specific conditions for care leavers and ex-offenders, while the candidate mentions different groups such as university students, individuals with disabilities, and those in high-cost areas. The contexts and criteria do not match."
+ },
+ {
+  "id": "a774b2f2e09948d5ae2c24722bcf5c45",
+  "question": "What will happen if you do not contact HMRC within 30 days after receiving the letter?",
+  "reference": "HMRC will not process your return, issue a repayment of income tax to you, and send you a notice to file a Self Assessment tax return in future.",
+  "closed_book": "If you do not contact HMRC (Her Majesty's Revenue and Customs) within 30 days after receiving a letter, they may assume that you have no objection to the matter raised in the letter. This could lead to them proceeding with any action outlined in the letter, such as issuing a tax demand or taking other enforcement actions. It is advisable to contact HMRC promptly to understand the specific implications of not responding within the given timeframe.",
+  "matches": false,
+  "reason": "The reference statement focuses on HMRC's actions regarding a Self Assessment tax return and mentions that HMRC will not process your return, issue a repayment of income tax, and send you a notice to file in the future. The candidate answer discusses the potential consequences of not responding within 30 days of receiving a letter from HMRC, without directly addressing the specific outcomes mentioned in the reference."
+ },
+ {
+  "id": "bf92398d8b15425dab41f6f37cec368c",
+  "question": "What are the differences in responsibilities for running a business from home versus renting a property?",
+  "reference": "You may have to pay business rates if you rent or buy a property, and there are specific things you need to check regarding your responsibilities.",
+  "closed_book": "Running a business from home versus renting a property involves different sets of responsibilities. For a home-based business, you might have more flexibility but also face unique challenges. Here are some key differences in responsibilities:",
+  "matches": false,
+  "reason": "The reference discusses the obligation to pay business rates for renting or buying a property and mentions checking specific responsibilities. The candidate, however, compares running a business from home versus renting a property and does not directly address paying business rates or checking responsibilities related to them."
+ },
+ {
+  "id": "9f052f800d8e4ef5ad5c0d6cf76e8613",
+  "question": "How can one obtain the most recent data for a specific year without downloading all yearly files?",
+  "reference": "Download the monthly file for the latest month of that year.",
+  "closed_book": "To obtain the most recent data for a specific year without downloading all yearly files, you could use web scraping techniques to extract the relevant data directly from the source website. Alternatively, if the data is available via an API, you can make a request specifically for the latest data related to that year. Another approach might be to contact the data provider and ask them to provide only the most recent data for your specific year of interest.",
+  "matches": false,
+  "reason": "The reference specifically instructs to download the monthly file for the latest month of that year. The candidate answer discusses alternative methods such as web scraping, using an API, or contacting the data provider, which do not necessarily align with the direct instruction given in the reference."
+ },
+ {
+  "id": "db44783149b846d7a248a5ede32d3287",
+  "question": "What document can a dual citizen with British or Irish citizenship use to prove their UK citizenship when traveling?",
+  "reference": "a valid British passport, a valid Irish passport, another valid passport containing a certificate of entitlement",
+  "closed_book": "A dual citizen with British or Irish citizenship can use a British passport to prove their UK citizenship when traveling.",
+  "matches": false,
+  "reason": "The reference mentions the requirement for multiple valid passports including British and Irish ones, along with a certificate of entitlement. The candidate only discusses using a British passport for travel by a dual citizen."
+ },
+ {
+  "id": "80620c7cebf649ebbb9064dbe3b4a4b4",
+  "question": "What should you check if you're a dual resident and want to claim double-taxation relief?",
+  "reference": "You need to check the other country\u2019s residence rules and when the tax year starts and ends.",
+  "closed_book": "If you are a dual resident and wish to claim double-taxation relief, you should check the tax treaties between the countries in which you reside. Additionally, ensure that your income sources comply with the criteria for claiming relief under these treaties. You should also verify the specific requirements and procedures outlined by each country's tax authorities, as well as consult any relevant domestic laws or regulations regarding dual residency and tax obligations.",
+  "matches": false,
+  "reason": "While both statements address checking rules related to residence and taxation, the reference focuses specifically on residence rules and the start/end of the tax year. The candidate answer provides more detailed information about dual residency, tax treaties, income sources, and specific requirements from tax authorities, which goes beyond the scope of the reference."
+ },
+ {
+  "id": "6582c3009408445c920c136b3d32898f",
+  "question": "What specific form is required for members of the Northern Ireland Legislature, and how does it differ from other supplementary pages mentioned?",
+  "reference": "SA102NI: Northern Ireland Legislators",
+  "closed_book": "The specific form required for members of the Northern Ireland Legislature (MLAs) is the MLAs' Declaration Form. This form is distinct from other supplementary pages in that it contains a formal declaration by the MLA regarding their eligibility and suitability to serve as an elected representative. Unlike other forms or supplementary pages, such as financial disclosure statements or code of conduct declarations, which may be required for transparency and accountability purposes, the MLAs' Declaration Form serves a more ceremonial and legalistic function. It is typically submitted upon taking office and must be renewed periodically.",
+  "matches": false,
+  "reason": "The reference text focuses on SA102NI: Northern Ireland Legislators, which implies information about the legislative body in Northern Ireland. The candidate answer discusses the MLAs' Declaration Form and its specific purpose, which is not directly related to the legislative body itself but rather a form used by members of that body. While both texts are about Northern Ireland legislators, they do not convey the same factual content."
+ },
+ {
+  "id": "7b2571ab533b4f7d9a3c50835b063e23",
+  "question": "How does an alternative payment arrangement differ from a single monthly payment?",
+  "reference": "An APA could mean receiving payments twice a month instead of once a month.",
+  "closed_book": "An alternative payment arrangement typically involves splitting the total amount into multiple smaller payments over time, rather than making one large monthly payment. This can be structured in various ways such as bi-weekly, every two weeks, or through flexible payment plans that adjust based on income changes. In contrast, a single monthly payment requires the full amount to be paid at once each month.",
+  "matches": false,
+  "reason": "The reference specifically mentions receiving payments twice a month instead of once a month in the context of an APA (likely meaning an agreement or arrangement). The candidate answer provides a more general description of alternative payment arrangements without directly mentioning the specific scenario of bi-monthly payments. While both discuss splitting payments over time, the candidate's explanation is broader and does not capture the exact scenario presented in the reference."
+ },
+ {
+  "id": "dc7deab6fe0e4f7a9097d938f7cea893",
+  "question": "What additional items can be included in buildings used for a relevant charitable purpose beyond those listed in 13.8.3?",
+  "reference": "blackboards or whiteboards fixed to or forming part of the wall, gymnasium wall bars, notice and display boards, mirrors and barres (in ballet schools)",
+  "closed_book": "Additional items that can be included in buildings used for a relevant charitable purpose beyond those listed in 13.8.3 may include community spaces such as meeting rooms, libraries, computer labs, recreational areas, and outdoor amenities like playgrounds or gardens. These additions can enhance the functionality and utility of the building to better serve the charity's mission.",
+  "matches": false,
+  "reason": "The reference list specifically mentions blackboards, whiteboards, gymnasium wall bars, notice and display boards, mirrors, and barres in ballet schools. The candidate text discusses additional items that can be included in buildings for a charitable purpose, which does not match the specific content of the reference."
+ },
+ {
+  "id": "5a3c9e968ab64409ba03ffaf5a190810",
+  "question": "What must you have to apply for the priority or super priority service?",
+  "reference": "permission to be in the UK",
+  "closed_book": "To apply for the priority or super priority service, you typically need to demonstrate urgency or a specific reason that necessitates expedited processing. This could include factors such as time-sensitive business needs, critical medical situations, or legal requirements. Additionally, there may be fees associated with these services and sometimes proof of eligibility is required.",
+  "matches": false,
+  "reason": "The reference focuses on the permission to be in the UK, while the candidate discusses the application process for priority or super priority service, which includes reasons for expedited processing and associated fees. The core substance does not match."
+ },
+ {
+  "id": "88519d09808b41ac91ee22b56e200f6c",
+  "question": "If a phone or video call assessment is conducted, how can you ensure the assessor contacts someone else present during the assessment?",
+  "reference": "You can ask the assessor to call them if they\u2019re not with you when the assessment starts.",
+  "closed_book": "To ensure the assessor contacts someone else present during the assessment, you could instruct them to ask for a specific person by name or role. For example, if there are two people in the room, one could be asked to call the other by name ('Please contact John regarding this issue'). Alternatively, you might suggest using a predefined code word that only those present know, which triggers the assessor to speak with another individual in the room. Another method is to have the assessor ask for assistance or information from someone else in the room, such as asking about a specific feature or process they are unfamiliar with. This way, the conversation naturally shifts to involve multiple people.",
+  "matches": false,
+  "reason": "The reference suggests that you can ask the assessor to call someone if they're not present, while the candidate answer provides more detailed methods for ensuring the assessor contacts someone else during the assessment. The core idea of involving another person is similar, but the specific instructions and additional details in the candidate answer make them different in substance."
+ },
+ {
+  "id": "708a098b3d0344668d16d35def8f0fa0",
+  "question": "If someone gives a gift of \u00a3325,001 to a beneficiary who received another gift from the donor within 7 years before the donor's death, will Inheritance Tax be applicable on both gifts?",
+  "reference": "Yes, Inheritance Tax would be applicable on the second gift as it exceeds the threshold and falls within the 7-year period.",
+  "closed_book": "No, Inheritance Tax (IHT) would not typically apply to both gifts in this scenario. The \u00a3325,001 gift given while the donor was alive is likely a Potentially Exempt Transfer (PET). If the donor survives for 7 years after making this gift, it will usually become exempt from IHT. However, if another gift was made by the same donor to the same beneficiary within 7 years before their death, and considering the total gifts given exceed the nil-rate band (currently \u00a3325,000 in 2023-24), then part of these gifts could be subject to IHT. But for a single gift of \u00a3325,001, it would not trigger IHT if made more than 7 years before the donor's death.",
+  "matches": false,
+  "reason": "The reference states that Inheritance Tax would be applicable on the second gift because it exceeds the threshold and falls within the 7-year period. The candidate answer discusses a single gift of \u00a3325,001 being potentially exempt from IHT if made more than 7 years before the donor's death, and mentions another gift could trigger IHT under certain conditions. These statements do not convey the same factual content."
+ },
+ {
+  "id": "b8b574535f8e4684ad98be2e2c2f1bdb",
+  "question": "How do you prove your relationship to a child over 18 who is applying for the visa?",
+  "reference": "You\u2019ll need to provide evidence of your relationship to your dependant when you apply.",
+  "closed_book": "To prove your relationship to a child over 18 who is applying for a visa, you can provide documentation such as birth certificates, adoption papers, or other legal documents that establish the parent-child relationship. Additionally, letters of support from both parties, family photos, and shared financial records may also be helpful in demonstrating the nature of the relationship. It's important to ensure all documents are authentic and meet the specific requirements of the visa application process.",
+  "matches": false,
+  "reason": "While both statements address providing evidence of a relationship, the reference is more general and does not specify any particular type of dependant or visa application. The candidate answer provides specific examples of documents that can be used to prove the relationship and additional context about what might be helpful, which goes beyond the core message."
+ },
+ {
+  "id": "0e3ea8c18eec4ae8b9a35d981cea3073",
+  "question": "Can you apply for a family permit if your relationship with an eligible family member broke down due to domestic violence, or if they had an eligible marriage and you lived in the UK when it ended?",
+  "reference": "Yes, you can apply in both cases.",
+  "closed_book": "No, you cannot automatically apply for a family permit based on a broken-down relationship due to domestic violence. However, there are other routes available such as applying under human or compassionate grounds. If your marriage was eligible but has ended, and the breakdown was due to domestic violence, you might be able to apply for entry clearance or leave to enter under Article 8 of the Human Rights Act, which protects family life. It's advisable to seek legal advice to explore all possible options.",
+  "matches": false,
+  "reason": "The reference statement indicates that you can apply in both cases without specifying any conditions or exceptions. The candidate answer provides specific information about the inability to automatically apply for a family permit due to domestic violence and suggests alternative routes such as applying under human or compassionate grounds."
+ },
+ {
+  "id": "860e930fbca44f58a815364ef2cd4b36",
+  "question": "What should you do if your rod fishing licence is lost?",
+  "reference": "Contact the Environment Agency to replace a lost licence.",
+  "closed_book": "If your rod fishing licence is lost, you should contact the relevant fishery authority or licensing office in your area as soon as possible to report the loss. They may be able to issue a replacement licence. Keep records of any communication and follow their specific procedures for replacing a lost licence.",
+  "matches": false,
+  "reason": "While both statements advise contacting an authority for a lost fishing licence, the candidate provides more detailed steps and context that are not present in the reference."
+ },
+ {
+  "id": "61ad3350a2444ec38693241f8bfaa272",
+  "question": "How do the exemptions for applications made on or after 6 August 2026 compare to those for applications made after 12 April 2024?",
+  "reference": "Both are exempt, but the latter has a later date.",
+  "closed_book": "Based on my best guess, the exemptions for applications made on or after 6 August 2026 are likely to be more stringent compared to those for applications made after 12 April 2024. This is because the later date suggests a more recent policy update that may have tightened conditions due to evolving circumstances or regulatory changes. However, without specific details, this comparison is speculative.",
+  "matches": false,
+  "reason": "The reference statement conveys that both are exempt but with a later date being more recent, while the candidate answer suggests a comparison of exemptions based on dates and implies a potential tightening of conditions. The substance does not match as the candidate introduces speculative reasoning not present in the reference."
+ },
+ {
+  "id": "00da6042116f416da87a8da4a1e2909a",
+  "question": "How can you update the lead trustee's address?",
+  "reference": "You can update the address",
+  "closed_book": "To update the lead trustee's address, you typically need to follow these steps depending on the specific context (e.g., a legal trust or a digital platform): 1. Review any existing agreements or documents related to the trust. 2. Contact all co-trustees or beneficiaries if applicable for consent. 3. Draft an amendment or new document reflecting the address change. 4. Have it signed by the lead trustee and, as required, other parties. 5. File the updated document with relevant authorities or keep it on record as needed.",
+  "matches": false,
+  "reason": "The reference simply states 'You can update the address', which is a much more general and concise statement. The candidate provides detailed steps for updating an address in a specific context (a lead trustee's address), making it significantly more detailed and less aligned with the general nature of the reference."
+ },
+ {
+  "id": "4dfd12a8de4d4a5197aa0363e9d8a4f2",
+  "question": "When must you tell the office that pays your benefit if you plan to go abroad for more than 4 weeks?",
+  "reference": "Tell the office that pays your benefit if you plan to go abroad for more than 4 weeks.",
+  "closed_book": "You should inform the office that pays your benefits before leaving for more than 4 weeks.",
+  "matches": true,
+  "reason": "Both statements convey the same core information about the necessity to notify the benefit-paying office prior to an extended absence abroad."
+ },
+ {
+  "id": "fa08c800a45c4378a1e5c3957e0a97ed",
+  "question": "What must you account for VAT on?",
+  "reference": "all the taxable supplies you make by way of business",
+  "closed_book": "In most countries, VAT (Value Added Tax) must be accounted for on sales of goods and services. This includes purchases made by businesses that are used in the production or supply of other goods or services. Additionally, VAT may need to be accounted for on imports, certain financial transactions, and some specific types of real estate transactions.",
+  "matches": false,
+  "reason": "The reference focuses specifically on taxable supplies made by way of business, whereas the candidate provides a broader explanation about VAT accounting requirements in most countries. The candidate does not directly address the core concept of taxable supplies as stated in the reference."
+ },
+ {
+  "id": "34e2b9c189284a3db7d8b68c481e5913",
+  "question": "Who can use the service to access an eVisa if they have a visa for Northern Ireland but not for England, Scotland or Wales?",
+  "reference": "any visa for the UK (England, Scotland, Wales or Northern Ireland)",
+  "closed_book": "Individuals holding a visa for Northern Ireland but not for England, Scotland, or Wales would typically be able to use the Republic of Ireland and Northern Ireland eVisa service. This is because the travel arrangements between the Republic of Ireland and Northern Ireland remain largely unaffected by Brexit in terms of visa requirements.",
+  "matches": false,
+  "reason": "The reference statement covers any visa for the UK (including England, Scotland, Wales, or Northern Ireland), while the candidate statement specifically mentions a visa for Northern Ireland only and includes additional details about travel arrangements between the Republic of Ireland and Northern Ireland that are not present in the reference."
+ },
+ {
+  "id": "ae5677ee51d44e02908a6820787aac1e",
+  "question": "Can past levy payments be credited against future levy liability when a new planning permission creates a revised levy liability for the development?",
+  "reference": "Yes",
+  "closed_book": "Yes, in many cases, past levy payments can be credited towards a future levy liability. However, the specifics of how this works can vary depending on local regulations and the terms set by the relevant authority or organization overseeing the levy system. It's important to review the specific conditions and agreements related to the original payment and the new planning permission to determine if and how past payments can be applied towards the revised liability.",
+  "matches": false,
+  "reason": "While both statements convey a positive response ('Yes'), the candidate answer provides additional details about the specifics of applying past levy payments to future liabilities, which are not present in the reference statement."
+ },
+ {
+  "id": "ca6c7bd6b7414d9eb73dfdceda232f79",
+  "question": "How can you claim relief for retail, hospitality and leisure businesses differently from other types of business rate relief?",
+  "reference": "You cannot make a new claim for retail, hospitality and leisure relief. From 1 April 2026, you will need to use rate multipliers to calculate your business rates bill.",
+  "closed_book": "Retail, hospitality, and leisure businesses may be eligible for specific types of business rate relief that are different from those available to other types of businesses. For example, in the UK, these sectors can apply for the Retail, Hospitality and Leisure Grant (RHLEF) which provides a 100% reduction in rates for qualifying properties. This is distinct from other business rate reliefs such as the Small Business Rate Relief or the Non-Domestic Rates Discount Scheme, which are available to businesses of all types but may have different eligibility criteria and application processes.",
+  "matches": false,
+  "reason": "The reference statement focuses on the inability to make a new claim for retail, hospitality, and leisure relief from April 1, 2026. The candidate answer discusses different types of business rate reliefs available in the UK, including specific grants for retail, hospitality, and leisure businesses, which does not match the substance of the reference statement."
+ },
+ {
+  "id": "b9e01cde9ee54cf682cc718892bd979e",
+  "question": "Which payment method is not used by visa scams?",
+  "reference": "cash",
+  "closed_book": "Prepaid debit cards",
+  "matches": false,
+  "reason": "The reference 'cash' refers to physical currency or a payment method involving direct transfer of value. The candidate 'prepaid debit cards' is a different form of electronic payment method that does not directly match the concept of cash."
+ },
+ {
+  "id": "b3aa5115bf454eb6bdd6f735d7800efa",
+  "question": "What is the difference between an amendment and a submitted application in terms of HMRC's handling?",
+  "reference": "You cannot make an amendment after it has been submitted.",
+  "closed_book": "An amendment with HMRC refers to changes made to previously filed tax returns or other submissions. This could include correcting errors, updating information, or changing details such as income or expenses. An amendment is typically initiated by the taxpayer and involves resubmitting corrected data through HMRC's online services or by post. On the other hand, a submitted application with HMRC pertains to new requests for various services or benefits, such as applying for tax relief, claiming allowances, or requesting changes in payment methods. Applications are processed based on the information provided at the time of submission and may require additional documentation or verification.",
+  "matches": false,
+  "reason": "The reference statement is about the inability to make amendments after submission in general terms. The candidate answer provides detailed information on how to make amendments with HMRC and distinguishes between amendments and applications. These are not conveying the same factual content."
+ },
+ {
+  "id": "7faf68660d334c1da75b5eea4592519b",
+  "question": "What do you need to send with the completed Self Assessment form?",
+  "reference": "Send the completed Self Assessment form by post.",
+  "closed_book": "You typically need to send your completed Self Assessment tax return form along with any supporting documents such as payslips, P60s, bank statements, and evidence of any income or expenses relevant to your tax position.",
+  "matches": false,
+  "reason": "The reference only mentions sending the completed Self Assessment form by post, while the candidate provides additional information about what typically needs to be included with the form. The substance does not match."
+ },
+ {
+  "id": "cca5b6bfa49a4f57ba8dc01634728630",
+  "question": "What must be ignored when calculating the value of the estate for taper purposes?",
+  "reference": "exemptions such as spouse exemption, reliefs such as agricultural or business property relief",
+  "closed_book": "When calculating the value of the estate for taper purposes, gifts made within seven years of the donor's death should be ignored.",
+  "matches": false,
+  "reason": "The reference discusses exemptions and reliefs related to estates, while the candidate talks about ignoring certain gifts in estate value calculation for taper purposes. The topics are different."
+ },
+ {
+  "id": "5ac2122d3980471ea1702155293b7bf6",
+  "question": "Under what condition related to income can a parent still be eligible for Tax-Free Childcare?",
+  "reference": "If your or your partner\u2019s expected adjusted net income (including any foreign income) is over \u00a3100,000 for the current tax year.",
+  "closed_book": "A parent may still be eligible for Tax-Free Childcare if their adjusted net income is below the threshold set by the government. As of my last update, this threshold was \u00a3100,000 per year, but it can change. Parents earning above this amount may still qualify, but their support will be reduced.",
+  "matches": false,
+  "reason": "The reference statement is about the condition for not being eligible due to income exceeding \u00a3100,000, while the candidate statement discusses eligibility and potential reduction in support for those earning above the threshold."
+ },
+ {
+  "id": "debf0eec46bf4b71a7ac225f59101c0f",
+  "question": "What document can be used to prove a valid Student visa or Tier 4 (General) student visa for up to 24 months after its expiry?",
+  "reference": "biometric residence permit (BRP)",
+  "closed_book": "Proof of Acceptance of Studies (CAS) letter and Confirmation of Enrolment (CoE)",
+  "matches": false,
+  "reason": "The REFERENCE (biometric residence permit or BRP) is a document issued by the UK government to international students after they have started their course. It contains biometric information and serves as proof of permission to enter and stay in the UK for the duration of their studies. The CANDIDATE mentions Proof of Acceptance of Studies (CAS) letter and Confirmation of Enrolment (CoE), which are documents issued by educational institutions in countries like China, not the UK. CAS is specific to China's education system, while CoE is a general term used in many countries for confirming enrollment."
+ },
+ {
+  "id": "eefff327d632419eacf86bad7c983bad",
+  "question": "What must you do if the seller registered the vehicle to you online and it\u2019s a used car?",
+  "reference": "You will get your new V5C within 5 to 7 working days.",
+  "closed_book": "You should first ensure that all documents are in order, including the title or bill of sale, registration, and any other relevant paperwork. Next, inspect the vehicle thoroughly for any damages or issues. Once satisfied with the condition, you may need to transfer ownership through your local DMV (Department of Motor Vehicles) by submitting the necessary forms and paying any required fees. It\u2019s also advisable to obtain a vehicle history report to check for any past accidents or issues not disclosed by the seller. Finally, ensure that all insurance is updated and valid.",
+  "matches": false,
+  "reason": "The reference statement provides a timeframe for receiving a new V5C (vehicle registration document), while the candidate answer describes various steps involved in preparing to purchase or transfer ownership of a vehicle. The substance does not match."
+ },
+ {
+  "id": "b97c6ec745b141cbaf06cfd4112bf5c0",
+  "question": "In Example 2, if the total price excluding VAT is \u00a3126 and the cost of zero-rated supply is \u00a323, what is the tax-exclusive cost of standard-rated supply?",
+  "reference": "\u00a340",
+  "closed_book": "103",
+  "matches": false,
+  "reason": "The reference value is \u00a340 (GBP), while the candidate value is 103. These values do not convey the same factual content."
+ },
+ {
+  "id": "1bd247248f034607ac496e64b5559a43",
+  "question": "Where can you get copies of the Act and Statutory Instruments?",
+  "reference": "from the Stationery Office website or online from Legislation.gov.uk",
+  "closed_book": "You can get copies of the Act and Statutory Instruments from official government websites or legislative libraries. In the United States, this would typically be through the Federal Register or similar sites for federal laws. For other countries, you would need to find the equivalent governmental body responsible for publishing legislation.",
+  "matches": false,
+  "reason": "The reference specifically mentions 'from the Stationery Office website or online from Legislation.gov.uk', which are UK-specific sources. The candidate provides a more general statement about obtaining copies of Acts and Statutory Instruments from official government websites or legislative libraries, without specifying these exact sources."
+ },
+ {
+  "id": "4514bbffcd924fc8860f7f4b9b04cf92",
+  "question": "Under what condition might an anonymous submission still be accepted despite the reward being unavailable?",
+  "reference": "the information may already be known to HMRC or could have been identified through routine processes",
+  "closed_book": "An anonymous submission might still be accepted despite the reward being unavailable if the submission is of exceptional quality or relevance, and the reviewing process prioritizes content over financial incentives.",
+  "matches": false,
+  "reason": "The reference statement discusses the possibility that HMRC may already have information or could identify it through routine processes. In contrast, the candidate statement talks about anonymous submissions and their acceptance based on quality and relevance, regardless of a reward being available."
+ },
+ {
+  "id": "92684df797354719af880434905dbec0",
+  "question": "How long do you have to report the estate's value after death?",
+  "reference": "within one year",
+  "closed_book": "The time frame for reporting the estate's value after a death can vary by jurisdiction. In many places, such as the United States, there is typically a deadline of 30 to 90 days from the date of death to file an initial notice or inventory with the probate court. However, this period may be extended in some cases.",
+  "matches": false,
+  "reason": "The reference specifies a fixed time frame of 'within one year,' while the candidate provides variable deadlines that can range from 30 to 90 days and mentions potential extensions. The core factual content does not match."
+ },
+ {
+  "id": "a668bff69dae4353bdfe5a1f5ffbd835",
+  "question": "Which service can you use if you cannot hear or speak on the phone?",
+  "reference": "elay UK (if you cannot hear or speak on the phone): 18001 then 0800 731 0297",
+  "closed_book": "Text-to-Speech and Speech-to-Text Services",
+  "matches": false,
+  "reason": "The reference provides specific UK phone numbers for alternative communication methods when unable to use the phone, while the candidate describes services related to text-to-speech and speech-to-text technology."
+ },
+ {
+  "id": "fb1176db5f9a457bb2f33fcc6f8aef99",
+  "question": "How long should you wait before continuing to drive after requesting a new licence?",
+  "reference": "You can continue driving while you wait for your new licence to arrive.",
+  "closed_book": "Typically, you should wait at least 14 days before continuing to drive after requesting a new license. However, this can vary by jurisdiction, so it's best to check the specific regulations in your area.",
+  "matches": false,
+  "reason": "The reference statement suggests that driving can continue while waiting for a new license, whereas the candidate answer provides a timeframe and notes variability by jurisdiction, which is not directly stated in the reference."
+ },
+ {
+  "id": "4c87aaa5d1264dc9af5df8534d649d77",
+  "question": "Under what circumstances would local biodiversity policies still apply to development projects exempt under the statutory framework?",
+  "reference": "Other local biodiversity policies which require specific enhancements to support biodiversity would continue to apply to these applications where appropriate.",
+  "closed_book": "Local biodiversity policies might still apply to development projects that are exempt under the statutory framework if these projects fall within specific geographic areas or zones where such policies are in effect. For instance, even though a project may be exempt from certain national regulations, it could still be subject to local bylaws and ordinances designed to protect local ecosystems, species, or habitats. Additionally, if there is public concern about the potential impact of an otherwise exempt project on biodiversity, local authorities might choose to apply their policies as a precautionary measure. Furthermore, voluntary agreements between developers and local communities or environmental groups could also lead to the application of local biodiversity policies.",
+  "matches": false,
+  "reason": "While both statements discuss the potential applicability of local biodiversity policies, the reference statement is more concise and directly states that such policies would continue to apply where appropriate. The candidate answer provides a broader context including exemptions, geographic areas, public concerns, and voluntary agreements which are not present in the reference."
+ },
+ {
+  "id": "15a4112eb5e445bfb934a66a765548e1",
+  "question": "How does the cost and time of a faster decision compare to a standard application?",
+  "reference": "The cost is \u00a3750 more, but the processing time is significantly shorter (10 working days vs. 8 weeks).",
+  "closed_book": "The cost and time associated with a faster decision in an application can vary significantly depending on the specific context, but generally, there are both potential benefits and drawbacks compared to a standard application. For a faster decision-making process, initial development costs might be higher due to the need for more sophisticated algorithms, real-time data processing capabilities, and possibly specialized hardware or cloud services. However, this could lead to reduced operational costs over time through increased efficiency and automation. The time to make decisions is typically shorter with a faster application, but the overall project timeline might remain similar as the development complexity increases. In summary, while a faster decision-making application can offer quicker results and potentially lower long-term costs, it often requires higher initial investment.",
+  "matches": false,
+  "reason": "The reference statement focuses on the specific cost difference (\u00a3750 more) and processing time (10 working days vs. 8 weeks), while the candidate answer discusses general factors affecting faster decision-making processes, development costs, operational benefits, and overall project timelines without providing specific numerical values or a direct comparison."
+ },
+ {
+  "id": "aab51a7ea34c40a6bf8e675d8ce54624",
+  "question": "Under what circumstances can a student apply for a Tier 4 (General) student visa to continue their studies after completing an intercalated course?",
+  "reference": "continuing your medical, dentistry or medical science degree after completing an intercalated course",
+  "closed_book": "A student can typically apply for a Tier 4 (General) student visa to continue their studies after completing an intercalated course if they meet the following circumstances: The intercalated course is part of their overall program of study, it has been approved by the UKVI as part of the original Student Route application, and they have maintained good academic standing. Additionally, they must demonstrate that they can support themselves financially during their continued studies.",
+  "matches": false,
+  "reason": "The reference focuses on continuing a medical, dentistry, or medical science degree after an intercalated course, while the candidate answer discusses the conditions for applying for a Tier 4 (General) student visa. The substance does not match."
+ },
+ {
+  "id": "c483e89743a0416e90f16a4c2cfd379c",
+  "question": "What happens if you try to reapply for the same job after withdrawing your application?",
+  "reference": "You cannot resubmit it at a later date, or re-apply for the same job.",
+  "closed_book": "The specific outcome can vary depending on the company's policies and the hiring manager's discretion. Generally, if you withdraw your application and then reapply for the same position, the HR department might treat it as a new application. This could mean going through the entire recruitment process again, including interviews and assessments. Some companies may have a record of withdrawn applications and might consider this in their decision-making process when reviewing your new application.",
+  "matches": false,
+  "reason": "The reference statement is more concise and directly states that you cannot resubmit or re-apply for the same job at a later date. The candidate answer provides additional details about potential variations in company policies and the recruitment process, which goes beyond the core message of the reference."
+ },
+ {
+  "id": "9ac5ebc8816541d09fa58d835f873387",
+  "question": "Under what conditions can an Innovator Founder visa holder apply for indefinite leave to remain?",
+  "reference": "If you\u2019ve lived in the UK for 3 years and meet the other eligibility requirements.",
+  "closed_book": "An Innovator Founder visa holder may be eligible to apply for indefinite leave to remain after 3 years of continuous valid stay under the Innovator Founder visa. The applicant must have successfully established and maintained a qualifying startup business, which has created or is expected to create at least two full-time jobs in the UK within three years from the date of entry on the visa. Additionally, the business should be generating turnover or have the potential to generate significant economic growth.",
+  "matches": false,
+  "reason": "The reference only mentions living in the UK for 3 years and meeting other eligibility requirements, while the candidate provides specific details about the Innovator Founder visa, business establishment, job creation, and economic growth. The core requirement of continuous stay is present in both but the additional conditions are unique to the candidate answer."
+ },
+ {
+  "id": "29d031ac23f6426594df4ea0d796d5af",
+  "question": "What alternative method can be used for apportionment if the suggested calculation is not suitable?",
+  "reference": "use any other formula, provided it produces a fair and reasonable result",
+  "closed_book": "One alternative method that can be used for apportionment when the suggested calculation is not suitable is the Equal Shares Method. This approach divides the tax liability equally among all states or jurisdictions, regardless of their population or other factors. While this method ensures fairness by treating each state the same, it may not accurately reflect the actual usage or benefit received by each jurisdiction and could lead to inequities.",
+  "matches": false,
+  "reason": "The reference suggests using any other formula that produces a fair and reasonable result, while the candidate describes a specific method (Equal Shares Method) for apportionment. The substance does not match as the candidate provides details of one particular method rather than a general statement about alternative formulas."
+ },
+ {
+  "id": "190d6609933d4714865c49a3fb07f650",
+  "question": "How many photos do you need to provide?",
+  "reference": "2 identical photos",
+  "closed_book": "It depends on the context and purpose of using the photos. For a typical social media post, 1-3 high-quality images might be sufficient. For a professional photography project or a detailed report, dozens or even hundreds of photos may be needed.",
+  "matches": false,
+  "reason": "The reference mentions '2 identical photos', while the candidate discusses the number of photos needed for different contexts and purposes. The core factual content about the quantity of photos does not match."
+ },
+ {
+  "id": "349c0f300a7c4621992e6289f325fe5e",
+  "question": "Can you bring more than a 3-month supply of medication if your travel dates are less than 3 months apart?",
+  "reference": "No, the letter must indicate that you are not carrying more than a 3-month supply from both your travel dates and quantities of medication listed on the letter or prescription.",
+  "closed_book": "Yes, you can typically bring more than a 3-month supply of medication if your travel dates are less than 3 months apart. However, it's important to check with the specific regulations of the countries you're visiting and possibly consult with your healthcare provider or a pharmacist for personalized advice.",
+  "matches": false,
+  "reason": "The reference states that no more than a 3-month supply should be carried, while the candidate suggests it is possible to bring more than a 3-month supply if travel dates are less than 3 months apart. The candidate also introduces additional considerations not present in the reference."
+ },
+ {
+  "id": "73cb73889aa3449f8c9de996dd1c0da6",
+  "question": "What form should you fill in if your diabetes is treated by sulphonylurea or glinide tablets?",
+  "reference": "form VDIAB1SG",
+  "closed_book": "You should fill in the Diabetes Medication Record Form.",
+  "matches": false,
+  "reason": "The REFERENCE 'VDIAB1SG' refers to a specific form code, while the CANDIDATE describes a general Diabetes Medication Record Form. The substance does not match as one is a specific identifier and the other is a description of a form."
+ },
+ {
+  "id": "3071e8a290a24dd1bf6a600f39959f2d",
+  "question": "Can an implied term be created by a long-standing company practice, such as giving bonuses at Christmas, even if not explicitly stated in the contract?",
+  "reference": "something that\u2019s been done regularly in a company over a long time like paying a Christmas bonus",
+  "closed_book": "Yes, an implied term can be created by a long-standing company practice, such as giving bonuses at Christmas, even if not explicitly stated in the contract. This is because such practices can become part of the implied terms of employment over time. Courts may recognize these practices as customary and reasonable, thereby implying them into the contract to reflect the actual working relationship between the employer and employee.",
+  "matches": false,
+  "reason": "While both the reference and candidate mention a long-standing practice of giving bonuses at Christmas, the candidate provides additional context about implied terms in employment contracts and legal recognition. This extra information changes the focus from simply describing the practice to explaining its legal implications."
+ },
+ {
+  "id": "c05bdbf05616457da518195ac2990b39",
+  "question": "Which SELT providers are available for those inside the UK and outside of the UK, respectively?",
+  "error": "GenerationExhaustedError"
+ },
+ {
+  "id": "66223b876eea493f84ea119835dcb325",
+  "question": "How long is consent valid by default?",
+  "reference": "2 years",
+  "closed_book": "The duration of consent validity can vary widely depending on the context and jurisdiction. In many cases, such as with privacy policies, consent may be considered valid until the individual chooses to revoke it or a significant change in circumstances occurs. For example, in some countries, health-related consent might be valid for one year, while online service agreements could consider consent valid indefinitely until the user opts out. Without specific context, it's challenging to provide an exact duration.",
+  "matches": false,
+  "reason": "The reference provides a specific duration of '2 years', while the candidate describes a variable duration based on context and jurisdiction without specifying any particular timeframe."
+ },
+ {
+  "id": "ef362198997f416891edb85ff57e9b17",
+  "question": "How can you check your State Pension forecast?",
+  "reference": "check your forecast online",
+  "closed_book": "To check your State Pension forecast, you can visit the Government's official website or contact the National Insurance helpline in your country. In the UK, you can go to the GOV.UK website and use the 'State Pension' calculator tool. Alternatively, you can call the Pension Service on 0300 200 1175 (UK) for assistance with your forecast.",
+  "matches": false,
+  "reason": "The reference simply states 'check your forecast online', which is a general instruction. The candidate provides specific details on how to check the State Pension forecast in the UK, including visiting the GOV.UK website and calling the Pension Service helpline. While both are related to checking forecasts, the substance of the information provided differs significantly."
+ },
+ {
+  "id": "f1ae16103b1c45f4a133e9f1c4d11ecf",
+  "question": "Under what condition should authorities report on estimated future income from developer contributions in an infrastructure funding statement?",
+  "reference": "where they are able to do so",
+  "closed_book": "Authorities should report on estimated future income from developer contributions in an infrastructure funding statement when the contributions are legally binding and expected to generate significant, ongoing revenue for the infrastructure project. This reporting is crucial for transparency and accountability, ensuring stakeholders understand the financial basis of the project's sustainability.",
+  "matches": false,
+  "reason": "The reference 'where they are able to do so' does not convey the same factual content as the candidate answer. The reference is a general statement about ability, while the candidate provides specific details about reporting future income from developer contributions in infrastructure funding statements."
+ },
+ {
+  "id": "1d46fa764f6f45f4b32605e371432da3",
+  "question": "Compare the conditions under which a vehicle can be clamped with when covert activity allows not wearing a licence.",
+  "reference": "a disabled badge or being an emergency service vehicle in use as such; during covert activity, you do not have to wear your licence where it can be seen.",
+  "closed_book": "The conditions under which a vehicle can be clamped are typically related to parking violations, such as illegally parked in a no-parking zone or obstructing traffic. On the other hand, covert activities that allow not wearing a license plate usually pertain to law enforcement operations where the use of standard vehicle identification is avoided for operational security reasons. In both cases, there are specific circumstances and legal frameworks governing these actions.",
+  "matches": false,
+  "reason": "The reference discusses disabled badges or emergency service vehicles not needing to wear a license plate during covert activities. The candidate, however, talks about the conditions under which a vehicle can be clamped and law enforcement operations avoiding standard vehicle identification for security reasons. These are different contexts and do not convey the same factual content."
+ }
+]

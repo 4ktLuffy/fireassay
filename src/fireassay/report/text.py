@@ -1,6 +1,6 @@
 """Render `ComparabilityReport`/`Leaderboard` objects, (M2) control and
-mutation results, and (M3) curation funnel reports, to the terminal via
-`rich`."""
+mutation results, (M3) curation funnel reports, and (items) item-analysis
+and blind-review reports, to the terminal via `rich`."""
 
 from __future__ import annotations
 
@@ -13,6 +13,8 @@ from fireassay.compare import Leaderboard
 from fireassay.controls.base import ControlOutcome
 from fireassay.curate.report import CurateReport, SessionFlag
 from fireassay.integrity import RefusalReason
+from fireassay.items.core import ItemStats, PanelStats
+from fireassay.items.review import DetectorScore
 from fireassay.mutation.score import MutationScoreResult
 from fireassay.store.db import ControlCheckRow, MutantRow, MutationRunRow
 
@@ -373,3 +375,101 @@ def render_curate_report(report: CurateReport, console: Console | None = None) -
             f"difficulty={obedience.difficulty_match_rate:.1%}  "
             f"cell={obedience.cell_match_rate:.1%}"
         )
+
+
+_CLASSIFICATION_STYLE = {
+    "mislabel_suspect": "bold red",
+    "dead_all_pass": "dim",
+    "dead_all_fail": "dim",
+    "live": "",
+}
+
+
+def render_items_analysis(
+    item_stats: Sequence[ItemStats], panel_stats: PanelStats, console: Console | None = None
+) -> None:
+    """Render `fireassay items analyse`'s output (M-ITEMS-SPEC.md §5).
+
+    Leads with `split_half_reliability` and its verdict, ahead of any
+    per-item number -- "a reader must see how much to trust the per-item
+    numbers before they see the numbers" -- and prints an explicit warning
+    when the panel cannot support per-item ranking (`reliability_verdict ==
+    "too_few_systems"`); classification still stands regardless (see
+    `items.core`'s module docstring). Never prints a composite score --
+    `class_counts` plus the per-item table are the disposition, not a
+    single number.
+    """
+    console = console or Console()
+    verdict_style = "green" if panel_stats.reliability_verdict == "usable" else "bold red"
+    console.print(
+        f"split_half_reliability = {panel_stats.split_half_reliability:.4f}  "
+        f"(measured over {panel_stats.n_items_used_for_reliability} of {panel_stats.n_items} "
+        "items -- zero-variance items are excluded, see items.core's module docstring)  "
+        f"[{verdict_style}]{panel_stats.reliability_verdict}[/{verdict_style}]"
+    )
+    if panel_stats.reliability_verdict == "too_few_systems":
+        console.print(
+            "[bold red]WARNING[/bold red]: too few systems to trust per-item "
+            "discrimination_d / point_biserial -- classification (live / dead_all_pass / "
+            "dead_all_fail / mislabel_suspect) still stands, per-item ranking does not."
+        )
+
+    console.print(
+        f"n_items={panel_stats.n_items}  n_systems={panel_stats.n_systems}  "
+        f"class_counts={panel_stats.class_counts}"
+    )
+    if panel_stats.claimed_vs_measured_difficulty_r is not None:
+        console.print(
+            "claimed-vs-measured difficulty correlation r = "
+            f"{panel_stats.claimed_vs_measured_difficulty_r:.4f} "
+            "-- a diagnostic only; never trust a claimed difficulty label on its own"
+        )
+    else:
+        console.print("[dim]claimed-vs-measured difficulty correlation: no claimed labels supplied[/dim]")
+
+    table = Table(title="item scorecard (a disposition, not a composite score)")
+    table.add_column("item_id")
+    table.add_column("p", justify="right")
+    table.add_column("discrimination_d", justify="right")
+    table.add_column("point_biserial", justify="right")
+    table.add_column("classification")
+    for s in item_stats:
+        style = _CLASSIFICATION_STYLE.get(s.classification, "")
+        classification_text = f"[{style}]{s.classification}[/{style}]" if style else s.classification
+        table.add_row(
+            s.item_id,
+            f"{s.p:.3f}",
+            f"{s.discrimination_d:+.3f}",
+            f"{s.point_biserial:+.3f}",
+            classification_text,
+        )
+    console.print(table)
+
+
+def render_items_score(score: DetectorScore, console: Console | None = None) -> None:
+    """Render `fireassay items review score`'s output (M-ITEMS-SPEC.md
+    §3)."""
+    console = console or Console()
+    console.print(
+        "[dim]seeded recall is an UPPER BOUND: a seeded flaw may be easier to detect than "
+        "a naturally occurring one.[/dim]"
+    )
+    table = Table(title="blind review: detector score")
+    table.add_column("metric")
+    table.add_column("value", justify="right")
+    table.add_column("95% CI", justify="right")
+    table.add_column("n", justify="right")
+
+    precision_ci = score.precision_ci
+    precision_text = f"{score.precision:.3f}" if score.precision is not None else "n/a"
+    precision_ci_text = (
+        f"[{precision_ci[0]:.3f}, {precision_ci[1]:.3f}]" if precision_ci is not None else "n/a"
+    )
+    table.add_row("precision (of flagged items)", precision_text, precision_ci_text, str(score.precision_n))
+
+    recall_ci = score.recall_ci
+    recall_text = f"{score.recall:.3f}" if score.recall is not None else "n/a"
+    recall_ci_text = f"[{recall_ci[0]:.3f}, {recall_ci[1]:.3f}]" if recall_ci is not None else "n/a"
+    table.add_row("recall (of seeded items, UPPER BOUND)", recall_text, recall_ci_text, str(score.recall_n))
+
+    console.print(table)

@@ -50,6 +50,19 @@ from fireassay.generate.pipeline import (
     select_chunks_for_target,
 )
 from fireassay.integrity import ComparisonRefusedError
+from fireassay.items.adapters.store import load_matrix as items_load_matrix
+from fireassay.items.adapters.store import load_meta as items_load_meta
+from fireassay.items.adapters.tabular import load_meta_jsonl, load_responses_csv, load_responses_jsonl
+from fireassay.items.core import ItemMeta, ItemResponses
+from fireassay.items.core import analyse as run_item_analysis
+from fireassay.items.review import (
+    ReviewKeyEntry,
+    ReviewLabel,
+    build_review_batch,
+    build_review_key,
+    score_review,
+)
+from fireassay.items.seed import seed_batch
 from fireassay.llm.cache import ResponseCache
 from fireassay.llm.ollama import OllamaClient
 from fireassay.models import EvidenceSpan, Question
@@ -60,6 +73,8 @@ from fireassay.report.text import (
     render_control_checks,
     render_control_outcomes,
     render_curate_report,
+    render_items_analysis,
+    render_items_score,
     render_leaderboard,
     render_mutation_run,
     render_mutation_score,
@@ -83,11 +98,15 @@ suite_app = typer.Typer(no_args_is_help=True)
 controls_app = typer.Typer(no_args_is_help=True)
 mutation_app = typer.Typer(no_args_is_help=True)
 curate_app = typer.Typer(no_args_is_help=True)
+items_app = typer.Typer(no_args_is_help=True)
+items_review_app = typer.Typer(no_args_is_help=True)
 app.add_typer(questions_app, name="questions")
 app.add_typer(suite_app, name="suite")
 app.add_typer(controls_app, name="controls")
 app.add_typer(mutation_app, name="mutation")
 app.add_typer(curate_app, name="curate")
+app.add_typer(items_app, name="items")
+items_app.add_typer(items_review_app, name="review")
 
 #: Packaged default for `controls run --expected`: `controls/expected.yaml`
 #: ships inside the `fireassay` package itself (see pyproject.toml's
@@ -971,6 +990,153 @@ def curate_report_cmd(
 
     store.close()
     render_curate_report(report)
+
+
+# -- items: item analysis for evaluation sets --------------------------------
+
+
+def _load_matrix_file(path: Path) -> list[ItemResponses]:
+    if path.suffix == ".csv":
+        return load_responses_csv(path)
+    if path.suffix in (".jsonl", ".ndjson"):
+        return load_responses_jsonl(path)
+    raise typer.BadParameter(f"--matrix must be .csv or .jsonl, got {path.suffix!r}")
+
+
+@items_app.command("analyse")
+def items_analyse(
+    matrix: Path | None = typer.Option(
+        None, "--matrix", help="CSV or JSONL response matrix (standalone mode -- no store touched)"
+    ),
+    meta: Path | None = typer.Option(None, "--meta", help="optional ItemMeta JSONL, keyed on item_id"),
+    db: Path | None = typer.Option(None, "--db", help="fireassay store (in-project mode)"),
+    suite: str | None = typer.Option(None, "--suite", help="name@version (in-project mode)"),
+    metric: str | None = typer.Option(
+        None, "--metric", help="in-project mode: score metric to threshold, e.g. retrieval.recall@5"
+    ),
+    threshold: float | None = typer.Option(
+        None, "--threshold", help="in-project mode: item is correct iff metric value > threshold"
+    ),
+    reliability_floor: float = typer.Option(0.5, "--reliability-floor"),
+    n_splits: int = typer.Option(200, "--n-splits"),
+    seed: int = typer.Option(0, "--seed"),
+) -> None:
+    """Item analysis over a response matrix, via either `--matrix`
+    (standalone -- usable with no fireassay store at all) or `--db`/
+    `--suite` (in-project, over a suite's own runs).
+
+    The in-project path additionally **requires** `--metric`/`--threshold`
+    with no default: fireassay's own runs record only continuous retrieval
+    metrics, never a ready-made boolean "correct" -- see
+    `items.adapters.store`'s module docstring for why no default is
+    offered for either; inventing one here would be exactly the kind of
+    unmeasured threshold this tool exists to refuse to produce.
+    """
+    if matrix is not None and db is not None:
+        typer.echo("items analyse: pass either --matrix or --db, not both", err=True)
+        raise typer.Exit(code=1)
+
+    item_meta: dict[str, ItemMeta] | None
+    if matrix is not None:
+        responses = _load_matrix_file(matrix)
+        item_meta = load_meta_jsonl(meta) if meta is not None else None
+    elif db is not None:
+        if suite is None or metric is None or threshold is None:
+            typer.echo("items analyse --db requires --suite, --metric, and --threshold", err=True)
+            raise typer.Exit(code=1)
+        store = Store(db)
+        name, _, version = suite.partition("@")
+        suite_row = store.get_suite(name, version)
+        runs = store.runs_for_suite(suite_row.id)
+        responses = items_load_matrix(store, runs, metric=metric, threshold=threshold)
+        item_meta = items_load_meta(store, suite_row.id)
+        store.close()
+    else:
+        typer.echo("items analyse: one of --matrix or --db is required", err=True)
+        raise typer.Exit(code=1)
+
+    item_stats, panel_stats = run_item_analysis(
+        responses, item_meta, reliability_floor=reliability_floor, n_splits=n_splits, seed=seed
+    )
+    render_items_analysis(item_stats, panel_stats)
+
+
+@items_review_app.command("build")
+def items_review_build(
+    db: Path = typer.Option(..., "--db"),
+    suite: str = typer.Option(..., "--suite"),
+    metric: str = typer.Option(..., "--metric", help="see `items analyse --db`'s docstring"),
+    threshold: float = typer.Option(..., "--threshold"),
+    out: Path = typer.Option(..., "--out", help="ReviewItem batch, JSONL -- what a reviewer opens"),
+    key: Path = typer.Option(..., "--key", help="ground-truth key, JSON -- reviewer never sees this"),
+    n_flagged: int = typer.Option(..., "--n-flagged", help="max mislabel_suspect items to include"),
+    n_unflagged: int = typer.Option(..., "--n-unflagged", help="max non-flagged items to include"),
+    n_seeded_per_kind: int = typer.Option(
+        0, "--n-seeded-per-kind", help="known-bad seeded items per corruption kind; 0 disables seeding"
+    ),
+    reliability_floor: float = typer.Option(0.5, "--reliability-floor"),
+    n_splits: int = typer.Option(200, "--n-splits"),
+    seed: int = typer.Option(0, "--seed"),
+) -> None:
+    """Build a blind review batch (M-ITEMS-SPEC.md §3) over `--suite`'s own
+    runs: flagged (`mislabel_suspect`) items, unflagged items sampled from
+    every other classification, and (if `--n-seeded-per-kind` > 0)
+    deterministically corrupted known-bad items, mixed into one shuffled
+    batch. `--out` carries only question/reference/evidence -- no
+    classification, statistic, or seeded flag (`items.review`'s leak
+    rule); `--key` is the ground-truth mapping and must be kept away from
+    the reviewer.
+    """
+    store = Store(db)
+    name, _, version = suite.partition("@")
+    suite_row = store.get_suite(name, version)
+    runs = store.runs_for_suite(suite_row.id)
+    responses = items_load_matrix(store, runs, metric=metric, threshold=threshold)
+    item_meta = items_load_meta(store, suite_row.id)
+    store.close()
+
+    item_stats, _panel_stats = run_item_analysis(
+        responses, item_meta, reliability_floor=reliability_floor, n_splits=n_splits, seed=seed
+    )
+    seeded_items = (
+        seed_batch(list(item_meta.values()), n_per_kind=n_seeded_per_kind, seed=seed)
+        if n_seeded_per_kind > 0
+        else []
+    )
+    batch = build_review_batch(
+        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged, seeded=seeded_items, seed=seed
+    )
+    key_entries = build_review_key(
+        item_stats, item_meta, n_flagged=n_flagged, n_unflagged=n_unflagged, seeded=seeded_items, seed=seed
+    )
+
+    with open(out, "w", encoding="utf-8") as f:
+        for review_item in batch:
+            f.write(review_item.model_dump_json())
+            f.write("\n")
+    with open(key, "w", encoding="utf-8") as f:
+        json.dump([entry.model_dump() for entry in key_entries], f, indent=2)
+
+    typer.echo(
+        f"wrote {len(batch)} review item(s) to {out}; key -> {key}  "
+        "(seeded recall is an UPPER BOUND -- seeded flaws may be easier to spot than natural ones)"
+    )
+
+
+@items_review_app.command("score")
+def items_review_score(
+    labels: Path = typer.Option(..., "--labels", help="reviewer verdicts, JSONL of {review_id, verdict}"),
+    key: Path = typer.Option(..., "--key", help="the ground-truth key from `items review build --key`"),
+) -> None:
+    """Score a completed blind review against its key (M-ITEMS-SPEC.md
+    §3): precision from the flagged items, recall (an upper bound) from
+    the seeded items, each with a 95% confidence interval."""
+    with open(labels, encoding="utf-8") as f:
+        label_list = [ReviewLabel(**json.loads(line)) for line in f if line.strip()]
+    with open(key, encoding="utf-8") as f:
+        key_list = [ReviewKeyEntry(**entry) for entry in json.load(f)]
+    score = score_review(label_list, key_list)
+    render_items_score(score)
 
 
 if __name__ == "__main__":

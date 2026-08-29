@@ -1,2 +1,12 @@
 model qwen2.5:7b@845dbda0ea48 quant=Q4_K_M
 sampling 300 of the kept candidates
+  50/300  answered without retrieval: 0  (214s)
+  100/300  answered without retrieval: 0  (416s)
+  150/300  answered without retrieval: 1  (629s)
+  200/300  answered without retrieval: 1  (836s)
+  250/300  answered without retrieval: 2  (1027s)
+  300/300  answered without retrieval: 2  (1235s)
+
+RESULT: 2/300 = 0.7% answerable with NO retrieval
+errors: 0
+literature: 31-82% on original RAG benchmarks; 1.4-17% after leakage filtering

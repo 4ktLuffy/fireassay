@@ -1,0 +1,9 @@
+model qwen2.5:7b@845dbda0ea48 quant=Q4_K_M
+sampling 150 of the kept candidates
+  50/150  answered without retrieval: 0  (416s)
+  100/150  answered without retrieval: 1  (813s)
+  150/150  answered without retrieval: 2  (1204s)
+
+RESULT: 2/149 = 1.3% answerable with NO retrieval
+errors: 1
+literature: 31-82% on original RAG benchmarks; 1.4-17% after leakage filtering

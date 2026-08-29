@@ -1,0 +1,2402 @@
+[
+ {
+  "id": "3ee86858ce484ff0bbe4f2656065c784",
+  "question": "Which of the following is NOT a country or territory offering additional notarial and document services according to the passage?",
+  "reference": "France",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference is a specific country (France), while the candidate response indicates a lack of knowledge. The substance does not match."
+ },
+ {
+  "id": "33730a5b444244a2a645158df0896164",
+  "question": "Under what circumstances can the first condition regarding residence be waived?",
+  "reference": "If you cannot meet it due to certain reasons.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests an inability to meet something due to specific reasons, while the candidate simply states a lack of knowledge without specifying any reason."
+ },
+ {
+  "id": "fb3d990cc8f54bff8dae5c134a8bdd43",
+  "question": "When does the governing body of a school become responsible for the Apprenticeship Levy?",
+  "reference": "If a school becomes a voluntary-aided school, foundation school, free school or academy part way through a tax year.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the type of schools that can become voluntary-aided, foundation, free school, or academy part way through a tax year. The candidate answer does not provide any factual content related to this topic."
+ },
+ {
+  "id": "c5a0717e8cbf4fa0956f0391d716a9b6",
+  "question": "Under what specific circumstances might a student applying for an undergraduate course with an integrated Masters year still require ATAS clearance?",
+  "reference": "If the subject area of the combined course has a Common Aggregator Hierarchy (CAH3) code, then ATAS clearance may be required.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the requirement for ATAS clearance based on a Common Aggregator Hierarchy (CAH3) code. The candidate answer does not convey any factual content related to this topic and instead expresses uncertainty."
+ },
+ {
+  "id": "e4e136264c9044aa85b40a04465f30ce",
+  "question": "What must be true for a couple to transfer their unused basic threshold?",
+  "reference": "the couple were married or in a civil partnership when the first death occurred",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the marital or civil partnership status of the couple at the time of the first death. The candidate answer expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "24313c05b17548d1b0a7c8f5ce8485c8",
+  "question": "Can a homeowner who runs a business from their home but does not employ anyone be exempt from paying business rates?",
+  "reference": "No, they may still need to pay business rates if the property is used for both domestic and business purposes.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about business rates based on the use of a property. The candidate answer expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "ca0cfb2aa54e4c20bd68e7eaab3faa7b",
+  "question": "In which months of the year are you not allowed to fish for coarse fish in rivers in England and Wales?",
+  "reference": "from 15 March to 15 June",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific date range (from 15 March to 15 June), while the candidate answer expresses uncertainty and does not convey any factual content related to dates."
+ },
+ {
+  "id": "68de87a9d64c4659ac0665a330161006",
+  "question": "How do the fees shown in the video tutorials compare to those listed in the Fees section?",
+  "reference": "The fees referred to in the video tutorials are for demonstration purposes only. Refer to the Fees section for current fees.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about the nature of the fees mentioned in video tutorials and directs the reader to a specific section for current fee information. The candidate response does not convey any factual content related to the fees or their context."
+ },
+ {
+  "id": "60b36d9be5d24252b52a727ea32ceaa5",
+  "question": "If you had multiple jobs during your most recent stay, how should you determine the salary to consider for visa extension eligibility?",
+  "reference": "only include the highest earning salary",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference specifies to include only the highest earning salary, while the candidate response indicates uncertainty or lack of knowledge. The substance does not match."
+ },
+ {
+  "id": "ce7ad59479004bb98ad1972bd5f94155",
+  "question": "What might happen if you do not contact Companies House before the time limit?",
+  "reference": "the company will be struck off",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement indicates a specific action (the company being struck off), while the candidate response expresses uncertainty about any information."
+ },
+ {
+  "id": "b415644d47ae4a3cabdfcb1ba7dcf976",
+  "question": "What happens if your current permission expires before a decision is made on your application?",
+  "reference": "Your current permission will continue under section 3C leave.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the continuation of permission under section 3C leave, while the candidate response does not address the content at all and instead expresses uncertainty."
+ },
+ {
+  "id": "14bc1f750b964b019cd52cd7eef57d94",
+  "question": "What must the photo of your passport include?",
+  "reference": "the whole photo page of your passport",
+  "closed_book": "The photo of your passport must include a clear frontal view of your face, showing both eyes open and looking directly at the camera. It should be recent, usually within the last six months, and display a neutral expression without smiling. The background should be plain and not distract from your image.",
+  "matches": false,
+  "reason": "The reference describes the entire photo page of a passport, which includes the photo itself but also other elements such as text and possibly a machine-readable zone. The candidate only describes the content and quality requirements for the photo on a passport, without mentioning any other parts of the page."
+ },
+ {
+  "id": "7ceb7c7e345e4f8a903dd0b746cb588a",
+  "question": "Compare the types of creative organizations that can invite you to visit the UK.",
+  "reference": "creative organisation, such as a gallery, university arts faculty, school or events venue",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference describes specific types of organizations related to creative activities, while the candidate is a statement of uncertainty."
+ },
+ {
+  "id": "869540e51b604d1ba1a3158e358b8006",
+  "question": "Can ISA investments be transferred to a surviving spouse\u2019s or civil partner\u2019s ISA?",
+  "reference": "Yes, but only if they have the same ISA provider as you.",
+  "closed_book": "Yes, ISA investments can generally be transferred to a surviving spouse's or civil partner's ISA. However, the specific rules and processes may vary depending on the type of ISA and local regulations. It is advisable to consult with a financial advisor for detailed guidance.",
+  "matches": false,
+  "reason": "The reference statement focuses on the condition that both parties must have the same ISA provider, while the candidate answer discusses the general transferability of ISAs to a surviving spouse or civil partner and mentions variability in rules and regulations. The core factual content does not match."
+ },
+ {
+  "id": "4695c781f7f44f68a91e0c3e8ad92491",
+  "question": "What is the difference between the fish that must be released and those that can be taken?",
+  "reference": "You must release any eels you catch (except conger eels) alive, while there are no such restrictions for minor or \u2018tiddler\u2019 species, non-native species, and ornamental varieties of native species.",
+  "closed_book": "The difference between the fish that must be released and those that can be taken depends on local fishing regulations, which are designed to protect fish populations. Generally, certain species or sizes of fish may need to be released back into the water due to conservation efforts or catch limits. Regulations vary by location, so it's important to check local fishing laws. Fish that can be taken typically meet size and species requirements set by authorities.",
+  "matches": false,
+  "reason": "The reference specifically mentions eels and conger eels, while the candidate statement is more general about fish regulations. The candidate does not specify that eels must be released alive (except for conger eels) or provide details unique to eel fishing."
+ },
+ {
+  "id": "31cfa1ecfb544333b413724327ee2bf9",
+  "question": "Under what circumstances might local planning authorities agree with lead local flood authorities on the requirement for site-specific flood risk assessments?",
+  "reference": "Local planning authorities may find it helpful to agree with lead local flood authorities the circumstances and locations where site specific flood risk assessments will be required due to surface water drainage.",
+  "closed_book": "Local planning authorities might agree with lead local flood authorities on the requirement for site-specific flood risk assessments when there is a high likelihood of flooding in the area, or when development could potentially exacerbate existing flood risks. This agreement typically ensures that developments are designed and constructed to minimize their impact on flood risk and to comply with national and local flood risk management strategies.",
+  "matches": false,
+  "reason": "While both statements discuss the collaboration between local planning authorities and lead local flood authorities regarding site-specific flood risk assessments, the candidate answer provides more specific conditions under which such assessments are required. The reference is broader in scope, focusing on agreeing on when these assessments will be necessary without specifying the exact circumstances."
+ },
+ {
+  "id": "be925626ae044d518e48a27137c21c0f",
+  "question": "If a child over 18 is added to the application, what must be true for them?",
+  "reference": "The eligibility criteria are different for children under or over 18.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides factual information about different eligibility criteria based on age, while the candidate response expresses uncertainty and does not convey any substantive content related to the reference."
+ },
+ {
+  "id": "6eafc20940be4779b22dd1aa61e7ee49",
+  "question": "Can input tax on legal fees be fully recovered?",
+  "reference": "Yes, if the legal fees relate wholly to the transfer of the business.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides a specific condition under which legal fees are considered related to the transfer of a business, while the candidate response expresses uncertainty and does not convey any factual content regarding the relationship between legal fees and business transfers."
+ },
+ {
+  "id": "dbf990aba7fc4509927e8407f0b5112a",
+  "question": "What happens if a relief or exemption from the Community Infrastructure Levy is granted but not followed by serving a Commencement Notice?",
+  "reference": "a surcharge penalty is applied instead of losing the exemption.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the application of a surcharge penalty in place of losing an exemption. The candidate response expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "672c8de8d4754821bee092822847b01f",
+  "question": "How does the deduction rate for rent or service charges compare to the deduction rates for other benefits?",
+  "reference": "The deduction rate for rent or service charges is higher, ranging between 10% and 15%, compared to 5% from Universal Credit for each debt and \u00a34.80 a week for other benefits.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific deduction rates for rent or service charges and details about Universal Credit and other benefits, while the candidate answer expresses uncertainty without providing any information related to the reference."
+ },
+ {
+  "id": "1adf93bf6fb04ccca8d4992b3408e1f9",
+  "question": "What specific type of insulation is not eligible for the relief and why?",
+  "reference": "Curtains and carpets are not usually installed simply as insulation.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about the typical use of curtains and carpets regarding insulation, while the candidate response expresses uncertainty without addressing the content of the reference."
+ },
+ {
+  "id": "43b753a4734c4c3c85135fc5bbc93247",
+  "question": "Can a UK undisclosed agent invoice for their own services in domestic supplies?",
+  "reference": "Yes, they may adopt the alternative VAT treatment set out in this section.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a clear factual content about adopting an alternative VAT treatment, while the candidate response expresses uncertainty and does not provide any information related to the reference."
+ },
+ {
+  "id": "f828c68e7ad94e27895cc9c7bdc0421b",
+  "question": "When can you use your eVisa instead of a visa vignette in an expired passport?",
+  "reference": "In most cases, you can use your eVisa in place of your visa vignette.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about the usage of an eVisa compared to a visa vignette, while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "c74bae7ed0bd400f8cf6902ae61e85f6",
+  "question": "What should you do if your SC1 application was submitted before 28 April 2023 and has not been approved?",
+  "reference": "You will need to use the link that was emailed to you.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific instruction related to using an email-provided link, while the candidate response indicates a lack of knowledge or information."
+ },
+ {
+  "id": "f7b530f636524a7ab47ff2347365ffae",
+  "question": "Under what condition will a partner or child's visa not automatically extend even if the primary holder extends their Innovator Founder visa?",
+  "reference": "If they do not extend their visa.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement is about a condition related to visa extension, while the candidate response is a general statement of uncertainty."
+ },
+ {
+  "id": "0f2a344afa2647e28869b4c6edee85b1",
+  "question": "When can a conservatory be installed in relation to the main construction of a house for sale?",
+  "reference": "Before the Certificate of Completion is issued.",
+  "closed_book": "A conservatory can typically be installed during various stages of the main construction of a house, including before or after the initial framing is complete. It depends on the specific design and structural requirements of both the main house and the conservatory. In some cases, it might be integrated into the original building plans, while in others, it could be added as an extension later on. Consulting with architects and builders will help determine the best timing for installation.",
+  "matches": false,
+  "reason": "The reference statement is about when a Certificate of Completion is issued, while the candidate text discusses the timing of conservatory installation during house construction. The subjects are different and do not convey the same factual content."
+ },
+ {
+  "id": "5c1d227acdd14a67ae715f0b1607a453",
+  "question": "When can you start including VAT on your invoices compared to when you need to account for it?",
+  "reference": "You cannot include VAT on your invoices until you get your VAT registration number, but you can increase your prices to account for the VAT you\u2019ll need to pay to HMRC.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about including VAT on invoices and adjusting prices accordingly after obtaining a VAT registration number. The candidate answer does not convey any of this factual content."
+ },
+ {
+  "id": "cda156ca9fb440ac852524590c977778",
+  "question": "Which counties are listed in the passage?",
+  "reference": "Kent, Surrey, East Sussex, West Sussex",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific geographic locations in England (Kent, Surrey, East Sussex, and West Sussex), while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "b2d16d6b354b46539cb138d1c42e3f0a",
+  "question": "What must happen before you are officially appointed as an appointee?",
+  "reference": "DWP will send Form BF57 confirming you\u2019ve been formally appointed to act for the claimant.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference conveys information about a specific form (Form BF57) being sent by DWP to confirm formal appointment for acting on behalf of the claimant. The candidate response does not provide any relevant information related to this context."
+ },
+ {
+  "id": "595ec5c904774df9adba171436333b77",
+  "question": "Who needs to pay Apprenticeship Levy?",
+  "reference": "employers",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'employers' refers to a specific group of people or entities, while the candidate 'I do not know' is a statement expressing uncertainty. The substance does not match."
+ },
+ {
+  "id": "1e84e8f6ec444667ac7d59ad997c51d9",
+  "question": "What must you hold if you are renewing your close protection licence or held one within the last 3 years, compared to what is required for a first-time application with an older qualification less than 3 years old?",
+  "reference": "For a first-time application with an older qualification less than 3 years old, you only need one of the current or older qualifications. For renewing your close protection licence or holding one within the last 3 years, you must hold both a full licence-linked qualification and the \u2018Level 2 Award for Close Protection Operatives in the Private Security Industry (Refresher)\u2019 qualification.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific details about the requirements for a first-time application and renewing a close protection licence. The candidate answer does not provide any relevant information related to the content of the reference."
+ },
+ {
+  "id": "b38ac7b1d97949cba8b90620bd998ba4",
+  "question": "How many rods can you use for salmon, sea trout and non-migratory trout in reservoirs, lakes and ponds?",
+  "reference": "up to 2 rods",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value (up to 2 rods) while the candidate expresses uncertainty with 'I do not know.' Therefore, they do not convey the same factual content."
+ },
+ {
+  "id": "45f8ce58b4cf415f8fd228e990e588f1",
+  "question": "What will HMRC\u2019s Making Tax Digital for Income Tax engagement team do after you complete the online form?",
+  "reference": "promote awareness of the Making Tax Digital for Income Tax products to you, offer education on Making Tax Digital for Income Tax, help guide you through the steps to sign up to Making Tax Digital for Income Tax, and help you understand the legal requirements.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific actions related to promoting awareness, offering education, guiding sign-up, and explaining legal requirements for Making Tax Digital for Income Tax. The candidate response is a simple statement of ignorance without any substantive content that matches the reference."
+ },
+ {
+  "id": "d6ed8a34b38f4b828bb44b1b9e887e76",
+  "question": "What specific caution should boaters take when navigating near the bridge damaged by a vehicle?",
+  "reference": "Be cautious of falling debris.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference advises caution regarding falling debris, while the candidate expresses uncertainty or lack of knowledge. The substance and intent are different."
+ },
+ {
+  "id": "0d6cae65e40d4dd69015c40f8b430fd4",
+  "question": "Which type of passport application requires a signature from a countersignatory?",
+  "reference": "first adult passport, first child passport, replacement for a lost, stolen or damaged passport, renewal of a passport for a child aged 11 or under, renewal of a passport if your appearance has changed and you cannot be recognised from your existing passport",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific scenarios for obtaining or renewing a passport, while the candidate response indicates a lack of knowledge."
+ },
+ {
+  "id": "20140d6d39604f9a8cf0d1a34d9cbcbf",
+  "question": "Under what circumstances can Child Benefit be paid weekly?",
+  "reference": "If you\u2019re a single parent or getting certain other benefits, such as Universal Credit.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about eligibility based on being a single parent or receiving certain benefits. The candidate response does not convey any factual content related to the reference."
+ },
+ {
+  "id": "78a90846a2ef4cdead8c98e41dbfbcc2",
+  "question": "Compare the types of incidents that need to be reported with those that do not require reporting.",
+  "reference": "Report a serious safeguarding risk if it involves abuse or mistreatment (alleged or actual) resulting in significant harm, whereas other incidents may not necessarily require immediate reporting to the Commission.",
+  "closed_book": "Incidents that typically need to be reported include safety violations, equipment malfunctions, accidents, and near misses. These reports are crucial for maintaining workplace safety and identifying areas for improvement. On the other hand, incidents that do not require reporting may include minor personal issues or inconveniences that do not affect operations or pose a risk to others. However, it's important to note that specific requirements can vary depending on the organization or industry.",
+  "matches": false,
+  "reason": "The reference focuses specifically on safeguarding risks involving abuse or mistreatment leading to significant harm and indicates that other incidents may not require immediate reporting. The candidate, however, provides a broader list of incidents that typically need reporting and specifies that minor personal issues do not usually require reporting. There is no mention of safeguarding risks in the candidate's statement."
+ },
+ {
+  "id": "627191b16418454da96719a1931d910c",
+  "question": "Which benefits are exempt from valuation and reporting to HMRC in a salary sacrifice arrangement?",
+  "reference": "payments into pension schemes, employer provided pensions advice, workplace nurseries, childcare vouchers and directly contracted employer pr",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific examples of benefits or services related to employee welfare and pensions, while the candidate response expresses uncertainty about any content."
+ },
+ {
+  "id": "7c2fb6c042e940a9a529171cf8863664",
+  "question": "Under what condition should Certificate C be used instead of Certificate B?",
+  "reference": "This should be completed if the applicant is not the sole owner, or if there are agricultural tenants, and the applicant knows the names and addresses of some but not all other owners and/or agricultural tenants.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference describes a condition that should be completed under specific circumstances related to ownership or tenancy. The candidate response simply states a lack of knowledge without addressing the conditions outlined in the reference."
+ },
+ {
+  "id": "0115d8623fd14c14945ff1318fc04df7",
+  "question": "What evidence is needed if you are a dependent relative but not a spouse, civil partner, unmarried partner, child, grandchild or dependent parent or grandparent?",
+  "reference": "you will need to show evidence that you\u2019re one of the following: dependent on the \u2018specified relevant person of Northern Ireland\u2019 or on their spouse or civil partner; a member of their household; in need of their personal care because of a serious or permanent health condition",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific criteria for showing evidence, while the candidate response is a general statement of uncertainty without any relation to the provided criteria."
+ },
+ {
+  "id": "55ec775860cf4d12b52a5f625e115240",
+  "question": "Under which conditions are UK hen eggs considered to present a very low risk of Salmonella according to the Food Standards Agency?",
+  "reference": "Eggs produced under the British lion code and Laid in Britain assurance schemes.",
+  "closed_book": "Under the conditions specified by the Red Tractor Scheme, UK hen eggs are considered to present a very low risk of Salmonella. This includes hens being housed in premises that meet specific hygiene and management standards, and the eggs being laid under controlled conditions.",
+  "matches": false,
+  "reason": "The reference mentions the British lion code and Laid in Britain assurance schemes specifically related to eggs. The candidate answer discusses the Red Tractor Scheme and its relation to a low risk of Salmonella in UK hen eggs under certain conditions, but does not directly mention these specific schemes."
+ },
+ {
+  "id": "2bcdd3f12e2346a9b4cf50b41a0d4423",
+  "question": "Under what circumstance can a jobseeker avoid contacting the DWP after applying for JSA?",
+  "reference": "If you have not heard anything from the DWP more than 14 days after your application.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about waiting for a response from the DWP after an application, while the candidate is a generic statement of uncertainty without any relation to the context provided."
+ },
+ {
+  "id": "8c97f666bdb74364ad0aa7bb62a64918",
+  "question": "What are the differences in fire safety requirements for a regular private rental property compared to a large house in multiple occupation (HMO)?",
+  "reference": "In a HMO, the landlord must provide fire alarms and extinguishers, whereas this is not mentioned as a requirement for other properties.",
+  "closed_book": "The fire safety requirements for a regular private rental property and a large house in multiple occupation (HMO) can differ significantly. For a regular private rental property, the primary focus is on ensuring that the dwelling meets basic fire safety standards to protect the tenant's life and property. These may include smoke alarms, working carbon monoxide detectors, and clear escape routes from each room. The landlord must also provide a gas safety certificate before tenants move in and ensure that all gas appliances are serviced annually by a registered engineer.",
+  "matches": false,
+  "reason": "The reference specifically mentions that landlords of HMOs must provide fire alarms and extinguishers, while no such requirement is stated for other properties. The candidate does not mention the specific requirement for HMOs regarding fire extinguishers but instead discusses general fire safety standards applicable to regular private rental properties."
+ },
+ {
+  "id": "4149b0be86c647abbd7342825f838876",
+  "question": "How does the presence of a project in a sensitive area affect its screening requirement compared to meeting the thresholds or criteria?",
+  "reference": "Projects listed in Schedule 2 which are located in, or partly in, a sensitive area also need to be screened, even if they are below the thresholds or do not meet the criteria.",
+  "closed_book": "The presence of a project in a sensitive area may require additional screening beyond standard threshold checks. Sensitive areas can include locations with environmental, cultural, or geopolitical significance. Such projects might need more rigorous assessments to ensure they do not pose risks to the environment, local communities, or national security. The specific requirements would depend on local regulations and guidelines.",
+  "matches": false,
+  "reason": "While both statements discuss projects in sensitive areas requiring additional screening, the reference is more concise and directly states that projects need to be screened even if they are below thresholds or do not meet criteria. The candidate answer provides a broader context about what constitutes a sensitive area and the potential risks involved, but does not explicitly mention the threshold or criterion aspect."
+ },
+ {
+  "id": "3356af0cc24649fb91ae637c99c690ea",
+  "question": "What happens if you have not paid enough tax compared to paying too much tax?",
+  "reference": "If you have not paid enough tax, you\u2019ll stay on the emergency tax code until you\u2019ve paid the correct tax for the year. If you\u2019ve paid too much tax, you can get a tax refund.",
+  "closed_book": "If you have not paid enough tax, you may owe the government additional taxes and could face penalties or interest on the underpayment. If you have paid too much tax, you may receive a refund from the government.",
+  "matches": false,
+  "reason": "While both statements address situations where tax payments are insufficient or excessive, the candidate answer introduces concepts of penalties and interest for underpayment that are not present in the reference. The reference focuses solely on the emergency tax code and refunds."
+ },
+ {
+  "id": "d473fc6a36f94ab7ad43083569aa3019",
+  "question": "What happens if you pay Class 2 contributions for the previous tax year?",
+  "reference": "You pay the original rate for those tax years.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual piece of information about paying the original rate for certain tax years. In contrast, the candidate response expresses uncertainty and does not provide any substantive information related to the reference."
+ },
+ {
+  "id": "b5dc641270f3483185bfb5926e055a29",
+  "question": "What are the consequences of not returning form WCA50 or not attending the Work Capability Assessment?",
+  "reference": "You will not receive New Style ESA.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific piece of information regarding the non-receipt of New Style ESA, while the candidate response is uncertain and does not provide any substantive information."
+ },
+ {
+  "id": "a7b34791bee84b6e93e029096ce24e65",
+  "question": "What information must be included in the first report?",
+  "reference": "confirm your gender dysphoria diagnosis and the clinical history this was based on, including: who made the diagnosis, when the diagnosis was made, what evidence was used to make the diagnosis",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference asks for specific details about a gender dysphoria diagnosis and its basis, while the candidate response simply states a lack of knowledge without providing any information related to the diagnosis or clinical history."
+ },
+ {
+  "id": "82a6b55cfa8f4d9e863264f27815c8e5",
+  "question": "How can a building be reconstructed if only part of it will be used for a qualifying purpose, and what must be considered when determining the zero-rated element?",
+  "reference": "You may reconstruct a building where only part of it will be used for a qualifying purpose. When determining if at least 60% of the work could be zero-rated as \u2018approved alterations\u2019, all of the work to the building should be considered. But only those alterations to the qualifying parts can count towards the zero-rated element.",
+  "closed_book": "If only part of a building will be used for a qualifying purpose, the reconstruction would typically involve focusing on that specific section. However, without more context about the jurisdiction or tax regulations in question, it's challenging to provide detailed guidance. When determining the zero-rated element, several factors must be considered, such as the proportion of the building being used for the qualifying purpose, any applicable thresholds or minimum requirements, and how the reconstruction affects the overall use of the property. I do not know the specific rules without additional context.",
+  "matches": false,
+  "reason": "The reference provides a clear statement about including all work to the building in the determination of zero-rated alterations for qualifying purposes, while the candidate answer does not mention this aspect and instead focuses on the complexity and lack of specific context regarding the regulations."
+ },
+ {
+  "id": "0ebd2b919b0b455f90aec01c9f8eac7b",
+  "question": "When creating a Defra account for reporting waste, how does the process differ between organizations with existing Government Gateway or GOV.UK One Login accounts and those without?",
+  "reference": "Organizations with existing Government Gateway or GOV.UK One Login accounts can log in directly to create a Defra account, while those without must first create their own Government Gateway or GOV.UK One Login account before creating the Defra account.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the login process for organizations with or without existing Government Gateway or GOV.UK One Login accounts. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "807436f5ff984c9d8a87b840f3a5c70e",
+  "question": "How can a tenant transfer their tenancy?",
+  "reference": "complete a \u2018request to assign tenancy\u2019 form",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference asks about completing a specific form, while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "4bb77f152cfc46a3ba5544b0ffdf59f6",
+  "question": "What are the two main types of private pension schemes?",
+  "reference": "defined contribution and defined benefit",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific terms related to pension plans (defined contribution and defined benefit), while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "ea50e36d89924ac5ab0eebb47fbccbfa",
+  "question": "When can an employee start their Paternity Leave from their first day of employment?",
+  "reference": "From 6 April 2026.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific date (6 April 2026), while the candidate response expresses uncertainty without providing any information."
+ },
+ {
+  "id": "2fc7d4a36dfb4df3afc86785d54b44ec",
+  "question": "What should you do if you have a type of money, savings or investment not listed in the options provided?",
+  "reference": "You can let us know using the \u2018other savings and investments\u2019 option.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information on how to communicate using a specific option, while the candidate expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "bc072ebfc31b46c8857ba281f993f144",
+  "question": "When can a building be excluded from the effect of an option to tax?",
+  "reference": "when construction begins",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'when construction begins' conveys a specific time or event related to the start of construction. The candidate 'I do not know.' does not provide any information about when construction might begin and instead expresses uncertainty."
+ },
+ {
+  "id": "281982de6aad407aa095430afa4154d3",
+  "question": "Under what circumstances must you contact HMRC before 31 March of the following tax year?",
+  "reference": "If you go over your savings allowance and do not receive a letter by 31 March of the following tax year, you must contact HMRC.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about contacting HMRC if your savings allowance is exceeded and a letter is not received by 31 March of the following tax year. The candidate answer does not convey any factual content related to this scenario."
+ },
+ {
+  "id": "6983e8c03fd346129bfd4b644f0f4acb",
+  "question": "What must occur before a Local Development Order can grant planning permission for development that might affect European Sites without being directly connected to the site's management?",
+  "reference": "a competent authority has given consent, permission, or other authorisation in accordance with regulation 63 of the Conservation of Habitats and Species Regulations 2017 (as amended)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about a competent authority granting consent or permission according to a particular regulation. The candidate answer expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "bbd2a072c3f74b1b8d9ea7050fb63c2a",
+  "question": "How should you handle VAT invoices for zero-rated or exempt supplies?",
+  "reference": "you must make sure that those items show clearly",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement is about ensuring items are clear, while the candidate response expresses uncertainty."
+ },
+ {
+  "id": "8435d77e028e49baa7a6c4477d639d2e",
+  "question": "How should you value items worth over \u00a31,500 for the inheritance tax form?",
+  "reference": "You may have to get a professional valuation.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests that a professional valuation might be necessary, while the candidate expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "2ad3d734d60d4f368bff24e1db1e766c",
+  "question": "How does the contact method for alternative formats differ from other inquiries?",
+  "reference": "You can call the Sure Start Maternity Grant helpline to ask for alternative formats, such as braille, large print or audio CD.",
+  "closed_book": "The contact method for alternative formats typically differs from other inquiries in that it is specifically directed towards obtaining materials in a format accessible to individuals with disabilities. This could involve requesting books, documents, or other resources in braille, large print, audio, or electronic text formats. The contact method might be through a specialized service such as a library for the blind, an accessibility department at a university, or an organization that provides alternative formats. Other inquiries may pertain to general information or services and could be directed to different departments or use more common communication methods like email or phone.",
+  "matches": false,
+  "reason": "The reference specifically mentions calling a 'Sure Start Maternity Grant helpline' for alternative formats, while the candidate discusses general contact methods for obtaining accessible materials through various specialized services. The candidate does not directly address the specific context of the Sure Start Maternity Grant or mention calling a helpline."
+ },
+ {
+  "id": "9324067db7f4445dadafdbeccb069fbd",
+  "question": "Where can teachers be employed without QTS in the English state school sector?",
+  "reference": "academy schools and free schools",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific types of educational institutions (academy schools and free schools), while the candidate response expresses uncertainty without providing any related information."
+ },
+ {
+  "id": "83b8e758cd714895b9b2552ffeafa7b3",
+  "question": "What must be included in the consultation process for the Community Infrastructure Levy?",
+  "reference": "Working with neighbourhood forums, theme specific groups, local businesses, and ward councillors.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific entities that are engaged in a community context (neighbourhood forums, theme specific groups, local businesses, and ward councillors), while the candidate answer expresses uncertainty without providing any related information."
+ },
+ {
+  "id": "699fcdeb027a47438cf683b63e4c5499",
+  "question": "What happens if you miss an appointment without a good reason?",
+  "reference": "Your Universal Credit payment will be reduced.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual change regarding a reduction in Universal Credit payment, while the candidate response expresses uncertainty and does not address the content of the reference."
+ },
+ {
+  "id": "c57aac5bfe2d4b1aa6c9790522dd1f3e",
+  "question": "If a Swiss citizen with settled status has been away from the UK for more than 4 years, what additional requirement must they meet to apply for British citizenship?",
+  "reference": "They need to apply for a Returning Resident visa.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys that an action (applying for a visa) needs to be taken, while the candidate response indicates a lack of knowledge or information."
+ },
+ {
+  "id": "4be1fbb4780247b7b2b94c6693c3c5bb",
+  "question": "What should a tax agent do if they cannot access the Charities for Agents online service?",
+  "reference": "Contact online services support for more help.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests contacting online service support, while the candidate expresses uncertainty."
+ },
+ {
+  "id": "52b6ff3d65244d2eaa8886eacf7d5b9b",
+  "question": "What are the possible outcomes of a court hearing and how might they differ in terms of immediate action required by the tenant?",
+  "reference": "The judge may adjourn the case, dismiss your claim, make an outright possession order, or make a suspended possession order. An outright possession order requires immediate action from the tenant to vacate the property, while a suspended possession order does not.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific details about the types of orders a judge can make in a case, including the actions required from the tenant. The candidate answer does not convey any factual content related to the reference and instead expresses uncertainty."
+ },
+ {
+  "id": "cc60f0ad440a42589fcfae3979909c81",
+  "question": "What should a non-profit organization do if it is not eligible for charitable rate relief but believes it might still receive some form of assistance?",
+  "reference": "Contact your local council to find out.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests contacting a local council for information, while the candidate response indicates a lack of knowledge or unwillingness to provide an answer."
+ },
+ {
+  "id": "32d96433a9194d21b51e9da5c2f22f35",
+  "question": "Can you apply for an HPI visa if you have already been given a Graduate visa?",
+  "reference": "No",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'No' conveys a specific piece of information, while the candidate response 'I do not know.' expresses uncertainty. These do not convey the same factual content."
+ },
+ {
+  "id": "fe2282fcdb504f74bf00f880ddabec0f",
+  "question": "Can you claim a refund if you have not overpaid but still want to check your tax account?",
+  "reference": "No, the passage only mentions claiming for a refund if you think you've made an overpayment.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the ability to claim a refund for an overpayment, while the candidate response expresses uncertainty without any substantive content related to the original statement."
+ },
+ {
+  "id": "dbfaa6aa76a84690aecae6965cea5abf",
+  "question": "What should the local planning authority do before amending the description of development?",
+  "reference": "discuss any revised wording with the applicant or their agent",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference text suggests a process of communication regarding potential revisions, while the candidate answer does not provide any information related to this process."
+ },
+ {
+  "id": "9793ded1aa51473fa3da822690c7fdf3",
+  "question": "How can someone who is deaf or cannot use a phone get help from emergency services?",
+  "reference": "Register with the emergencySMS by texting REGISTER to 999.",
+  "closed_book": "Someone who is deaf or hard of hearing and unable to use a regular telephone can still contact emergency services through several methods. They can use text telephones (TTY) by dialing 101 in the UK, 71332 for TTY users in the US, or 1-800-RELAY-NOW (1-800-735-2966) to connect with a relay operator. In some countries, they can also use video relay services (VRS) where an interpreter helps them communicate via video call.",
+  "matches": false,
+  "reason": "The reference provides instructions for registering with emergencySMS by texting 'REGISTER' to 999. The candidate answer discusses alternative methods for individuals who are deaf or hard of hearing to contact emergency services, such as using TTYs and VRS, but does not mention the specific instruction for emergencySMS."
+ },
+ {
+  "id": "8847f6101c8041a5958fa0be6acac7f5",
+  "question": "How long does it usually take to get a decision for fast track endorsement compared to peer reviewed application?",
+  "reference": "2 weeks vs 5 weeks",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a comparison between two time periods (2 weeks vs 5 weeks), while the candidate expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "66c4198f85f940c4a9e61897e7b1a837",
+  "question": "Compare the conditions for making exempt supplies under points b and c.",
+  "reference": "b) you make exempt supplies, but intend or expect the input tax incurred on your capital expenditure on the property that is attributed to those exempt supplies, including any subsequent adjustments to initial input tax deduction, will not exceed \u00a35,000\nc. you expect to be entitled to full credit for all the input tax incurred on your capital expenditure on the property as a result of the application of section 33(2) of the Value Added Tax Act 1994.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific conditions related to making exempt supplies and input tax deductions, while the candidate response indicates a lack of knowledge on the subject."
+ },
+ {
+  "id": "4d3a7e8c3baf42d7a70ca6c3c0f9ec98",
+  "question": "What should you do if you cannot resolve your complaint with the VAT officer?",
+  "reference": "follow HMRC\u2019s complaints procedure",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about following HMRC's complaints procedure, while the candidate expresses uncertainty or lack of knowledge. The substance does not match."
+ },
+ {
+  "id": "2d6e99c1588542a4ab5702078d63fbb3",
+  "question": "What can you use to keep your records?",
+  "reference": "on paper, digitally or as part of a software program (like book-keeping software)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about the form in which something can exist (on paper, digitally, or within a software program like book-keeping software), while the candidate response expresses uncertainty without providing any relevant content."
+ },
+ {
+  "id": "f1e6ebc98618456c8c8a244b27326879",
+  "question": "What is the telephone number for contacting the Environment Agency outside of the UK?",
+  "reference": "+44 (0) 114 282 5312",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific phone number (+44 (0) 114 282 5312), while the candidate response indicates a lack of knowledge ('I do not know'). The substance does not match."
+ },
+ {
+  "id": "8646233abf4e4ed4b68759c835802b49",
+  "question": "For which countries must you check the specific insurance requirements before driving, and what is a potential consequence of not doing so?",
+  "reference": "You may need to carry a green card to prove you have the minimum insurance cover required by the country you\u2019re driving in. This includes: Israel, Morocco, Tunisia.",
+  "closed_book": "For some countries, particularly those outside your home country or region, it's important to check specific insurance requirements before driving. This can include countries in Europe (like the UK after Brexit), North America, Asia, and elsewhere. The potential consequence of not checking these requirements could be fines, towing fees, or even having your vehicle impounded.",
+  "matches": false,
+  "reason": "While both statements discuss the importance of checking insurance requirements for driving in certain countries, the reference specifically mentions green cards and named countries (Israel, Morocco, Tunisia) with a focus on proof of minimum insurance. The candidate statement is more general, mentioning various regions and potential consequences without specifying any particular countries or the need for a green card."
+ },
+ {
+  "id": "5588dea69545450e9ab2418b5e361643",
+  "question": "How does the additional rate for electric or zero-emission vehicles with a list price over \u00a350,000 differ from the standard rate in terms of application period?",
+  "reference": "The additional rate applies for 5 years, starting from the second year of vehicle tax.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the duration and timing of an additional rate for vehicle tax, while the candidate response expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "96f8a1f1164147b9b0852c1046e2754b",
+  "question": "How long does it take for a new driving licence to arrive after applying by post?",
+  "reference": "Your driving licence will usually arrive within 3 weeks.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about the expected delivery time of a driving licence, while the candidate answer expresses uncertainty without providing any factual content related to the reference."
+ },
+ {
+  "id": "9d85fd99e7024049be08e4f26852ae37",
+  "question": "What happens if you stay outside the UK for more than 2 years compared to staying within 2 years?",
+  "reference": "You can lose your indefinite leave to remain if you stay outside the UK for more than 2 years at a time.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about losing indefinite leave to remain if you stay outside the UK for more than 2 years at a time. The candidate answer expresses uncertainty and does not convey any factual content related to the original statement."
+ },
+ {
+  "id": "74c413bba7734d9ead9d5cf754962c8d",
+  "question": "How can you check if your degree is officially recognised in England?",
+  "reference": "the higher education institute can award degrees - you can check on the Office for Students (OfS) Register",
+  "closed_book": "To check if your degree is officially recognised in England, you can contact the institution where you obtained your degree for a formal transcript or certificate. Additionally, you can visit the Higher Education Statistics Agency (HESA) website or use their services to verify the qualification. Another option is to consult with professional bodies relevant to your field of study.",
+  "matches": false,
+  "reason": "While both statements address verifying the recognition of a degree, the REFERENCE specifically mentions checking with the Office for Students (OfS) Register, whereas the CANDIDATE suggests contacting the institution, using HESA, or consulting professional bodies. The methods provided in the CANDIDATE answer are broader and do not exclusively focus on the OfS Register."
+ },
+ {
+  "id": "ef5f31e751204657a225f39d943c83b1",
+  "question": "What happens if you apply for Tax-Free Childcare after using up your 90-day window to inform your employer?",
+  "reference": "You cannot rejoin their voucher scheme or their directly contracted childcare scheme.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about not being able to rejoin certain schemes, while the candidate response is a general statement of uncertainty without any substantive content related to the reference."
+ },
+ {
+  "id": "68ad8caf34b343afaded5febe1cb7a49",
+  "question": "Can I use this service to file a tax return for a partnership?",
+  "reference": "no",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference answer 'no' conveys a specific piece of information, while the candidate answer 'I do not know' does not provide the same factual content or convey the same meaning."
+ },
+ {
+  "id": "e1685b6d4bb941f69f7501136b7d4257",
+  "question": "Under what circumstances can a deactivation certificate issued before the new regulations take effect still be valid?",
+  "reference": "When the owner of a previously deactivated firearm seeks to transfer it.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about a specific scenario involving the transfer of a previously deactivated firearm. The candidate answer is a simple statement expressing ignorance and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "2e3b2784211443ba82b823d4fabe15db",
+  "question": "What should you do if your vehicle needs taxing in the next 4 weeks and you want to change its address on the V5C?",
+  "reference": "You need to tax your vehicle online using your current V5C before changing your address.",
+  "closed_book": "To change the address on the V5C before your vehicle needs taxing, you should apply for a new V5C at the Vehicle Registration Office (VRO) or through their online service. You will need to provide proof of the new address and any other required documentation. Once the application is processed, you can then take the updated V5C to the tax office when it's time to tax your vehicle.",
+  "matches": false,
+  "reason": "The reference states that you need to tax your vehicle online using the current V5C before changing the address. The candidate suggests applying for a new V5C and updating it with the new address first, which is different from the reference."
+ },
+ {
+  "id": "cae3b0af6c8b4365923b008d623b8f7e",
+  "question": "What could happen if a PSC fails to provide their identity verification details within the 14-day period?",
+  "reference": "You may be committing an offence and have to pay a financial penalty or fine. We will also display a note against your name on the public register.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about potential legal consequences and actions that may be taken, while the candidate response is a statement of uncertainty without any substantive content related to the reference."
+ },
+ {
+  "id": "2f5ddf88ae254308805f5892b4333bdc",
+  "question": "What must be sent to the German municipal or other competent authority at least 15 days before departure, along with the pupils\u2019 authorisations and parents\u2019 identity documents?",
+  "reference": "The form",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about a form, while the candidate expresses uncertainty. There is no substantive match in terms of content."
+ },
+ {
+  "id": "28ea8887ca9445ada15f038efb46d19f",
+  "question": "Under what conditions can a 'self-build' house or flat be exempt from the Community Infrastructure Levy, and how must this exemption be applied for?",
+  "reference": "'self-build' houses and flats, which are built by \u2018self-builders\u2019 where an exemption has been applied for and obtained prior to commencement of the development;",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about 'self-build' houses and flats built by self-builders who have obtained an exemption. The candidate answer expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "1ed8b0c160ab4d628474856028703944",
+  "question": "What is the total cost for a 24-hour stay in The Hague, Netherlands including room rate?",
+  "reference": "117.50 euros",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value in euros, while the candidate expresses uncertainty."
+ },
+ {
+  "id": "28e0aed2a2c440158f57ce51261a09b3",
+  "question": "What documents must be submitted before a compliance statement can be made?",
+  "reference": "an up to date copy of the memorandum and articles of association, the information memorandum, prospectus or other documents used to explain the fundraising proposal to your investors, details of any other agreements between your company and the shareholder, a list of the amounts, dates and venture capital schemes under which you\u2019ve previously received investment, any other documents to show you meet the qualifying conditions",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a list of specific documents and information needed, while the candidate response is a generic statement indicating ignorance."
+ },
+ {
+  "id": "9f3022c8bf614d36bfde635d0cb012fe",
+  "question": "What is the standard amount for a fractured jaw bone with multiple fractures (e.g., Le Fort fractures types 2 and 3) under continuing significant disability?",
+  "reference": "\u00a311,000",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value (\u00a311,000), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "6bd49d3539644f8d984bc9e5222b1a38",
+  "question": "What type of visa holders are eligible to apply for protection if they are victims of modern slavery or human trafficking?",
+  "reference": "Overseas Domestic Worker visa, on a Domestic Worker in a Private Household visa, or as a private servant of a diplomat",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific types of visas related to domestic workers, while the candidate expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "ffb293e947bc42458f8b69622988b3c6",
+  "question": "What must you have before the loan can be paid in full?",
+  "reference": "a National Insurance number",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about a specific term (National Insurance number), while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "88fbb5681cd64bf2901271a0458a4b25",
+  "question": "What is the difference between a UK residence card or BRC and a biometric residence permit (BRP)?",
+  "reference": "A UK residence card or BRC is different from a \u2018biometric residence permit\u2019 (BRP).",
+  "closed_book": "A UK residence card, also known as a Biometric Residence Card (BRC), and a biometric residence permit (BRP) are both documents issued by the UK government to individuals who have been granted permission to live and work in the UK. However, they differ in their issuance process and usage context. A BRC is typically issued to people from countries that do not require a visa to enter the UK for short visits but need one for longer stays. It is usually a card with a photograph and biometric information such as fingerprints. On the other hand, a BRP is a plastic card that is issued to individuals who have been granted indefinite leave to remain or settled status in the UK. It serves as both a residence permit and an identity document. The key differences are that a BRP is more commonly used for longer-term stays and provides additional rights compared to a BRC.",
+  "matches": false,
+  "reason": "The reference statement only indicates that a UK residence card or BRC is different from a biometric residence permit (BRP), without providing specific details. The candidate answer provides detailed information about the differences between a BRC and BRP, including their issuance process and usage context, which goes beyond the simple statement in the reference."
+ },
+ {
+  "id": "008ce2362c9f4489ad3bda7433ffbec2",
+  "question": "Who can be granted 'leave in line'?",
+  "reference": "a child who is under the protection of someone granted \u2018Section 67 leave\u2019, or a child of someone granted \u2018Calais leave\u2019 to remain",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific details about the protection status of a child under certain leave provisions, while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "368a12b1d53447dbafdda342914d266f",
+  "question": "What should you do if a message from a verified social media account asks for personal information, compared to an unverified one?",
+  "reference": "If the account is verified, you should not ignore it and need to contact HMRC directly.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a clear instruction regarding the action to take if an account is verified, while the candidate response does not provide any information related to the original statement and instead expresses uncertainty."
+ },
+ {
+  "id": "2cf8ed037d0f4e85a415eb07b41371b5",
+  "question": "What should a pregnant employee do if their employer disagrees about the risk and refuses to take action?",
+  "reference": "Talk to their health and safety or trade union representative, or contact the Health and Safety Executive.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific actions related to health and safety or trade unions, while the candidate response is a general statement of ignorance."
+ },
+ {
+  "id": "37f921998a934972a8412b69a6ded4f3",
+  "question": "Where can I find live traffic information for major roads in England?",
+  "reference": "National Highways website",
+  "closed_book": "You can find live traffic information for major roads in England through various sources such as websites like Google Maps, TomTom, or Microsoft Bing. Additionally, the government's official site, Traveline, provides real-time traffic updates and journey planning tools.",
+  "matches": false,
+  "reason": "The reference specifically mentions the National Highways website as the source of live traffic information for major roads in England. The candidate answer does not mention National Highways and instead lists other sources such as Google Maps, TomTom, Microsoft Bing, and Traveline."
+ },
+ {
+  "id": "30463b1741d448669b0af0d504af2258",
+  "question": "How can you sign in to the service?",
+  "reference": "with the security code in your letter from DWP or DfC, or with GOV.UK One Login",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides instructions on how to access certain information, while the candidate is a statement of uncertainty or lack of knowledge."
+ },
+ {
+  "id": "641f519e0aa24f38a0a9792331ea7e81",
+  "question": "When must feedback on the members lists be submitted?",
+  "reference": "Friday 12 August 2022",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific date (Friday 12 August 2022), while the candidate response indicates uncertainty ('I do not know'). The substance does not match."
+ },
+ {
+  "id": "178e443e6dd946a2b514fa4e0f422d5f",
+  "question": "Who can get more than the Local Housing Allowance shared accommodation rate?",
+  "reference": "are a care leaver and under 25, have previously lived in a hostel for homeless people for at least 3 months in total, are an ex-offender managed under an active Multi-Agency Public Protection Agreement (MAPPA), are getting the daily liv",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific criteria related to being a care leaver under 25, living in a hostel for homeless people, being an ex-offender managed under MAPPA, and receiving daily living support. The candidate answer does not address any of these points but instead states 'I do not know.'"
+ },
+ {
+  "id": "a774b2f2e09948d5ae2c24722bcf5c45",
+  "question": "What will happen if you do not contact HMRC within 30 days after receiving the letter?",
+  "reference": "HMRC will not process your return, issue a repayment of income tax to you, and send you a notice to file a Self Assessment tax return in future.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about HMRC's actions regarding the processing of returns and notices to file. The candidate answer does not convey any of this factual content but instead expresses uncertainty."
+ },
+ {
+  "id": "bf92398d8b15425dab41f6f37cec368c",
+  "question": "What are the differences in responsibilities for running a business from home versus renting a property?",
+  "reference": "You may have to pay business rates if you rent or buy a property, and there are specific things you need to check regarding your responsibilities.",
+  "closed_book": "Running a business from home versus renting a property can have several differences in responsibilities. Here are some key distinctions:",
+  "matches": false,
+  "reason": "The reference discusses the obligation to pay business rates for renting or buying a property and mentions checking specific responsibilities. The candidate, however, talks about differences in running a business from home versus renting a property without directly addressing business rates or responsibilities."
+ },
+ {
+  "id": "9f052f800d8e4ef5ad5c0d6cf76e8613",
+  "question": "How can one obtain the most recent data for a specific year without downloading all yearly files?",
+  "reference": "Download the monthly file for the latest month of that year.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides instructions to download a specific file, while the candidate expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "db44783149b846d7a248a5ede32d3287",
+  "question": "What document can a dual citizen with British or Irish citizenship use to prove their UK citizenship when traveling?",
+  "reference": "a valid British passport, a valid Irish passport, another valid passport containing a certificate of entitlement",
+  "closed_book": "A dual citizen with British or Irish citizenship who wishes to prove their UK citizenship when traveling may use a British passport. Alternatively, if they are also an Irish citizen and prefer to travel on Irish documentation, they could use an Irish passport.",
+  "matches": false,
+  "reason": "The reference mentions the need for a valid British passport, a valid Irish passport, and another valid passport containing a certificate of entitlement. The candidate only discusses using these passports to prove UK citizenship when traveling, without mentioning the requirement for multiple types of passports or the certificate of entitlement."
+ },
+ {
+  "id": "80620c7cebf649ebbb9064dbe3b4a4b4",
+  "question": "What should you check if you're a dual resident and want to claim double-taxation relief?",
+  "reference": "You need to check the other country\u2019s residence rules and when the tax year starts and ends.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about checking residence rules and tax years of another country, while the candidate response is a statement of uncertainty without any relevant content to compare."
+ },
+ {
+  "id": "6582c3009408445c920c136b3d32898f",
+  "question": "What specific form is required for members of the Northern Ireland Legislature, and how does it differ from other supplementary pages mentioned?",
+  "reference": "SA102NI: Northern Ireland Legislators",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about 'SA102NI: Northern Ireland Legislators', while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "7b2571ab533b4f7d9a3c50835b063e23",
+  "question": "How does an alternative payment arrangement differ from a single monthly payment?",
+  "reference": "An APA could mean receiving payments twice a month instead of once a month.",
+  "closed_book": "An alternative payment arrangement typically involves splitting the total amount into multiple payments over time, rather than making a single monthly payment. This can be structured in various ways such as bi-weekly, every two weeks, or through flexible payment plans that adjust based on income or other factors. In contrast, a single monthly payment means the full amount is paid off within one month.",
+  "matches": false,
+  "reason": "The reference specifically mentions 'receiving payments twice a month instead of once a month,' which aligns with an APA (Alternative Payment Arrangement) context. However, the candidate answer provides a more generalized description of alternative payment arrangements without directly mentioning the specific scenario of receiving payments twice a month. The substance does not fully match as the candidate's explanation is broader and less specific to the given reference."
+ },
+ {
+  "id": "dc7deab6fe0e4f7a9097d938f7cea893",
+  "question": "What additional items can be included in buildings used for a relevant charitable purpose beyond those listed in 13.8.3?",
+  "reference": "blackboards or whiteboards fixed to or forming part of the wall, gymnasium wall bars, notice and display boards, mirrors and barres (in ballet schools)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a list of specific items related to educational or athletic settings, while the candidate response is a statement of ignorance and does not convey any factual content."
+ },
+ {
+  "id": "5a3c9e968ab64409ba03ffaf5a190810",
+  "question": "What must you have to apply for the priority or super priority service?",
+  "reference": "permission to be in the UK",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference asks about a specific factual content related to permission to be in the UK, while the candidate response does not address this at all."
+ },
+ {
+  "id": "88519d09808b41ac91ee22b56e200f6c",
+  "question": "If a phone or video call assessment is conducted, how can you ensure the assessor contacts someone else present during the assessment?",
+  "reference": "You can ask the assessor to call them if they\u2019re not with you when the assessment starts.",
+  "closed_book": "To ensure the assessor contacts someone else present during the assessment, you could provide clear instructions to the participants before starting. For example, instruct them to have a colleague or another person in the room who can be contacted if needed. Additionally, you might want to set up a plan where the assessor periodically checks in with different individuals present to ensure everyone has an opportunity to be assessed.",
+  "matches": false,
+  "reason": "While both statements aim to ensure someone can be contacted during an assessment, the reference specifically mentions asking the assessor to call a person if they are not present. The candidate answer suggests providing instructions for participants and setting up periodic check-ins, which is more detailed but does not directly match the specific action in the reference."
+ },
+ {
+  "id": "708a098b3d0344668d16d35def8f0fa0",
+  "question": "If someone gives a gift of \u00a3325,001 to a beneficiary who received another gift from the donor within 7 years before the donor's death, will Inheritance Tax be applicable on both gifts?",
+  "reference": "Yes, Inheritance Tax would be applicable on the second gift as it exceeds the threshold and falls within the 7-year period.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about Inheritance Tax being applicable to a second gift due to it exceeding the threshold and falling within the 7-year period. The candidate answer expresses uncertainty without providing any relevant information, thus not conveying the same factual content."
+ },
+ {
+  "id": "b8b574535f8e4684ad98be2e2c2f1bdb",
+  "question": "How do you prove your relationship to a child over 18 who is applying for the visa?",
+  "reference": "You\u2019ll need to provide evidence of your relationship to your dependant when you apply.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the requirement for providing evidence of a relationship to a dependant during an application process. The candidate response does not address this at all but instead expresses uncertainty."
+ },
+ {
+  "id": "0e3ea8c18eec4ae8b9a35d981cea3073",
+  "question": "Can you apply for a family permit if your relationship with an eligible family member broke down due to domestic violence, or if they had an eligible marriage and you lived in the UK when it ended?",
+  "reference": "Yes, you can apply in both cases.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement affirms that applying is possible in both cases, while the candidate response indicates uncertainty."
+ },
+ {
+  "id": "860e930fbca44f58a815364ef2cd4b36",
+  "question": "What should you do if your rod fishing licence is lost?",
+  "reference": "Contact the Environment Agency to replace a lost licence.",
+  "closed_book": "You should report the loss of your rod fishing licence to the relevant authorities as soon as possible. The process may involve obtaining a replacement licence, which could require proof of your identity and payment of any associated fees. It's important to replace the lost licence to avoid any legal issues or fines for unlicensed fishing.",
+  "matches": false,
+  "reason": "While both statements convey the need to report a lost fishing licence and involve contacting relevant authorities, the candidate provides more detailed steps such as the requirement of proof of identity and payment of fees. The reference is more concise, focusing solely on contacting the Environment Agency."
+ },
+ {
+  "id": "61ad3350a2444ec38693241f8bfaa272",
+  "question": "How do the exemptions for applications made on or after 6 August 2026 compare to those for applications made after 12 April 2024?",
+  "reference": "Both are exempt, but the latter has a later date.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys specific factual content about exemptions and dates, while the candidate response expresses uncertainty without providing any information related to the original statement."
+ },
+ {
+  "id": "00da6042116f416da87a8da4a1e2909a",
+  "question": "How can you update the lead trustee's address?",
+  "reference": "You can update the address",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'You can update the address' conveys information about the ability to change an address, while the candidate response 'I do not know' expresses uncertainty without providing any related information. The substance does not match."
+ },
+ {
+  "id": "4dfd12a8de4d4a5197aa0363e9d8a4f2",
+  "question": "When must you tell the office that pays your benefit if you plan to go abroad for more than 4 weeks?",
+  "reference": "Tell the office that pays your benefit if you plan to go abroad for more than 4 weeks.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference message is about informing the office that pays your benefit about an intention to go abroad for more than 4 weeks. The candidate answer does not convey any information related to this topic."
+ },
+ {
+  "id": "fa08c800a45c4378a1e5c3957e0a97ed",
+  "question": "What must you account for VAT on?",
+  "reference": "all the taxable supplies you make by way of business",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific definition related to taxable supplies made in a business context, while the candidate response expresses uncertainty and does not convey any factual content."
+ },
+ {
+  "id": "34e2b9c189284a3db7d8b68c481e5913",
+  "question": "Who can use the service to access an eVisa if they have a visa for Northern Ireland but not for England, Scotland or Wales?",
+  "reference": "any visa for the UK (England, Scotland, Wales or Northern Ireland)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference specifies any visa for the UK including its countries, while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "ae5677ee51d44e02908a6820787aac1e",
+  "question": "Can past levy payments be credited against future levy liability when a new planning permission creates a revised levy liability for the development?",
+  "reference": "Yes",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference answer 'Yes' conveys a different factual content compared to the candidate answer 'I do not know.'"
+ },
+ {
+  "id": "ca6c7bd6b7414d9eb73dfdceda232f79",
+  "question": "How can you claim relief for retail, hospitality and leisure businesses differently from other types of business rate relief?",
+  "reference": "You cannot make a new claim for retail, hospitality and leisure relief. From 1 April 2026, you will need to use rate multipliers to calculate your business rates bill.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the inability to make new claims for certain types of relief and the requirement to use rate multipliers starting from April 1, 2026. The candidate answer expresses uncertainty without providing any relevant factual content."
+ },
+ {
+  "id": "b9e01cde9ee54cf682cc718892bd979e",
+  "question": "Which payment method is not used by visa scams?",
+  "reference": "cash",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'cash' conveys a specific factual content related to currency or money. The candidate 'I do not know' does not provide any factual information and instead expresses uncertainty. Therefore, the substance does not match."
+ },
+ {
+  "id": "b3aa5115bf454eb6bdd6f735d7800efa",
+  "question": "What is the difference between an amendment and a submitted application in terms of HMRC's handling?",
+  "reference": "You cannot make an amendment after it has been submitted.",
+  "closed_book": "An amendment to a tax return or submission typically involves changes made after the initial filing. These can include corrections, updates, or additional information that needs to be added to an existing tax return. HMRC handles amendments by reviewing the changes and processing them according to current regulations and guidelines. A submitted application, on the other hand, usually refers to a new request for something like a change in tax status, registration for a scheme, or applying for a specific tax relief. HMRC processes these applications based on the information provided and may require additional documentation or clarification before making a decision.",
+  "matches": false,
+  "reason": "The reference statement is concise and directly states that you cannot make an amendment after submission. The candidate answer provides more detailed information about the process of amendments and applications but does not explicitly state that amendments cannot be made after a submission."
+ },
+ {
+  "id": "7faf68660d334c1da75b5eea4592519b",
+  "question": "What do you need to send with the completed Self Assessment form?",
+  "reference": "Send the completed Self Assessment form by post.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference instructs to send a completed Self Assessment form by post, while the candidate response indicates uncertainty about what action to take."
+ },
+ {
+  "id": "cca5b6bfa49a4f57ba8dc01634728630",
+  "question": "What must be ignored when calculating the value of the estate for taper purposes?",
+  "reference": "exemptions such as spouse exemption, reliefs such as agricultural or business property relief",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific types of exemptions and reliefs, while the candidate expresses uncertainty."
+ },
+ {
+  "id": "5ac2122d3980471ea1702155293b7bf6",
+  "question": "Under what condition related to income can a parent still be eligible for Tax-Free Childcare?",
+  "reference": "If your or your partner\u2019s expected adjusted net income (including any foreign income) is over \u00a3100,000 for the current tax year.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about expected adjusted net income and a threshold amount, while the candidate response does not address the content at all."
+ },
+ {
+  "id": "debf0eec46bf4b71a7ac225f59101c0f",
+  "question": "What document can be used to prove a valid Student visa or Tier 4 (General) student visa for up to 24 months after its expiry?",
+  "reference": "biometric residence permit (BRP)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'biometric residence permit (BRP)' provides specific factual content related to a type of document. The candidate response 'I do not know.' does not convey any factual information and is merely a statement of ignorance."
+ },
+ {
+  "id": "eefff327d632419eacf86bad7c983bad",
+  "question": "What must you do if the seller registered the vehicle to you online and it\u2019s a used car?",
+  "reference": "You will get your new V5C within 5 to 7 working days.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about the delivery time for a V5C, while the candidate response does not address any of the content in the reference."
+ },
+ {
+  "id": "b97c6ec745b141cbaf06cfd4112bf5c0",
+  "question": "In Example 2, if the total price excluding VAT is \u00a3126 and the cost of zero-rated supply is \u00a323, what is the tax-exclusive cost of standard-rated supply?",
+  "reference": "\u00a340",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value (\u00a340), while the candidate expresses uncertainty or lack of knowledge. The substance does not match."
+ },
+ {
+  "id": "1bd247248f034607ac496e64b5559a43",
+  "question": "Where can you get copies of the Act and Statutory Instruments?",
+  "reference": "from the Stationery Office website or online from Legislation.gov.uk",
+  "closed_book": "You can typically obtain copies of Acts and Statutory Instruments from official government publications offices or legislative websites. In many countries, these documents are also available through national libraries or online legal databases.",
+  "matches": false,
+  "reason": "While both sources indicate where to find Acts and Statutory Instruments, the reference is specific to two particular websites (Stationery Office and Legislation.gov.uk), whereas the candidate statement provides a broader range of options including government publications offices, national libraries, or online legal databases."
+ },
+ {
+  "id": "4514bbffcd924fc8860f7f4b9b04cf92",
+  "question": "Under what condition might an anonymous submission still be accepted despite the reward being unavailable?",
+  "reference": "the information may already be known to HMRC or could have been identified through routine processes",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the possibility that certain information might be known to HMRC or identifiable through standard procedures. In contrast, the candidate response simply states a lack of knowledge without addressing the content of the reference."
+ },
+ {
+  "id": "92684df797354719af880434905dbec0",
+  "question": "How long do you have to report the estate's value after death?",
+  "reference": "within one year",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference specifies a timeframe (within one year), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "a668bff69dae4353bdfe5a1f5ffbd835",
+  "question": "Which service can you use if you cannot hear or speak on the phone?",
+  "reference": "elay UK (if you cannot hear or speak on the phone): 18001 then 0800 731 0297",
+  "closed_book": "You can use a text-based communication service such as SMS, instant messaging apps (like WhatsApp or Telegram), or video chat services with text options (like Skype with chat feature enabled).",
+  "matches": false,
+  "reason": "The reference provides specific phone numbers for alternative communication methods in the UK, while the candidate offers general suggestions for non-voice communication methods without specifying any particular contact details."
+ },
+ {
+  "id": "fb1176db5f9a457bb2f33fcc6f8aef99",
+  "question": "How long should you wait before continuing to drive after requesting a new licence?",
+  "reference": "You can continue driving while you wait for your new licence to arrive.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about the possibility of continuing to drive while waiting for a new license, whereas the candidate response is uncertain and does not convey any factual content related to driving with a pending license."
+ },
+ {
+  "id": "4c87aaa5d1264dc9af5df8534d649d77",
+  "question": "Under what circumstances would local biodiversity policies still apply to development projects exempt under the statutory framework?",
+  "reference": "Other local biodiversity policies which require specific enhancements to support biodiversity would continue to apply to these applications where appropriate.",
+  "closed_book": "I do know. Local biodiversity policies may still apply to development projects that are exempt under the statutory framework if these projects fall within specific geographic areas or zones where such policies are in effect, regardless of broader exemptions. Additionally, local policies might be triggered by certain characteristics of the project, such as its potential impact on sensitive ecosystems or species, even if it is otherwise exempt.",
+  "matches": false,
+  "reason": "The reference statement focuses specifically on biodiversity policies continuing to apply to applications where appropriate, without mentioning development projects, exemptions, geographic areas, or project characteristics. The candidate answer introduces additional context and conditions not present in the reference."
+ },
+ {
+  "id": "15a4112eb5e445bfb934a66a765548e1",
+  "question": "How does the cost and time of a faster decision compare to a standard application?",
+  "reference": "The cost is \u00a3750 more, but the processing time is significantly shorter (10 working days vs. 8 weeks).",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific cost and processing time information, while the candidate response does not address either of these points."
+ },
+ {
+  "id": "aab51a7ea34c40a6bf8e675d8ce54624",
+  "question": "Under what circumstances can a student apply for a Tier 4 (General) student visa to continue their studies after completing an intercalated course?",
+  "reference": "continuing your medical, dentistry or medical science degree after completing an intercalated course",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about continuing a specific type of academic path (medical, dentistry, or medical science degree) after an intercalated course. The candidate response does not provide any information related to the reference and instead states uncertainty."
+ },
+ {
+  "id": "c483e89743a0416e90f16a4c2cfd379c",
+  "question": "What happens if you try to reapply for the same job after withdrawing your application?",
+  "reference": "You cannot resubmit it at a later date, or re-apply for the same job.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about resubmitting applications or re-applying for the same job, while the candidate's response does not address this at all."
+ },
+ {
+  "id": "9ac5ebc8816541d09fa58d835f873387",
+  "question": "Under what conditions can an Innovator Founder visa holder apply for indefinite leave to remain?",
+  "reference": "If you\u2019ve lived in the UK for 3 years and meet the other eligibility requirements.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about residency in the UK and meeting eligibility requirements, while the candidate response does not address these points at all."
+ },
+ {
+  "id": "29d031ac23f6426594df4ea0d796d5af",
+  "question": "What alternative method can be used for apportionment if the suggested calculation is not suitable?",
+  "reference": "use any other formula, provided it produces a fair and reasonable result",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests using alternative formulas for fairness, while the candidate expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "190d6609933d4714865c49a3fb07f650",
+  "question": "How many photos do you need to provide?",
+  "reference": "2 identical photos",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference describes a specific scenario involving two identical photos, while the candidate response expresses uncertainty without relating to any of the content in the reference."
+ },
+ {
+  "id": "349c0f300a7c4621992e6289f325fe5e",
+  "question": "Can you bring more than a 3-month supply of medication if your travel dates are less than 3 months apart?",
+  "reference": "No, the letter must indicate that you are not carrying more than a 3-month supply from both your travel dates and quantities of medication listed on the letter or prescription.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the content that must be indicated in a letter regarding medication supply, while the candidate response does not address the substance of the reference at all."
+ },
+ {
+  "id": "73cb73889aa3449f8c9de996dd1c0da6",
+  "question": "What form should you fill in if your diabetes is treated by sulphonylurea or glinide tablets?",
+  "reference": "form VDIAB1SG",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'form VDIAB1SG' refers to a specific document or form, while the candidate 'I do not know.' provides no information related to the reference."
+ },
+ {
+  "id": "3071e8a290a24dd1bf6a600f39959f2d",
+  "question": "Can an implied term be created by a long-standing company practice, such as giving bonuses at Christmas, even if not explicitly stated in the contract?",
+  "reference": "something that\u2019s been done regularly in a company over a long time like paying a Christmas bonus",
+  "closed_book": "Yes, an implied term can be created by a long-standing company practice, such as giving bonuses at Christmas, even if not explicitly stated in the contract. Such practices can become part of the implied terms of employment over time through custom and practice.",
+  "matches": true,
+  "reason": "Both the reference and candidate answers convey the idea that a long-standing company practice, such as paying a Christmas bonus, can be considered an implied term of employment. The candidate answer provides more detail but does not change the core factual content."
+ },
+ {
+  "id": "c05bdbf05616457da518195ac2990b39",
+  "question": "Which SELT providers are available for those inside the UK and outside of the UK, respectively?",
+  "reference": "Trinity College London, IELTS SELT Consortium, LANGUAGECERT; PSI Services (UK) Ltd, IELTS SELT Consortium, LANGUAGECERT",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific names of organizations related to language certification and testing, while the candidate response indicates a lack of knowledge about these entities."
+ },
+ {
+  "id": "66223b876eea493f84ea119835dcb325",
+  "question": "How long is consent valid by default?",
+  "reference": "2 years",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific time duration of 2 years, while the candidate expresses uncertainty with 'I do not know.' There is no substantive match in terms of content."
+ },
+ {
+  "id": "ef362198997f416891edb85ff57e9b17",
+  "question": "How can you check your State Pension forecast?",
+  "reference": "check your forecast online",
+  "closed_book": "You can check your State Pension forecast by visiting the Government's website or contacting the relevant government department in your country. In the UK, for example, you can use the GOV.UK service called 'State Pension Checker' to get an estimate of when you can start receiving your pension and how much you might receive.",
+  "matches": false,
+  "reason": "The reference simply suggests checking a forecast online without specifying the method or service. The candidate provides more detailed information about accessing the State Pension forecast specifically in the UK, which goes beyond the general instruction given in the reference."
+ },
+ {
+  "id": "f1ae16103b1c45f4a133e9f1c4d11ecf",
+  "question": "Under what condition should authorities report on estimated future income from developer contributions in an infrastructure funding statement?",
+  "reference": "where they are able to do so",
+  "closed_book": "Authorities should report on estimated future income from developer contributions in an infrastructure funding statement when there is a legal requirement to do so, or when the information is deemed material and relevant for stakeholders to understand the financial basis of the infrastructure project. This typically occurs during the planning and approval stages of the project.",
+  "matches": false,
+  "reason": "The reference phrase 'where they are able to do so' is a general statement about conditions under which an action can be taken. The candidate answer provides specific details on when authorities should report estimated future income from developer contributions, including legal and material relevance criteria. These statements convey different levels of detail and context."
+ },
+ {
+  "id": "1d46fa764f6f45f4b32605e371432da3",
+  "question": "Compare the conditions under which a vehicle can be clamped with when covert activity allows not wearing a licence.",
+  "reference": "a disabled badge or being an emergency service vehicle in use as such; during covert activity, you do not have to wear your licence where it can be seen.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about wearing a disabled badge or being an emergency service vehicle, and the conditions under which a licence does not need to be worn during covert activity. The candidate response does not convey any of this factual content."
+ },
+ {
+  "id": "911c969e441e4912a18af3a169c7615b",
+  "question": "What should you do if a tenant does not have the right documents, share code, and is told they cannot rent by the Home Office?",
+  "reference": "Call the landlord\u2019s helpline to get help with a check.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests calling a specific helpline provided by the landlord for assistance with a check, while the candidate response does not provide any information related to the original instruction and instead expresses uncertainty."
+ },
+ {
+  "id": "7722807bed6c456c9b2e741933a81f82",
+  "question": "How can you access older import VAT statements?",
+  "reference": "You need to access your Customs Declaration Service dashboard.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific action (accessing the Customs Declaration Service dashboard), while the candidate response indicates uncertainty or lack of knowledge."
+ },
+ {
+  "id": "f5777a37e61a473f937d203b22130b05",
+  "question": "What happens if you leave your course in term 3?",
+  "reference": "all the loan for the year if you suspend or leave in term 3",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference discusses conditions related to suspending or leaving during term 3 and the impact on loans for the year. The candidate response is a statement of ignorance and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "38706ae0c22545be9ae997cb1b532d7a",
+  "question": "What is the maximum percentage of a deceased spouse's State Second Pension that can be inherited?",
+  "reference": "50%",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value (50%), while the candidate expresses uncertainty with 'I do not know.'"
+ },
+ {
+  "id": "39053c73ae5f49dc9e8cab33ff62e352",
+  "question": "What additional requirement must independent sector teachers meet to teach in maintained and non-maintained special schools in England?",
+  "reference": "They need QTS.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual requirement (they need QTS), while the candidate response expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "346da74ef54d48dc9107109e7e8ad0c8",
+  "question": "Under what circumstances must you register for Self Assessment with HMRC?",
+  "reference": "You must register for Self Assessment if you received dividend income.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the requirement to register for Self Assessment when receiving dividend income. The candidate response does not address this information at all and instead expresses uncertainty."
+ },
+ {
+  "id": "8d17cb4a3de946409e097e4ea14b5376",
+  "question": "Can I pay Corporation Tax by post?",
+  "reference": "No.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'No.' expresses a clear and definitive stance, while the candidate response 'I do not know.' indicates uncertainty. These convey different factual contents."
+ },
+ {
+  "id": "c9d5d226e77547f084786d5ec99bd0ae",
+  "question": "Under what circumstances can a manufacturer avoid directly registering their custom-made devices with the MHRA?",
+  "reference": "When an EU-based Authorised Representative has been appointed, the manufacturer must register all its custom-made devices with the MHRA.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the requirement for EU-based Authorised Representatives and registration with the MHRA. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "9b90718bea0b45e7b05e54cdc58b0698",
+  "question": "When can leave start if the baby is born early, compared to when you are off work for a pregnancy-related illness?",
+  "reference": "Leave will also start: the day after the birth if the baby is early automatically if you\u2019re off work for a pregnancy-related illness in the 4 weeks before the week (Sunday to Saturday) th",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific conditions under which leave will start, including after birth, due to an early birth, or for a pregnancy-related illness. The candidate answer does not convey any factual content related to the reference."
+ },
+ {
+  "id": "debb5286e5c348ecaa9dfd8f05d792bc",
+  "question": "Which of the listed funds does not follow the naming pattern of 'Two [Word] Superannuation Fund' or 'V[Letter][Number] Superannuation Fund'? ",
+  "reference": "VIDA",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'VIDA' refers to a specific entity or concept, while the candidate response 'I do not know' does not convey any factual content related to the reference. Therefore, they do not match in substance."
+ },
+ {
+  "id": "814b42864bbb485e84eda1612042aa14",
+  "question": "What must you do if the estate generates new income while managing it?",
+  "reference": "You must check if you need to pay tax on any new income the estate generates after the person has died.",
+  "closed_book": "You must ensure that any new income generated by the estate is properly accounted for and managed according to the terms of the will or probate court orders. This may include distributing the income in accordance with the beneficiaries' rights, paying any taxes due on the income, and maintaining accurate records of all financial transactions.",
+  "matches": false,
+  "reason": "While both statements address the management of new income generated by an estate, the reference specifically mentions paying tax on that income, which is not explicitly stated in the candidate answer. The candidate answer focuses more broadly on managing and distributing the income according to legal documents."
+ },
+ {
+  "id": "c7f68473defe433fa9989185e6dfba08",
+  "question": "How does Pension Credit differ from Housing Benefit in terms of eligibility and purpose?",
+  "reference": "Pension Credit is for those over State Pension age on a low income, while Housing Benefit is not mentioned in relation to Pension Credit.",
+  "closed_book": "Pension Credit is a means-tested benefit designed to top up the incomes of older people aged 60 or over, as well as some younger disabled people. It helps ensure that pensioners do not fall into poverty by providing additional financial support. Pension Credit has specific eligibility criteria based on age, income, and savings, among other factors. Its purpose is to assist elderly individuals in maintaining a decent standard of living during their retirement years, particularly those with low incomes or limited savings.\n\nHousing Benefit, on the other hand, is a means-tested benefit that helps people who are struggling to pay for their housing costs. It can cover rent, mortgage interest, council tax, and sometimes utility bills. The eligibility for Housing Benefit depends on factors such as income, savings, and the number of people in the household. Its primary purpose is to assist individuals or families with meeting their housing expenses.\n\nIn summary, Pension Credit focuses on supporting older people's incomes, while Housing Benefit aims to help cover housing costs.",
+  "matches": false,
+  "reason": "The reference specifically states that Housing Benefit is not mentioned in relation to Pension Credit, whereas the candidate answer includes a detailed description of Housing Benefit and its relationship to Pension Credit. The substance does not match."
+ },
+ {
+  "id": "8098e9e73d944929acde329fa02adf98",
+  "question": "Can you request a review if your application has already been fully processed without errors?",
+  "reference": "No, the application will not be reconsidered.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement clearly indicates a decision regarding an application not being reconsidered, while the candidate response expresses uncertainty. The substance of the messages differs in meaning."
+ },
+ {
+  "id": "1ae318212a0e41b1b40b6a59ac92b78d",
+  "question": "How do the place of supply rules differ for B2B and B2C services in VAT Notice 700?",
+  "reference": "For B2B, the supply is made where the customer belongs; for B2C, the supply is made where the supplier belongs.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the location of supply in B2B and B2C contexts, while the candidate response expresses uncertainty without providing any related content."
+ },
+ {
+  "id": "6d08cb9bc0694960ae2da72213a7ac1b",
+  "question": "Can an employee who is excluded from standing for election still vote in the transfer election, and what rights do they have compared to those who can stand for election?",
+  "reference": "No affected employee is unreasonably excluded from standing for election, but all affected employees at the time of the election are entitled to vote.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the rights of employees regarding standing for election and voting, while the candidate's response is a declaration of ignorance about the topic."
+ },
+ {
+  "id": "210096a9c1004d40b5224d05f4b4dc62",
+  "question": "What distinguishes VAT-registered businesses selling goods to charities from other sellers in terms of VAT rates?",
+  "reference": "VAT-registered businesses can sell certain goods and services to charities at the zero or reduced rate of VAT, while other sellers may not be eligible for such rates.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about VAT-registered businesses selling goods and services to charities at reduced VAT rates. The candidate answer expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "4a482df5347b4688a3854ee0e19113fb",
+  "question": "How does the eligibility for rail ticket discounts differ between wheelchair users and blind/visually impaired people?",
+  "reference": "Wheelchair users can check their eligibility on the National Rail website, while blind and visually impaired people can also check their eligibility on the same site.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about how wheelchair users and blind or visually impaired people can check their eligibility on the National Rail website. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "7703fbb832f94a54b11dbd5047874bcf",
+  "question": "What specific evidence is required for claiming tax relief on a workplace pension, and how does it differ from the proof needed for personal pension payments?",
+  "reference": "evidence that you received 20% tax relief automatically from your employer \u2014 if you\u2019re claiming for a workplace pension",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about receiving 20% tax relief from an employer when claiming for a workplace pension. The candidate response does not address this information at all and instead states a lack of knowledge on the topic."
+ },
+ {
+  "id": "137d24cb6b7740399d618ef5f9dd73fb",
+  "question": "Under what circumstances can you receive a refund of your application fee?",
+  "reference": "If UK Visas and Immigration has not started to process your application.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the status of an application with UK Visas and Immigration, while the candidate response is a general statement indicating ignorance."
+ },
+ {
+  "id": "1ce653a27d8442eaafc71ff8d2aff5e1",
+  "question": "How does the treatment of applicants who are 18 or over differ from those still considered children for UPE purposes?",
+  "reference": "You will not be treated as a child for the purposes of the UPE application.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about treatment in the context of an UPE application, while the candidate response is a general statement indicating ignorance."
+ },
+ {
+  "id": "a8c3e44d8706499e84064b7a17a22508",
+  "question": "What is the difference in the process for moving a body abroad from Scotland compared to Northern Ireland?",
+  "reference": "There is a different process for moving a body abroad from Scotland and moving a body abroad from Northern Ireland.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides factual information about the different processes for moving bodies abroad from Scotland and Northern Ireland. The candidate response expresses uncertainty without providing any substantive content related to the reference."
+ },
+ {
+  "id": "9a10c5428bf64e86902d420d6d12420b",
+  "question": "Which countries are listed under the 'differential evidence requirement'? ",
+  "reference": "Australia\nAustria\nBahrain\nBarbados\nBelgium\nBotswana\nBrazil\nBrunei\nBulgaria\nCambodia\nCanada\nChile\nChina\nCroatia\nRepublic of Cyprus\nCzechia\nDenmark\nThe Dominican Republic\nEstonia\nFinland",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference list provides a specific set of countries, while the candidate answer is a generic statement indicating uncertainty."
+ },
+ {
+  "id": "7a666d9e121742ffaa2f217d08050236",
+  "question": "How much compensation is awarded for the loss of one leg below the knee, and what level does it correspond to?",
+  "reference": "\u00a333,000, A14",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific monetary and alphanumeric information (\u00a333,000, A14), while the candidate response expresses uncertainty without providing any relevant factual content."
+ },
+ {
+  "id": "366686f2789840e0aaa9004a55ff83c0",
+  "question": "How long can you stay in the UK if you turn 31 after your visa is issued?",
+  "reference": "as long as your visa is valid",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'as long as your visa is valid' conveys a factual piece of information related to travel or residency. In contrast, the candidate response 'I do not know' does not provide any substantive information and simply expresses uncertainty. Therefore, they do not convey the same factual content."
+ },
+ {
+  "id": "65704ff7700641e39b51b474c3d2d903",
+  "question": "How do you calculate the tax value of the zero-rated supply?",
+  "reference": "\u00a345.04",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value (\u00a345.04), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "2868d1cca3f044e885c4a2b3f0c41c39",
+  "question": "Where can you get advice on writing applications and what to do at interviews?",
+  "reference": "The National Careers Service",
+  "closed_book": "You can get advice on writing applications and what to do at interviews from career counselors, online resources, books, or by networking with professionals in your desired field.",
+  "matches": false,
+  "reason": "The reference specifically mentions the National Careers Service, while the candidate provides general advice on getting career-related information from various sources without mentioning this specific service."
+ },
+ {
+  "id": "c1d3eb0b8845479db15eb7b82fa9511b",
+  "question": "What information do you need to provide when applying for a family visa?",
+  "reference": "all your names, your date of birth, your current passport or other valid travel ID, copies of the photo page and any visa or entry stamps in your previous passports, details of any previous immigration applications you\u2019ve made, details of any criminal convictions, your national insurance number, if you have one, your parents\u2019 date of birth and nationality",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference list provides specific details required for an immigration application or similar process, while the candidate response is a generic statement indicating ignorance."
+ },
+ {
+  "id": "9c12a25bcbc6434daf92adac3d88774e",
+  "question": "What condition must be met for a magistrates\u2019 court to issue a planning enforcement order?",
+  "reference": "The apparent breach of planning control has been deliberately concealed and it is just to make the order having regard to all the circumstances.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses a breach of planning control that has been concealed and suggests making an order based on all circumstances. The candidate response is a simple admission of ignorance without addressing the substance of the reference."
+ },
+ {
+  "id": "91b34ffed9ae4eefa5e26e606f349017",
+  "question": "Under what circumstances can a child automatically be considered a British citizen without applying?",
+  "reference": "If the child was born inside the UK before their parent was granted indefinite leave to remain.",
+  "closed_book": "A child can automatically be considered a British citizen without applying if they are born in the UK to parents who are nationals or residents of a qualifying Commonwealth country, or if they are born to British parents. Additionally, a child born outside the UK to a British citizen parent may also acquire British citizenship at birth under certain circumstances.",
+  "matches": false,
+  "reason": "The reference specifically mentions a scenario where a child's status is tied to their parents' indefinite leave to remain in the UK. The candidate answer does not address this specific condition and instead provides broader criteria for British citizenship."
+ },
+ {
+  "id": "96f079cf349a4ae38b5fde1b6cd6c5fd",
+  "question": "What are the two types of approved test centres for the British National (Overseas) visa?",
+  "reference": "approved test centre abroad, approved test centre in the UK",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about approved test centers located both abroad and in the UK. The candidate response expresses uncertainty without providing any relevant factual content."
+ },
+ {
+  "id": "32f2333e19264c62a250e7c03268e819",
+  "question": "What must you do to ensure your evidence is considered by the tribunal?",
+  "reference": "Submit any evidence as soon as possible before the hearing so the tribunal has time to read it.",
+  "closed_book": "To ensure your evidence is considered by the tribunal, you should follow these steps: submit your evidence in a timely manner according to the tribunal's rules and deadlines, clearly label and organize your evidence, provide a written statement or affidavit that explains how each piece of evidence supports your case, and be prepared to present your evidence during the hearing if required. It is also advisable to consult with legal counsel to ensure compliance with any specific procedural requirements.",
+  "matches": false,
+  "reason": "While both statements emphasize timely submission of evidence, the candidate answer provides additional details and recommendations that go beyond the core message of the reference. The reference focuses solely on submitting evidence before the hearing, whereas the candidate answer includes steps such as labeling and organizing evidence, providing written explanations, and being prepared to present during the hearing."
+ },
+ {
+  "id": "4a4da5d9d055488aa8836ed7c75a04f2",
+  "question": "Under what circumstances might you need to show your green card even if you are not involved in an accident?",
+  "reference": "at the border when moving between countries, if you\u2019re stopped by the police",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific context related to being stopped by police at a border when moving between countries. The candidate answer does not address any of the content in the reference and instead gives a generic response."
+ },
+ {
+  "id": "fd62591b1271486896480d893c9b7656",
+  "question": "When revoking a REE, how does HMRC's ability to withdraw it compare to the opter's ability to revoke it?",
+  "reference": "HMRC can withdraw a REE if you do not comply with our requests for information, but once you have made a REE, you cannot revoke it.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about HMRC's ability to withdraw a REE if there is non-compliance with requests for information. The candidate answer does not convey any of this factual content and instead expresses uncertainty."
+ },
+ {
+  "id": "b6048853d0774694bf812be2cc44d3e8",
+  "question": "How does applying for the maximum amount using household income compare to only applying for the minimum amount?",
+  "reference": "If you\u2019ve not provided your household income and have therefore only applied for the minimum amount of Maintenance Loan there\u2019s still time to get more if you\u2019re eligible!",
+  "closed_book": "Applying for the maximum amount using household income typically allows you to secure a higher loan or credit limit, which can be beneficial if you need more funds. However, it also increases your monthly payments and the total interest paid over the life of the loan. Applying only for the minimum amount is generally safer as it reduces financial strain and minimizes interest costs, but may not meet all your needs. The best approach depends on your financial situation and goals.",
+  "matches": false,
+  "reason": "The reference focuses on the possibility of increasing the loan amount if household income is provided, while the candidate discusses the trade-offs between applying for a maximum or minimum amount. The core factual content does not match."
+ },
+ {
+  "id": "6bfdd242176c4ca7a3616dbd7684bf87",
+  "question": "What should you do if your surname has changed but you want to take the test before updating your passport or identity document?",
+  "reference": "You must change the name in your passport or identity document before booking your test.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about a requirement for changing a name in documents prior to booking a test. The candidate response is a generic statement of uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "2048fcfcd1684ef3bab388a4dc7a32ee",
+  "question": "Can you book the module 1 and module 2 tests on the same day, or do they have to be booked separately?",
+  "reference": "They can be booked separately or at the same time.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the possibility of booking items separately or together, while the candidate response expresses uncertainty."
+ },
+ {
+  "id": "c3eb459fc60c4abcbf669db00c66c569",
+  "question": "What types of workers might have different rest rights than the general rules mentioned?",
+  "reference": "Air, sea or road transport workers",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific types of transport workers (air, sea, or road), while the candidate response indicates a lack of knowledge on the topic."
+ },
+ {
+  "id": "7133815a17f544a1afaf21d05ead95d6",
+  "question": "What must you do if the standard rules change and you can no longer comply?",
+  "reference": "apply for a bespoke permit",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'apply for a bespoke permit' conveys a specific action related to obtaining a custom or tailored permit. The candidate response 'I do not know.' does not convey any factual content and is a statement of ignorance rather than an action or process."
+ },
+ {
+  "id": "1ac674f92913423ca435f7f9571aa5e0",
+  "question": "Under what conditions can a calculation method be used to demonstrate 95% or more qualifying use for a building, and how is the fairness of such a method determined?",
+  "reference": "A calculation method can be used if it accurately reflects the extent to which the building (or part) is intended for use for a qualifying purpose, its application is not unduly burdensome, and its accuracy can be checked relatively easily.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific criteria for when a calculation method can be used, while the candidate response expresses uncertainty without addressing any of the criteria."
+ },
+ {
+  "id": "83cae360985349368c4801456ebb04fa",
+  "question": "What must self-employed individuals do monthly to receive Universal Credit payments?",
+  "reference": "report their earnings",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'report their earnings' refers to the act of disclosing financial information, while the candidate 'I do not know' expresses a state of ignorance. The substance does not match."
+ },
+ {
+  "id": "0dedb67e1c9d454f97542a3f446e265f",
+  "question": "How often can prisoners under 49 request a clothing hand-in compared to prisoners over 50?",
+  "reference": "prisoners under 49 can request a clothing \u2018hand-in\u2019 once a year. Prisoners over 50 can request a clothing \u2018hand-in\u2019 every 6 months.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific age-based frequencies for prisoners to request a clothing 'hand-in', while the candidate answer expresses uncertainty and does not convey any factual content related to the original statement."
+ },
+ {
+  "id": "10932462d76548778a42f93a68600b2e",
+  "question": "What should someone do if they have been issued a permission to travel letter but still wish to come to the UK under the Ukraine schemes?",
+  "reference": "You will need to make a new application to the Homes for Ukraine scheme.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about needing to apply to the Homes for Ukraine scheme, while the candidate response expresses uncertainty without providing relevant information."
+ },
+ {
+  "id": "bc4bfed883d146de93e84e9c01ecd522",
+  "question": "What must a driver who passed their car driving test on or after 1 February 2001 do to ride a moped?",
+  "reference": "They will not need to take further theory and practical tests or take CBT again.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the candidate not needing to take further theory and practical tests or CBT again. The candidate answer expresses uncertainty without conveying any of the substantive content from the reference."
+ },
+ {
+  "id": "a684c689318b4208952de68473cac64d",
+  "question": "How much can a claimant earn before their Universal Credit is reduced if they are not receiving housing cost support and do not live in temporary accommodation?",
+  "reference": "\u00a3710 a month",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific monthly amount (\u00a3710), while the candidate expresses uncertainty ('I do not know'). The substance does not match."
+ },
+ {
+  "id": "37046fe27a6e44559dc781f24e2e7af9",
+  "question": "How does the app handle face scanning for children under 9 compared to those aged 10 or older?",
+  "reference": "The app will not ask you to scan the face of a child aged 9 or younger.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about an app's policy regarding scanning faces of children aged 9 or younger. The candidate response is a general statement expressing uncertainty and does not convey the same factual content."
+ },
+ {
+  "id": "ee6864928a67440ba3f493a3ab169788",
+  "question": "What is the difference in addressing an employment tribunal claim form between England and Wales, and Scotland?",
+  "reference": "England and Wales use PO Box 11225, Crown House, Loughborough, LE11 9PX while Scotland uses PO Box 27105, Glasgow, G2 9JR.",
+  "closed_book": "The process of submitting an employment tribunal claim form can differ slightly between England and Wales, and Scotland. In England and Wales, claims are submitted to the Employment Tribunals Service through the Government's online portal or by completing a paper form and sending it to the appropriate address. For Scotland, claims should be made using the Scottish Employment Tribunal Online Service (SETOS) for online submissions or by post if an online account cannot be created. However, specific details such as the exact addresses and any additional requirements may vary, so it's advisable to check the latest guidance from the relevant tribunal service.",
+  "matches": false,
+  "reason": "The reference provides specific postal address information for England and Wales (PO Box 11225, Crown House, Loughborough, LE11 9PX) and Scotland (PO Box 27105, Glasgow, G2 9JR). The candidate does not provide this specific address information but instead gives a general overview of the process for submitting an employment tribunal claim form in England and Wales and Scotland. Therefore, the substance does not match."
+ },
+ {
+  "id": "d0c8072658984974ace918044ce58b02",
+  "question": "When does the developer need to issue a notice of chargeable development?",
+  "reference": "Where development is granted by way of a general consent, the developer must issue a notice of chargeable development to the collecting authority.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the requirement for developers to notify the collecting authority when development is granted by a general consent. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "10a9801e9fe24c28bfaffbfdd8eff346",
+  "question": "How long can a rent increase be backdated compared to the date of notice?",
+  "reference": "not by more than 4 weeks",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific timeframe (not by more than 4 weeks), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "dfb5bd65291649c780f34e0eafb2c10c",
+  "question": "Under what circumstances can someone over State Pension age apply for Personal Independence Payment (PIP)?",
+  "reference": "If you\u2019re over State Pension age, you cannot usually make a new claim for PIP. You can apply for Attendance Allowance instead.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about claiming PIP after State Pension age, while the candidate response is a general statement of uncertainty without any relevant content."
+ },
+ {
+  "id": "02179b0884db45faa9ee567f8a23bc7e",
+  "question": "How does the criminal damage conviction affect the football banning order's impact on rehabilitation?",
+  "reference": "It will still become spent on 5 February 2019 as it only overlaps with the football banning order.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about a date and an event (spending and football banning order), while the candidate expresses uncertainty without providing any relevant details."
+ },
+ {
+  "id": "a6929ee164654ac5bb8b0219099e7f02",
+  "question": "Under what circumstances would you need to contact the Court Funds Office?",
+  "reference": "If the person you were deputy for had an account with them.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference question asks about a specific situation involving a person's account and their deputy. The candidate response does not address this question at all, instead providing a generic statement of ignorance."
+ },
+ {
+  "id": "9c094b320b274a70b312b336a3970634",
+  "question": "Who can apply for settled status even if they are exempt from immigration control?",
+  "reference": "People who are exempt from immigration control.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about people who are exempt from immigration control, while the candidate response expresses uncertainty and does not convey any factual content related to the topic."
+ },
+ {
+  "id": "05330d4d68b840ac81d6dc16e7dda64b",
+  "question": "How can you request a Welsh speaker during the call, and what is the timing of this option?",
+  "reference": "You\u2019ll be given this option when the call begins.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement indicates a specific action or option that will be provided at the start of a call. The candidate answer does not convey any information related to this context and instead provides a general response."
+ },
+ {
+  "id": "7649ee9c2d14488c8129c357b54158f6",
+  "question": "Which superannuation fund name includes a unique identifier that is not shared by others in the list?",
+  "reference": "Thompson62 SMSF",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'Thompson62 SMSF' provides specific information related to a particular entity or topic, while the candidate response 'I do not know' does not convey any factual content and is a general statement of ignorance."
+ },
+ {
+  "id": "b56ff44f1af943eea8c4c2cdd8803c49",
+  "question": "Under what conditions is an employer not required to provide a payslip?",
+  "reference": "not an employee or \u2018worker\u2019, for example a contractor or freelancer; in the police service; a merchant seaman; a master or crew member working in share fishing (paid by a share in the profits or gross earnings of a fishing vessel)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific examples of individuals who are not considered employees or workers in certain contexts, while the candidate response indicates a lack of knowledge."
+ },
+ {
+  "id": "bc1c11a5a01a4aa09654622ca14cb350",
+  "question": "Where can you purchase the official guide to hazard perception for both lorries and buses?",
+  "reference": "online for your PC or Mac, app for Apple phones and tab",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about the availability of a product or service on different devices (PC/Mac and Apple phones/tablets), while the candidate expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "adf1a126d8f34ad8b8fa70e3aa3872ee",
+  "question": "What specific form should be used for reporting a medical condition affecting driving when applying for a bus, coach or lorry licence?",
+  "reference": "form G1V",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'form G1V' provides specific factual content related to a form or document, while the candidate 'I do not know' does not convey any substantive information and is a statement of ignorance. Therefore, they do not match in terms of substance."
+ },
+ {
+  "id": "84d268f4f8f94190812ee1416f8bb78a",
+  "question": "What can be included to describe the risk of flooding?",
+  "reference": "evidence, such as maps and level surveys of the site, flood data sets (e.g. flood levels, depths and/or velocities) and any other relevant data (e.g. speed of onset and duration)",
+  "closed_book": "The risk of flooding can be described by considering factors such as historical flood data, topography, proximity to water bodies, soil type, urban development, climate change impacts, and emergency response capabilities.",
+  "matches": false,
+  "reason": "While both the reference and candidate mention factors related to flooding risk, the specific elements listed do not match. The reference focuses more on direct evidence like maps, level surveys, and flood data sets, whereas the candidate includes a broader range of factors such as topography, proximity to water bodies, soil type, urban development, climate change impacts, and emergency response capabilities."
+ },
+ {
+  "id": "1f8012cb52aa45f1abfdfd8766c3e7ad",
+  "question": "How does the practice test differ from the real Civil Service Verbal and Numerical tests in terms of difficulty?",
+  "reference": "The practice test is designed to show you the look and feel of the real test while keeping the questions easy to respond to.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the purpose of a practice test, whereas the candidate response is a generic and unrelated statement."
+ },
+ {
+  "id": "8394e638f8b24263805d00c20341527e",
+  "question": "Under what circumstances might a candidate who meets the minimum test requirements still not receive an invitation to continue the selection process?",
+  "reference": "Meeting the minimum test requirements for a job level is no guarantee of an invite to continue the selection process.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual content about job selection processes, while the candidate response is a declaration of ignorance and does not provide any information related to the original statement."
+ },
+ {
+  "id": "570875c32ee64b2991dcaf3545348e4b",
+  "question": "How can someone adopt a child from overseas?",
+  "reference": "Contact a UK adoption agency through your local council in England and Wales or a voluntary adoption agency that deals with overseas adoption.",
+  "closed_book": "Adopting a child from overseas involves several steps and requirements that vary by country. Generally, the process includes finding an adoption agency or organization, completing home studies, obtaining necessary documents such as birth certificates and medical records for the child, and navigating legal processes in both your home country and the country of origin. It's important to thoroughly research and comply with all regulations and laws related to international adoption.",
+  "matches": false,
+  "reason": "The reference focuses specifically on contacting a UK adoption agency through local council or voluntary agencies dealing with overseas adoptions. The candidate answer provides a broader overview of the steps involved in international adoption without mentioning how to find an appropriate agency."
+ },
+ {
+  "id": "97b1609cb17d49eeb185bc8fcf80fb55",
+  "question": "When can a corporate body reclaim VAT on goods or services obtained before incorporation compared to those obtained after?",
+  "reference": "A corporate body can reclaim VAT on supplies before incorporation if certain conditions are met, but cannot reclaim VAT on goods or services obtained before the body was incorporated.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about conditions for a corporate body to reclaim VAT on supplies and goods/services before incorporation. The candidate answer expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "03cad8adf107487da923bf01abc127eb",
+  "question": "How does the duration of stay for dependants compare to that of the applicant if their asylum claim is successful?",
+  "reference": "The duration of stay for dependants is usually the same as the applicant's.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about the duration of stay for dependants being typically the same as the applicant's. The candidate answer expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "db8005c29bff47c5ba72c8e6c0b3e1e6",
+  "question": "Under what conditions can a motor vehicle be purchased free of VAT and exported outside the UK?",
+  "reference": "When buying a motor vehicle free of VAT where it\u2019s to be exported to a destination outside the UK (Personal Export Scheme, VAT Notice 707).",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about buying a motor vehicle free of VAT for export outside the UK under the Personal Export Scheme and VAT Notice 707. The candidate answer does not provide any relevant information related to the reference."
+ },
+ {
+  "id": "5fa0f75989d64bc8b35ee4ab90614068",
+  "question": "If your application for the Global Talent visa is refused, how does requesting an endorsement review affect your permission to stay in the UK?",
+  "reference": "It will not extend your stay.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific factual content about staying duration, while the candidate response is uncertain and does not provide any information related to the stay."
+ },
+ {
+  "id": "6b0ce29e9f1742bb90aa4b7c85637372",
+  "question": "How does the time limit for appealing differ between a magistrates\u2019 court and a Crown Court?",
+  "reference": "You usually need to appeal within 15 working days of the date you were sentenced in a Crown Court, while there is no specific mention of time limits for appealing in a magistrates\u2019 court.",
+  "closed_book": "The time limit for appealing to the Criminal Cases Review Commission (CCRC) from a Magistrates' Court is 21 days from when the conviction became final. For appeals against conviction or sentence in the Crown Court, the time limit is generally 28 days from when the conviction became final. However, it's important to note that these are general guidelines and specific circumstances can affect the appeal process.",
+  "matches": false,
+  "reason": "The reference discusses time limits for appeals in Crown Court and magistrates\u2019 court separately, while the candidate provides different time frames (21 days vs. 28 days) for Magistrates' Court appeals and does not mention Crown Court appeal specifics as directly."
+ },
+ {
+  "id": "dff6a9662b204f369c3a01e9f8cbb584",
+  "question": "If your address has changed since registering the LPA, what must you do before requesting an activation key?",
+  "reference": "contact us so we can update your details",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests contacting to update details, while the candidate is a statement of ignorance."
+ },
+ {
+  "id": "cca2ca9d54f144d0b8f7df403077fac3",
+  "question": "How much of the threshold would be used if David leaves \u00a350,000 to his friend Sandra?",
+  "reference": "20%",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value (20%), while the candidate expresses uncertainty with 'I do not know.' There is no substantive match in terms of content."
+ },
+ {
+  "id": "a0c7045e33aa442fa2406ce86d2c93ec",
+  "question": "If my visa was cancelled at border controls outside the UK and I am detained on the date of cancellation, how long do I have to apply for an administrative review?",
+  "reference": "7 days",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific timeframe of 7 days, while the candidate expresses uncertainty with 'I do not know.' There is no substantive match in terms of content."
+ },
+ {
+  "id": "f4b6aec76bcd4bd8996a693d17975eb1",
+  "question": "What should you do if you see red flags or lights on MOD land?",
+  "reference": "You should avoid the area and not enter when these are present.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement advises avoiding a certain area under specific conditions, while the candidate response is a general statement of uncertainty without any relation to the original content."
+ },
+ {
+  "id": "8456ac1104e14fbe9a1d07031c3a3012",
+  "question": "When must a product be marked with UKCA or CE marking?",
+  "reference": "A product is placed on the market when it is manufactured and put into use, or supplied in the course of a commercial activity.",
+  "closed_book": "UKCA (United Kingdom Conformity Assessed) marking is required for products placed on the market in Great Britain, while CE (Conformit\u00e9 Europ\u00e9enne) marking is necessary for products sold in the European Economic Area (EEA). The specific requirements for when a product must be marked with UKCA or CE depend on the type of product and its intended market. Generally, products subject to EU directives and regulations typically require a CE marking, whereas those regulated by UK legislation may need a UKCA marking after January 1, 2023. However, I do not have specific details for every scenario.",
+  "matches": false,
+  "reason": "The reference statement discusses the general concept of when a product is placed on the market, while the candidate answer provides information about specific marking requirements (UKCA and CE) for different markets. The substance does not match."
+ },
+ {
+  "id": "74e646af10654177a8d39267fc6b78a7",
+  "question": "How can an applicant or Registered Body request a withdrawal, and which method involves sending a letter to the DBS?",
+  "reference": "There are three methods: emailing, writing and sending a letter directly, and informing the relevant local police force.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific methods of communication or reporting, while the candidate expresses uncertainty."
+ },
+ {
+  "id": "dd72feb0da96444cb6fde74afbbc0afa",
+  "question": "What must you do if you have a UK blue badge and live in Spain?",
+  "reference": "Return the UK blue badge.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference asks to return a UK blue badge, while the candidate responds with uncertainty."
+ },
+ {
+  "id": "c9e5912e91c84dcc94a21386b6524e29",
+  "question": "How long does it usually take to get a decision on your visa after applying online?",
+  "reference": "8 weeks",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific time frame (8 weeks), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "0018ad52002943bd80fe58f9ae79c4e0",
+  "question": "What penalty will you incur if you drive professionally without your Driver CPC card after 20 days?",
+  "reference": "\u00a350 fixed penalty",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific factual information about a fixed penalty amount of \u00a350, while the candidate expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "102200a3fcdf43e892118655a5e066ab",
+  "question": "What must a charity do if it is not currently recognized by HMRC?",
+  "reference": "apply for recognition online",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'apply for recognition online' conveys a specific action related to seeking recognition through an online process. The candidate response 'I do not know' does not convey any factual content related to the reference and instead expresses uncertainty or lack of information."
+ },
+ {
+  "id": "5f8d2c6425f44f6f8b64c211a1c2b02a",
+  "question": "If you operate LGVs domestically and not internationally, do you need to include vehicles over 3.5 tonnes in your authorisation?",
+  "reference": "No, unless they are part of a vehicle combination over 3.5 tonnes.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the conditions under which candidates can be part of a vehicle combination over 3.5 tonnes, while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "18143d16ee4346988f36894c43d6a2c2",
+  "question": "Where can you get free and confidential advice if your employment ends?",
+  "reference": "Acas helpline or Kalayaan charity",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific entities (Acas helpline or Kalayaan charity) related to support services, while the candidate response indicates a lack of knowledge with no substantive content."
+ },
+ {
+  "id": "f07817412bd940d3a171a9f1b4b9a087",
+  "question": "What version of the electoral register includes everyone's name and UK address?",
+  "reference": "full version",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference appears to be a full statement or description, while the candidate is a simple denial of knowledge. The substance does not match."
+ },
+ {
+  "id": "79bf3e3eec43463681f4160a23ac04a7",
+  "question": "Which coach company has the most bus service numbers listed?",
+  "reference": "Nick Maddy Coaches",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'Nick Maddy Coaches' suggests a specific piece of information about someone named Nick Maddy who is involved in coaching. The candidate response 'I do not know.' does not convey any factual content and simply expresses uncertainty."
+ },
+ {
+  "id": "df8e0eddbd294df09bab348975c6e868",
+  "question": "What types of vehicles are mentioned in the passage?",
+  "reference": "vehicles with more than 8 passenger seats, goods vehicles with a maximum laden weight of more than 3.5 tonnes",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific criteria for vehicle types (vehicles with more than 8 passenger seats and goods vehicles with a maximum laden weight of more than 3.5 tonnes), while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "adab9ea0357e40f1957eeb1019a7f99d",
+  "question": "What must you do to give someone's school or university fees?",
+  "reference": "apply to the Court of Protection",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference pertains to applying to the Court of Protection, while the candidate response expresses uncertainty or lack of knowledge."
+ },
+ {
+  "id": "fa0ec4d0ff7b4420b0b277a62330812d",
+  "question": "How can you ensure the GOV.UK ID Check app will work on your smartphone?",
+  "reference": "Make sure you\u2019re using either an iPhone 8 or newer and running iOS 16.7 or higher with Safari, Chrome or Firefox as your default web browser; Android phone (for example Samsung or Google Pixel) running 10 or higher with Chrome or Firefox as your default web browser; Check your web browser is not in private mode",
+  "closed_book": "To ensure the GOV.UK ID Check app works on your smartphone, make sure it meets the following requirements: It should be a supported device running Android 6.0 (Marshmallow) or later, or iOS 12 or later. Ensure you have an active internet connection and that your device's operating system is up to date. Additionally, download the app directly from the Google Play Store for Android devices or the App Store for iOS devices.",
+  "matches": false,
+  "reason": "The reference focuses on web browser requirements and specific versions of iOS and Android, while the candidate discusses smartphone operating system requirements and the installation of a specific app. The core devices and their software versions are different."
+ },
+ {
+  "id": "4e2e984450e1490bb325678f5a7e7e9f",
+  "question": "How can you get a final death certificate?",
+  "reference": "Once the inquest is over, you can get the final death certificate from the registrar.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about obtaining a final death certificate after an inquest, while the candidate response does not address the topic at all."
+ },
+ {
+  "id": "428eb1023f254adb9e63088556286cce",
+  "question": "What should you do if you cannot upload photos when applying for a National Insurance number?",
+  "reference": "You can still apply online but your application will take longer. You may need to attend an appointment or post photocopies of your documents.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the application process, including online application and potential need for appointments or posted photocopies. The candidate response does not convey any of this factual content."
+ },
+ {
+  "id": "9c7ddbbabe234c198e3c7172e13f9910",
+  "question": "Under what condition can discharging domestic sewage be exempt from an environmental permit?",
+  "reference": "if you meet the general binding rules for discharges to a surface water or the general binding rules for discharges to ground",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific conditions related to discharges to surface water and ground, while the candidate expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "ee04bad4045a4cf89445ea22df57ec7f",
+  "question": "Can a person with a temporary injury like a broken limb claim VAT relief under this notice?",
+  "reference": "No.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'No.' expresses a clear and definitive stance, while the candidate response 'I do not know.' indicates uncertainty. These convey different factual contents."
+ },
+ {
+  "id": "bfb639636141427887e03575054dba56",
+  "question": "What is the difference in loan amounts for a master\u2019s degree starting on August 1, 2026, compared to one starting on August 1, 2025?",
+  "reference": "\u00a3348",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value (\u00a3348), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "1335ec3ecda045179c0f654569ef3437",
+  "question": "Which type of higher education course would disqualify a child from receiving Child Benefit?",
+  "reference": "pre-degree course - for example a foundation diploma or access to higher education course",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about specific types of pre-degree courses, while the candidate response expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "6dfdaad7a020493aac9ba5d068b2420e",
+  "question": "What happens if your annual income is exactly \u00a329,385?",
+  "reference": "You will be charged 3.2% interest.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific factual content about an interest charge rate, while the candidate response does not address this information at all and instead provides a non-committal statement."
+ },
+ {
+  "id": "f7091d8471a94af589f3e521b922119d",
+  "question": "What types of natural flood management techniques can be used to reduce the impacts of tidal surges and adapt to rising sea levels?",
+  "reference": "Coastal management such as creating saltmarshes, sand dunes and the realignment of coastal risk management structures to absorb wave energy, reduce the impacts of tidal surges and adapt to rising sea levels.",
+  "closed_book": "Natural flood management techniques that can help reduce the impacts of tidal surges and adapt to rising sea levels include constructing or restoring wetlands, creating flood plains, enhancing natural barriers like dunes and mangroves, and using permeable pavements. These methods aim to mimic nature's ability to absorb water and release it slowly over time, reducing peak flows during storms and providing a buffer against higher tides.",
+  "matches": true,
+  "reason": "Both the reference and candidate answers discuss similar methods for coastal management aimed at adapting to rising sea levels and reducing the impacts of tidal surges. The candidate answer provides more specific examples such as constructing or restoring wetlands, creating flood plains, enhancing natural barriers like dunes and mangroves, and using permeable pavements, but these are all within the broader scope of the coastal management techniques mentioned in the reference."
+ },
+ {
+  "id": "52fdb3bf759b48eb902d21b502e97916",
+  "question": "What color should be used to edge the application site on the location plan?",
+  "reference": "red",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'red' conveys a specific color, while the candidate 'I do not know' expresses uncertainty or lack of information. The substance does not match."
+ },
+ {
+  "id": "217b408248ad403683039d77e691205a",
+  "question": "What is the minimum reduced annual allowance you can have in tax years up to and including 2022-2023?",
+  "reference": "\u00a310,000",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific monetary value of \u00a310,000, while the candidate response indicates a lack of knowledge. The substance does not match."
+ },
+ {
+  "id": "14f87dc2faec4dd896336b53a2f4f352",
+  "question": "How will HMRC take back the Winter Fuel Payment in relation to your tax code?",
+  "reference": "HMRC will change your tax code for the 2026 to 2027 tax year, which means you\u2019ll pay more tax each month to pay back the full payment that you received in the 2025 to 2026 tax year.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about HMRC changing the tax code for a particular tax year to recover overpaid taxes. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "ff23dc90ecfd48d28a5af3b251ab64e7",
+  "question": "What is the difference in tax relief between shipwrights and all other workers in shipyards?",
+  "reference": "60",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value (60), while the candidate expresses uncertainty with 'I do not know.' There is no substantive match in terms of content."
+ },
+ {
+  "id": "ef94ec47256a42c688575a0cd17b847f",
+  "question": "What types of sales are excluded from HM Land Registry Price Paid Data?",
+  "reference": "sales that have not been lodged with HM Land Registry, sales that were not for value",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about certain types of sales, namely those not lodged with HM Land Registry and those that were not for value. The candidate response expresses uncertainty without providing any substantive information related to the reference."
+ },
+ {
+  "id": "f1e4f3245d4849a2a9f2823b7c8c5ccc",
+  "question": "How does making state pension contributions in the EEA or Switzerland compare to making UK National Insurance contributions for a full year?",
+  "reference": "Partial years of making UK National Insurance contributions could count if you also made state pension contributions in that same year to any country in the EEA or Switzerland.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about how partial years of UK National Insurance contributions can count if state pension contributions were made in the same year to any country in the EEA or Switzerland. The candidate answer does not convey any factual content related to this topic."
+ },
+ {
+  "id": "366619d74b4b4a73b0a858b172a313c0",
+  "question": "What must you do if your exempted dog's address changes?",
+  "reference": "Let the Index of Exempted Dogs know.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference conveys a directive to inform an Index of Exempted Dogs about something, while the candidate is a statement of uncertainty or lack of knowledge. The substance and intent are different."
+ },
+ {
+  "id": "17130e80ba1948aaa5b0c061552ff7c8",
+  "question": "What must you provide evidence of if your application was 'unreasonably refused'?",
+  "reference": "you must apply for a stateless person\u2019s travel document instead",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides information about applying for a specific type of travel document, while the candidate response indicates uncertainty or lack of knowledge."
+ },
+ {
+  "id": "5bdc01358b9548e8a660ff3972d2c736",
+  "question": "Can a medical student on a work placement abroad receive a free criminal record check?",
+  "reference": "No",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'No' conveys a specific piece of information, while the candidate response 'I do not know.' expresses uncertainty. These do not convey the same factual content."
+ },
+ {
+  "id": "3caa8b394992467cb745d4f95ab0cb94",
+  "question": "How does the maximum number of operators a transport manager can work for compare to the maximum total fleet size they are responsible for?",
+  "reference": "A transport manager can work for a maximum of 4 operators with a combined maximum total fleet of 50 vehicles.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the number of operators and the maximum fleet size a transport manager can work for, while the candidate answer expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "960dc387418f46ce91c187346d0c2c49",
+  "question": "What type of students are most likely to receive support from the Residential Support Scheme?",
+  "reference": "students living in rural areas with limited access to a wide range of 16 to 18 further education provision",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference describes the situation of students living in rural areas with limited access to further education provision between 16 to 18 years old. The candidate answer is a statement of uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "83c9aadec412479da29c946be73df0d8",
+  "question": "How often can you take the Return to Driving CPC course?",
+  "reference": "Once every 5 years",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific frequency (once every 5 years), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "178832fc8a5c455caa5ea17a56813f75",
+  "question": "What can happen to a driver for serious or dangerous offences?",
+  "reference": "a fine or points on your licence (\u2018fixed penalty\u2019) - the amount depends on how serious the offence is",
+  "closed_book": "A driver can face various consequences for serious or dangerous offences, including fines, license suspension or revocation, mandatory attendance in driver improvement programs, community service, and in severe cases, imprisonment.",
+  "matches": false,
+  "reason": "The reference specifically mentions a 'fixed penalty' which includes fines or points on the licence based on the severity of the offence. The candidate answer describes various consequences for serious or dangerous offences without specifying that it is related to a fixed penalty system and does not mention points on the licence."
+ },
+ {
+  "id": "27211e9b8db1438cafeb1a7f71b3a0ee",
+  "question": "What is the Driver and Vehicle Standards Agency responsible for?",
+  "reference": "ensuring that operators of goods and passenger vehicles are compliant with legislation relating to matters including drivers\u2019 hours, roadworthiness, operator licensing and the safe loading of vehicles",
+  "closed_book": "The Driver and Vehicle Standards Agency (DVSA) is responsible for ensuring road safety in Great Britain by testing and licensing drivers, maintaining vehicle standards, and enforcing traffic laws. This includes conducting driving tests, inspecting commercial vehicles, and operating testing centers for cars, motorcycles, and lorries/trucks.",
+  "matches": false,
+  "reason": "While both statements address aspects of vehicle and driver compliance, the reference specifically focuses on legislation related to drivers' hours, roadworthiness, operator licensing, and safe loading. The candidate answer, however, provides a broader overview of the DVSA's responsibilities without explicitly mentioning these specific areas."
+ },
+ {
+  "id": "6bde48c6f3134840af4087a407f3e453",
+  "question": "Under what circumstances might someone be eligible for extra help through their Jobcentre Plus work coach?",
+  "reference": "If you\u2019re unemployed or on benefits.",
+  "closed_book": "Under certain circumstances, such as having a health condition that makes it difficult to work, being a carer for someone who needs significant care and support, or facing other barriers to employment, someone might be eligible for extra help through their Jobcentre Plus work coach. The specific eligibility criteria can vary.",
+  "matches": false,
+  "reason": "The reference statement is about being unemployed or on benefits, while the candidate statement discusses various circumstances that might make someone eligible for extra help through a work coach. The core topic of unemployment and benefits does not match the substance of the candidate's response."
+ },
+ {
+  "id": "27b274a1a55c470bbf290f34726d2790",
+  "question": "What must you do if you cannot meet your commitments under the claimant commitment?",
+  "reference": "You must contact us straight away by adding a note to your journal in your Universal Credit account, or using the contact details provided by your work coach.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific instructions on how to contact for assistance, while the candidate response is a statement of ignorance without any mention of contacting or the method provided."
+ },
+ {
+  "id": "a03e5f727bee4d02a22ec851fc7065e0",
+  "question": "What are the qualifications for Level 4?",
+  "reference": "certificate of higher education (CertHE), higher apprenticeship, higher national certificate (HNC), level 4 award, level 4 certificate, level 4 diploma, level 4 NVQ",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference list provides specific qualifications and awards at a particular level (level 4), while the candidate response indicates uncertainty and does not provide any information related to the reference."
+ },
+ {
+  "id": "dc7c596d51164ed7a4577a561ff526eb",
+  "question": "What must your client do to claim the trust, and how should you prepare for this process?",
+  "reference": "Your client must \u2018claim\u2019 the trust by answering some questions about it, and you should give your client the latest details of the trust so that their answers match them.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement discusses the process of claiming a trust by answering questions and providing updated details to the client. The candidate answer does not address these points but instead provides an unrelated response."
+ },
+ {
+  "id": "936025f0bd0244b08d8e06d20b01d630",
+  "question": "What happens if you choose to stop being an attorney and there are no replacement attorneys listed?",
+  "reference": "There may be other ways to help the donor make decisions.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference suggests that there are alternative methods or approaches to assist the donor in making decisions. The candidate response, however, does not address this at all but instead expresses uncertainty."
+ },
+ {
+  "id": "98f11d2d6ece40e48c87e5bb98ad75f5",
+  "question": "Compare the conditions for a dwelling to be considered a single household dwelling.",
+  "reference": "is designed for occupation by a single household either as a result of having been originally constructed for that purpose (and has not been subsequently adapted for occupation of any other kind), or as a result of adaptation\nconsists of self-contained living accommodation\nhas no provision for direct internal access to any other dwelling or part of a dwelling\nis not prohibited from separate use by the terms of any covenant, statutory planning consent or similar provision\nis not prohibited from separate disposal",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a detailed definition of what constitutes a dwelling that is designed for occupation by a single household with specific criteria. The candidate answer simply states 'I do not know,' which does not convey any factual content related to the reference."
+ },
+ {
+  "id": "06ee0a08d06747f9adf64826d840894d",
+  "question": "How can you find out what your tax code means?",
+  "reference": "Enter your tax code in the check what your tax code means tool to find out: what the numbers and letters mean, how much tax you\u2019ll pay, what you may need to do next",
+  "closed_book": "To find out what your tax code means, you should contact HM Revenue & Customs (HMRC) directly. They can provide you with a breakdown of your tax code and explain how it affects your tax deductions. You can do this by visiting their website or contacting them through the phone.",
+  "matches": false,
+  "reason": "While both the reference and candidate provide information on understanding a tax code, the reference specifically directs users to use an online tool for detailed information, whereas the candidate suggests contacting HMRC directly. The methods of obtaining the information differ."
+ },
+ {
+  "id": "ee6252ae7ffb401ba1e7b17b823da13b",
+  "question": "Which bus company has the most routes listed in the passage?",
+  "reference": "First West of England",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific name 'First West of England', while the candidate response expresses uncertainty. The substance does not match."
+ },
+ {
+  "id": "f5f9aba4b59143bda5b699c859227f06",
+  "question": "Which of the following countries' nationals do not need to prove their English language proficiency?",
+  "reference": "Australia, Canada, New Zealand",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference list includes specific countries (Australia, Canada, New Zealand), while the candidate response indicates a lack of knowledge about these entities."
+ },
+ {
+  "id": "6c18a16453d242e095be18023cb87139",
+  "question": "What happens if there are no losses or deterioration to the irreplaceable habitats compared to a scenario where enhancements are proposed?",
+  "reference": "In the case of no losses or deterioration, the biodiversity value is not included in the pre-development calculation and no bespoke compensation package is necessary.",
+  "closed_book": "In the scenario with no losses or deterioration of irreplaceable habitats, the ecosystems and biodiversity within those areas would remain intact. This means that species populations could maintain their current levels, ecological processes would continue undisturbed, and the overall health and resilience of these habitats would be preserved. In contrast, if enhancements are proposed but there are still losses or deterioration to the irreplaceable habitats, it could lead to a decline in biodiversity, potential disruption of ecological functions, and reduced ecosystem services such as water purification, carbon sequestration, and habitat provision for wildlife.",
+  "matches": false,
+  "reason": "The reference statement focuses on the absence of losses or deterioration leading to no need for a biodiversity value calculation or compensation package. The candidate answer discusses the preservation of ecosystems and biodiversity under similar conditions but also introduces scenarios with enhancements and losses, which are not present in the reference."
+ },
+ {
+  "id": "7ce2081183cc44c8980b547bb0e2635b",
+  "question": "How should you make the payment compared to trying to do it yourself?",
+  "reference": "using HMRC\u2019s online payment services",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference mentions using HMRC's online payment services, while the candidate response expresses uncertainty and does not convey any related information."
+ },
+ {
+  "id": "ef179c0c9f414cd3a665a6c1ab4ba161",
+  "question": "How does British citizenship pass to a child born outside the UK compare between 1983 and June 2006 versus before 1983?",
+  "reference": "For children born outside the UK, British citizenship is normally automatically passed down one generation to those born on or after 1 July 2006 and between 1983 and June 2006. However, for those born before 1983, their children will not automatically be citizens.",
+  "closed_book": "Before 1983, British citizenship was not automatically passed to a child born abroad if at least one parent was a British citizen. The child would need to apply for registration of citizenship after birth. However, from 1983 onwards, under the British Nationality Act 1981, children born outside the UK could acquire British citizenship at birth if either parent held British citizenship and had lived in the UK for at least one year. This changed again with the British Nationality Act 2006, which came into effect on June 1, 2006, making it easier for children to be born with British citizenship by requiring only that at least one parent was a British citizen and had any period of continuous residence in the UK.",
+  "matches": false,
+  "reason": "The reference focuses on the automatic passing of British citizenship to children born outside the UK based on their parents' status and the birth date. The candidate answer discusses the changes in legislation over time regarding how a child can acquire British citizenship if one parent is a British citizen. While both provide information about British citizenship for children born abroad, they do not convey the same factual content."
+ },
+ {
+  "id": "45e88f0c30884f68960893313895699a",
+  "question": "Do I need a GOV.UK One Login to access the service?",
+  "reference": "Yes, you will still need a GOV.UK One Login to access the service even if you have an existing Use an LPA account.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific information about the requirement for GOV.UK One Login, while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "e257d35a35eb450abf71113401f21f30",
+  "question": "What must you do if your partner or child does not extend their visa?",
+  "reference": "Their current visa will expire at its original end date.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual piece of information about the expiration of a visa, while the candidate response expresses uncertainty and does not provide any substantive information related to the visa's status."
+ },
+ {
+  "id": "3689a315c70847059193605364968994",
+  "question": "What are the three conditions under which an interim licence will expire?",
+  "reference": "at the date specified where the interim is granted to allow you time to provide further evidence; or the full licence is granted; or the application for a full licence is either withdrawn",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific conditions related to interim and full licensing applications, while the candidate response expresses uncertainty without any substantive content."
+ },
+ {
+  "id": "d2e3f0f783bd4eb2bd6c3089105fba36",
+  "question": "Under what circumstances should one contact the Central Deferment Office?",
+  "reference": "If there are any changes to your company which affect your deferment account.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference asks about changes to the company that affect the deferment account, while the candidate provides a generic response indicating ignorance."
+ },
+ {
+  "id": "6a6e4b9d408a4247ba3fc5ed98842362",
+  "question": "When does the Valuation Office start valuing HMOs as single properties for Council Tax in England compared to Wales?",
+  "reference": "1 December 2023 in England and 3 June 2026 in Wales",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific dates for events in England and Wales, while the candidate response indicates a lack of knowledge about any dates."
+ },
+ {
+  "id": "8d75a39121f247929ec4168e0b35a3a0",
+  "question": "What should you do if your UK passport has expired and you need to apply for an Advanced Learner Loan?",
+  "reference": "Send your original birth or adoption certificate to Student Finance England.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific instructions on what document to send and where to send it, while the candidate response is a statement of ignorance without any relevant information."
+ },
+ {
+  "id": "6949165b29324920a1de117541b270a4",
+  "question": "What documents are required for displaying number plates?",
+  "reference": "a renewal reminder for vehicle tax or SORN (V11 or V11NI), temporary registration certificate (V379 or V379NI), a number plate authorisation certificate (V948) with an official stamp from the Driver and Vehicle Licensing Agency (DVLA), an electronic number plate authorisation certificate (eV948 or eV948/2), a letter of authorisation from a fleet operator (including lease or hire company) quoting the document reference number from the registration certificate, if your fleet is in the new V5C on demand scheme (also called \u2018V5C suppression\u2019), a PDF of the vehicle\u2019s details from the view vehicle record service, UK trailer registration certificate (VTRC)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a detailed list of documents required, while the candidate expresses uncertainty. The substance does not match."
+ },
+ {
+  "id": "b7c8670cddc94b028c76bb3c5ffddfbf",
+  "question": "What must organizations using the DBS checking service ensure?",
+  "reference": "Organizations must comply with the code of practice.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a requirement for organizations to adhere to a specific code of practice, while the candidate response expresses uncertainty or lack of knowledge on the topic."
+ },
+ {
+  "id": "8ee6899bd9e74d28a23036cbfcd03f9c",
+  "question": "Under what condition would a collecting authority not be required to pay back an overpayment of CIL?",
+  "reference": "The overpayment is the result of a land or infrastructure payment, or the payment was credited against a new liability in accordance with the abatement provisions.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about overpayment being related to land or infrastructure payments or new liability credits. The candidate response expresses uncertainty and does not convey any of the substantive details provided in the reference."
+ },
+ {
+  "id": "ec6bdc2ad00446da85183996a680dee0",
+  "question": "Under what condition can you continue driving an automatic car after failing a manual driving test?",
+  "reference": "You can continue driving an automatic car if you fail your driving test in a manual car.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides information about the ability to drive an automatic car after failing a manual driving test. The candidate answer expresses uncertainty and does not convey any factual content related to the reference."
+ },
+ {
+  "id": "6c09bdf5d492435abeefb55eef86a2cb",
+  "question": "What happens if the enforcement agent visits all addresses but still cannot collect enough to cover the debt?",
+  "reference": "The agent will not be able to take any more action on the warrant.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a specific factual content about an agent's inability to take further actions related to a warrant. The candidate answer expresses uncertainty or lack of knowledge without addressing the original statement's substance."
+ },
+ {
+  "id": "2dd4453644ae46c1a9116f680404749c",
+  "question": "What should you not do when using AI tools to improve your application?",
+  "reference": "You must not use AI tools to create, change or invent information about your identity, qualifications, experience or research.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific instructions regarding the use of AI tools to manipulate personal information. The candidate response is a general denial without addressing the content or intent of the reference statement."
+ },
+ {
+  "id": "329080c8d28840a598b9641427ba58c4",
+  "question": "Can a development project that reduces vulnerability and increases resilience in a Coastal Change Management Area still be considered appropriate if it does not raise funds for subsequent relocation?",
+  "reference": "No, because the passage states that such projects should reduce vulnerability, increase resilience, and raise funds to facilitate subsequent relocation.",
+  "closed_book": "Yes, a development project that reduces vulnerability and increases resilience in a Coastal Change Management Area can still be considered appropriate even if it does not directly fund subsequent relocation. The primary goal of such projects is to enhance the area's ability to withstand natural hazards and environmental changes, thereby protecting existing infrastructure and communities without necessarily addressing future relocation needs.",
+  "matches": false,
+  "reason": "The reference states that projects should reduce vulnerability, increase resilience, and raise funds for subsequent relocation. The candidate only mentions reducing vulnerability and increasing resilience without explicitly stating the need for raising funds for relocation."
+ },
+ {
+  "id": "71d77fb71089455d83a7e516fca93906",
+  "question": "What is the difference in handling requests for changes between April 2024 and September 2024 rota schemes?",
+  "reference": "We are unable to accept any new requests for changes to the April 2024 rotas, and we cannot accept requests from individual duty solicitors.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference message provides specific information about the inability to accept changes to April 2024 rotas and requests from individual duty solicitors. The candidate answer does not convey any of this factual content but instead expresses uncertainty."
+ },
+ {
+  "id": "d97792a561cf4c0da6e4d5f558023d3d",
+  "question": "When comparing the salary requirements for extending a Skilled Worker visa versus applying for one, what is different about the conditions?",
+  "reference": "For extending your visa, there are no specific additional conditions mentioned regarding lower salary requirements compared to initial application.",
+  "closed_book": "When comparing the salary requirements for extending a Skilled Worker visa versus applying for one, there are no differences in the salary conditions. The minimum salary threshold to apply or extend a Skilled Worker visa remains consistent and is based on the going rate for that particular occupation as determined by the Migration Skills List (MSL) or Regional Occupation List (ROL). Therefore, the salary requirements do not change between applying initially and extending the visa.",
+  "matches": false,
+  "reason": "While both statements indicate that there are no differences in salary conditions for initial application and extension of a visa, the reference specifically mentions 'extending your visa' without specifying the type of visa. The candidate statement refers to a Skilled Worker visa and provides additional details about the salary threshold being based on the Migration Skills List (MSL) or Regional Occupation List (ROL)."
+ },
+ {
+  "id": "62f5cb3917374d9fb04d8ecb45461ae8",
+  "question": "Which version of the LPA is more up-to-date?",
+  "reference": "The online summary",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference mentions 'the online summary,' implying some factual content about an online summary. In contrast, the candidate response is a simple statement of uncertainty without any substantive information. Therefore, they do not convey the same factual content."
+ },
+ {
+  "id": "0669c042b66546bfa0e42939337481b7",
+  "question": "What must you do if connecting to a public foul sewer is not reasonable but you cannot meet the general binding rules?",
+  "reference": "You must apply for a permit.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement 'You must apply for a permit' conveys a requirement or obligation to take an action. The candidate response 'I do not know' does not address the requirement and instead expresses uncertainty."
+ },
+ {
+  "id": "3c33be79fcc94dae9649d2834d6147a4",
+  "question": "What evidence might you need if you adopted a child from outside the UK?",
+  "reference": "'certificate of eligibility to adopt'",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference refers to a specific document or certification related to adoption, while the candidate is an expression of ignorance."
+ },
+ {
+  "id": "8f8f7940fbda4752b7c9955f6b93b66e",
+  "question": "How should you report changes in circumstances?",
+  "reference": "calling the New Style ESA helpline or writing to the Jobcentre Plus office that pays your New Style ESA",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific actions (calling a helpline or writing to an office) related to the New Style ESA, while the candidate response is a statement of ignorance without any substantive information."
+ },
+ {
+  "id": "ffdd86a889b5467aa2e28199b9e79e1b",
+  "question": "What cannot be included in the parcel sent to Wormwood Scrubs Prison?",
+  "reference": "electrical items or food items",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference mentions 'electrical items or food items', while the candidate response is 'I do not know'. The substance does not match."
+ },
+ {
+  "id": "659b8d9e610d4109ae208731773386b3",
+  "question": "How long will you keep getting relief on your main property if you get a second property after 27th November 2025?",
+  "reference": "36 months",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific time period (36 months), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "4e33b0bfbb63402b9e04314d7d057dbd",
+  "question": "What must not have been lived in during the 2 years before starting work on a building for it to be eligible for reduced rate?",
+  "reference": "None of the buildings making up the original unit.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement specifies that none of the buildings in the original unit are included, while the candidate response indicates uncertainty about the information."
+ },
+ {
+  "id": "fc8fdcaf50fa4c6084725f70995497f5",
+  "question": "Do I need to register for VAT if I sell goods from the UK to EU countries?",
+  "reference": "No",
+  "closed_book": "It depends on the value of the sales and the specific rules in place. Generally, if you are selling goods from the UK to EU countries, you may need to register for VAT in those countries if your annual turnover exceeds certain thresholds set by each country. It's recommended to check the specific VAT registration requirements for each EU country where you make sales.",
+  "matches": false,
+  "reason": "The reference answer is a single word 'No', indicating that no additional action (like registering for VAT) is required based on the given context. However, the candidate answer provides detailed information about when and why one might need to register for VAT when selling goods from the UK to EU countries."
+ },
+ {
+  "id": "86c85630c97046a8a9c897729a5806f9",
+  "question": "How long can the update of my National Insurance record take compared to paying online?",
+  "reference": "up to 8 weeks",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific timeframe (up to 8 weeks), while the candidate expresses uncertainty (I do not know). The substance does not match."
+ },
+ {
+  "id": "6ecdd547c1ff4772a0a35ecde46e9d55",
+  "question": "What is the VAT rate for printed or copied music, and where can more information be found?",
+  "reference": "0%",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides a specific numerical value (0%), while the candidate expresses uncertainty. The substance does not match."
+ },
+ {
+  "id": "7b305cc5d6334391bead911198f1929d",
+  "question": "How can you check if a conveyancer is suitable for your first home purchase?",
+  "reference": "Contact the conveyancer to check they\u2019ll be able to work for you and to find out what they\u2019ll charge you.",
+  "closed_book": "To check if a conveyancer is suitable for your first home purchase, consider the following steps: review their qualifications and experience in handling first-time buyer transactions, read client reviews and testimonials, ask for references from previous clients, ensure they are a member of a professional body such as the Law Society or Conveyancing Association, and verify that they have appropriate insurance. Additionally, discuss fees upfront to avoid any surprises.",
+  "matches": false,
+  "reason": "The reference focuses on contacting a conveyancer to check their availability and charges, while the candidate provides detailed steps for selecting a suitable conveyancer. The core topic is related but not the same in substance."
+ },
+ {
+  "id": "db76ae53f94e4ecd84224c959b58bd63",
+  "question": "If a UK national or family member has been living in the EU, Switzerland, Norway, Iceland or Liechtenstein for 3 years and then returns to the UK on or after January 1, 2018, but before December 31, 2020, what additional condition must be met to be eligible for the Advanced Learner Loan?",
+  "reference": "returned to the UK on or after 1 January 2018 and by 31 December 2020 after living in the EU, Switzerland, Norway, Iceland or Liechtenstein",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific dates and locations for residency, while the candidate response indicates uncertainty without providing any relevant information."
+ },
+ {
+  "id": "7204383d30fb4070b3a0df32cb2bdd88",
+  "question": "Compare the types of articles incorporated in a building with those not considered building materials.",
+  "reference": "curtain poles, rails and fitted blinds (not electric)",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about curtain poles, rails, and fitted blinds (excluding electric ones), while the candidate response expresses uncertainty without providing any relevant information."
+ },
+ {
+  "id": "9fcf6f4565e14d42ba2d7a670994d2d3",
+  "question": "How does transitional protection change compared to an increase in Universal Credit for childcare costs?",
+  "reference": "It will not include any increase to pay for childcare costs.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement provides specific factual content about not including an increase for childcare costs. The candidate response expresses uncertainty and does not convey any substantive information related to the reference."
+ },
+ {
+  "id": "2321abfaf3974b50b3dc9ec663c74955",
+  "question": "What type of driving license is needed to drive in the UK if you have a non-UK license?",
+  "reference": "No international driving permit (IDP) is needed.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference statement conveys a factual piece of information regarding the requirement for an international driving permit (IDP), while the candidate response expresses uncertainty. The substance does not match."
+ },
+ {
+  "id": "dbb1cf9f27184761a49e289a64a22d44",
+  "question": "How long does it usually take to get a decision if you apply inside the UK?",
+  "reference": "You\u2019ll usually get a decision within 8 weeks.",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference provides specific information about the timeframe for getting a decision (8 weeks), while the candidate response does not address the timeframe at all and instead expresses uncertainty."
+ },
+ {
+  "id": "f9c3b50b27b1423ea0e969ad52c833ff",
+  "question": "What type of visa does not matter for the 180-day period calculation?",
+  "reference": "any other visa",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference 'any other visa' provides specific factual content related to a type of visa, while the candidate 'I do not know' does not provide any relevant information and is a statement of ignorance."
+ },
+ {
+  "id": "8d916e25ed8f45d4bd468d8921867b41",
+  "question": "Who can be considered as having certain convictions or cautions?",
+  "reference": "directors, partners and transport managers",
+  "closed_book": "I do not know.",
+  "matches": false,
+  "reason": "The reference list includes specific roles (directors, partners, and transport managers), while the candidate response indicates a lack of knowledge on the subject."
+ }
+]
