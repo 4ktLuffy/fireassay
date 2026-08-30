@@ -1,0 +1,14 @@
+2364 candidates
+panel: 54 configs, built in 34s
+  200/2364  885s  eta 160min
+  400/2364  1773s  eta 145min
+  600/2364  2657s  eta 130min
+  800/2364  3542s  eta 115min
+  1000/2364  4394s  eta 100min
+  1200/2364  5277s  eta 85min
+  1400/2364  6143s  eta 71min
+  1600/2364  7042s  eta 56min
+  1800/2364  7895s  eta 41min
+  2000/2364  8736s  eta 27min
+  2200/2364  9602s  eta 12min
+done in 172min -> run/panel54_matrix.csv

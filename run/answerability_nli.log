@@ -1,0 +1,8 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/394 [00:00<?, ?it/s]Loading weights: 100%|██████████| 394/394 [00:00<00:00, 19025.51it/s]
+  50/176  3s
+  100/176  6s
+  150/176  9s
+
+176 verdicts in 11s
+{'supported': 91, 'unclear': 84, 'not_supported': 1}
