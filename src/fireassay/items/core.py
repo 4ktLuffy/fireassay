@@ -57,6 +57,27 @@ the objectively correct answer, which does not match a wrong reference
 label. Operationally: among non-degenerate items (`0 < p < 1`), an item is
 `mislabel_suspect` when the top-scoring systems do *worse* on it than the
 bottom-scoring systems (`discrimination_d < 0`).
+
+**This is NOT VALIDATED as a defect detector -- it was measured and it did
+not hold.** Blind human review on 132 uniform-random labels found the
+items it flags no more likely to be broken than a random draw of the same
+size: 21.9% of flagged items (7/32) were judged broken, against a random
+draw's 25.0% (10/40), both against a 17.4% suite base rate -- Fisher exact
+two-sided p=0.79 (defect 50 in
+`~/ObitosBrain/notes/2026-08-28-fireassay-eval-integrity.md`). The
+structural reason (defect 49): within one chunking, retrieval sets nest --
+0 monotonicity violations measured across 14,184 item x chunking pairs --
+so `top_k` is this panel's only strength axis and a `top_k=3` success
+implies a `top_k=10` success; the ranking inversion `discrimination_d < 0`
+looks for is nearly unproducible from that geometry alone, regardless of
+whether any given item is actually mislabelled. `discrimination_d < 0`
+remains a real, correctly-computed statistical property, and the count is
+still reported (`PanelStats.class_counts["mislabel_suspect"]`) -- but it
+must never be read as evidence that a specific item is mislabelled. See
+`MISLABEL_SUSPECT_VALIDATION`, defined just below `Classification`, for
+the numbers this paragraph summarises;
+`report.text.render_items_analysis` prints an explicit UNVALIDATED line
+alongside any non-zero `mislabel_suspect` count.
 """
 
 from __future__ import annotations
@@ -121,6 +142,65 @@ _ALL_CLASSIFICATIONS: tuple[Classification, ...] = (
     "dead_all_pass",
     "dead_all_fail",
     "mislabel_suspect",
+)
+
+
+class KnownDetectorValidation(BaseModel):
+    """A minimal, self-contained record of one shipped classification's
+    measured validation status as a detector -- deliberately **not**
+    `items.validation.DetectorValidation` (that fuller type, with full
+    `Estimate`s/CIs, lives one layer up in `items.validation`, which
+    imports `items.core` for `Estimate`; this module must not import back,
+    so this stays a flat record built only from types already defined
+    here). Exists so the claim a classification's *name* makes cannot be
+    read without also reading whether it was measured to hold -- see
+    `MISLABEL_SUSPECT_VALIDATION` below, and this module docstring's
+    `mislabel_suspect` paragraph."""
+
+    model_config = ConfigDict(frozen=True)
+
+    detector: str
+    measured_on: str
+    labels: str
+    n_flagged_labelled: int
+    precision: float
+    random_draw_n: int
+    random_draw_precision: float
+    base_rate: float
+    fisher_p: float
+    verdict: Literal["validated", "not_validated", "unmeasured"]
+    note: str
+
+
+#: `mislabel_suspect`'s own measured validation record -- see this
+#: module's docstring (`mislabel_suspect` paragraph) and defects 49/50 in
+#: `~/ObitosBrain/notes/2026-08-28-fireassay-eval-integrity.md`.
+#: `discrimination_d < 0` is a real, correctly-computed statistical
+#: property (see `analyse`); this constant is what stops the *name*
+#: `mislabel_suspect` from being read as a validated claim it never
+#: earned. `report.text.render_items_analysis` prints this alongside any
+#: non-zero `mislabel_suspect` count.
+MISLABEL_SUSPECT_VALIDATION = KnownDetectorValidation(
+    detector="mislabel_suspect",
+    measured_on="2026-08-29",
+    labels="132 uniform-random human labels, run/calibration.jsonl",
+    n_flagged_labelled=32,
+    precision=7 / 32,
+    random_draw_n=40,
+    random_draw_precision=10 / 40,
+    base_rate=0.174,
+    fisher_p=0.79,
+    verdict="not_validated",
+    note=(
+        "NOT VALIDATED as a defect detector. Measured 2026-08-29 against 132 "
+        "uniform-random human labels: 21.9% of flagged items (7/32) were judged broken, "
+        "no better than a random draw of the same size (10/40 = 25.0%), against a 17.4% "
+        "suite base rate -- Fisher exact two-sided p=0.79. Structural reason (defect 49): "
+        "within one chunking, retrieval sets nest, so the ranking inversion "
+        "discrimination_d < 0 looks for is nearly unproducible. discrimination_d < 0 "
+        "remains a real, correctly-computed property and the count is reported; it must "
+        "not be read as evidence a specific item is mislabelled."
+    ),
 )
 
 

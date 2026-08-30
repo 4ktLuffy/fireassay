@@ -4,7 +4,7 @@ and blind-review reports, to the terminal via `rich`."""
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from rich.console import Console
 from rich.table import Table
@@ -14,8 +14,9 @@ from fireassay.controls.base import ControlOutcome
 from fireassay.curate.report import CurateReport, SessionFlag
 from fireassay.integrity import RefusalReason
 from fireassay.items.calibration import DetectorEvaluation
-from fireassay.items.core import Estimate, ItemStats, PanelStats
+from fireassay.items.core import MISLABEL_SUSPECT_VALIDATION, Estimate, ItemStats, PanelStats
 from fireassay.items.review import DetectorScore
+from fireassay.items.validation import DetectorValidation
 from fireassay.mutation.score import MutationScoreResult
 from fireassay.store.db import ControlCheckRow, MutantRow, MutationRunRow
 
@@ -385,9 +386,32 @@ _CLASSIFICATION_STYLE = {
     "live": "",
 }
 
+#: Style for `DetectorValidation.verdict` in the `--validations` table
+#: (Change 5) -- `not_validated` gets the same prominence as any other
+#: WARNING-register verdict in this file (`reliability_verdict ==
+#: "too_few_systems"`, `Estimate.verdict == "needs_sampling_design"`).
+_DETECTOR_VALIDATION_STYLE = {
+    "validated": "green",
+    "not_validated": "bold red",
+    "unmeasured": "dim",
+}
+
+
+def _estimate_text(estimate: Estimate | None) -> str:
+    """`value [ci_lo, ci_hi]`, or `n/a` when there is nothing to report
+    (`estimate is None`, or `Estimate.value is None` -- `verdict ==
+    "no_denominator"`) -- shared by the `--validations` table below."""
+    if estimate is None or estimate.value is None:
+        return "n/a"
+    ci_text = f" [{estimate.ci[0]:.3f}, {estimate.ci[1]:.3f}]" if estimate.ci is not None else ""
+    return f"{estimate.value:.3f}{ci_text}"
+
 
 def render_items_analysis(
-    item_stats: Sequence[ItemStats], panel_stats: PanelStats, console: Console | None = None
+    item_stats: Sequence[ItemStats],
+    panel_stats: PanelStats,
+    validations: Mapping[str, DetectorValidation] | None = None,
+    console: Console | None = None,
 ) -> None:
     """Render `fireassay items analyse`'s output (M-ITEMS-SPEC.md §5).
 
@@ -399,6 +423,18 @@ def render_items_analysis(
     `items.core`'s module docstring). Never prints a composite score --
     `class_counts` plus the per-item table are the disposition, not a
     single number.
+
+    A non-zero `mislabel_suspect` count in `class_counts` is followed
+    immediately by an UNVALIDATED line (`items.core.MISLABEL_SUSPECT_VALIDATION`)
+    -- it must be impossible to read the count without also reading that
+    the classification failed measurement as a detector (defect 50; Goal
+    2 criterion 4).
+
+    `validations`, if supplied (`--validations`, loaded via
+    `items.validation.load_validations`), prints a short table of every
+    measured detector's precision/recall and derived verdict before the
+    item scorecard (Goal 2 criterion 3) -- a `not_validated` record prints
+    in the same warning register as everything else in this function.
     """
     console = console or Console()
     verdict_style = "green" if panel_stats.reliability_verdict == "usable" else "bold red"
@@ -419,6 +455,12 @@ def render_items_analysis(
         f"n_items={panel_stats.n_items}  n_systems={panel_stats.n_systems}  "
         f"class_counts={panel_stats.class_counts}"
     )
+    mislabel_count = panel_stats.class_counts.get("mislabel_suspect", 0)
+    if mislabel_count > 0:
+        console.print(
+            f"[bold red]UNVALIDATED[/bold red]: {mislabel_count} item(s) flagged "
+            f"{MISLABEL_SUSPECT_VALIDATION.detector} -- {MISLABEL_SUSPECT_VALIDATION.note}"
+        )
     if panel_stats.claimed_vs_measured_difficulty_r is not None:
         console.print(
             "claimed-vs-measured difficulty correlation r = "
@@ -427,6 +469,28 @@ def render_items_analysis(
         )
     else:
         console.print("[dim]claimed-vs-measured difficulty correlation: no claimed labels supplied[/dim]")
+
+    if validations is not None:
+        val_table = Table(title="detector validation status (measured precision/recall, items.validation)")
+        val_table.add_column("detector")
+        val_table.add_column("precision", justify="right")
+        val_table.add_column("recall", justify="right")
+        val_table.add_column("base_rate", justify="right")
+        val_table.add_column("verdict")
+        val_table.add_column("measured_on")
+        for name in sorted(validations):
+            record = validations[name]
+            style = _DETECTOR_VALIDATION_STYLE.get(record.verdict, "")
+            verdict_text = f"[{style}]{record.verdict}[/{style}]" if style else record.verdict
+            val_table.add_row(
+                record.detector,
+                _estimate_text(record.precision),
+                _estimate_text(record.recall),
+                f"{record.base_rate:.3f}",
+                verdict_text,
+                record.measured_on,
+            )
+        console.print(val_table)
 
     table = Table(title="item scorecard (a disposition, not a composite score)")
     table.add_column("item_id")

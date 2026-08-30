@@ -22,7 +22,7 @@ dev = [
     "ruff",
     "mypy",
     "cosmic-ray",
-    "ppi-py",
+    "ppi-python",  # PyPI name; imports as ppi_py. Needs numba
 ]
 
 [project.scripts]

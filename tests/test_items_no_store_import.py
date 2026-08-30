@@ -217,3 +217,32 @@ def test_sanity_the_walker_follows_items_ppis_own_cross_module_import() -> None:
     the new module."""
     reachable = _reachable_modules("fireassay.items.ppi")
     assert "fireassay.items.core" in reachable
+
+
+def test_items_validation_module_graph_excludes_store_and_llm() -> None:
+    """`items.validation` (the `DetectorValidation` record, Goal 2
+    criteria 3/4) is bound by the same store-free rule as
+    `items.core`/`items.calibration`/`items.answerability`/`items.ppi`,
+    and additionally must not reach `fireassay.llm` -- see its module
+    docstring."""
+    reachable = _reachable_modules("fireassay.items.validation")
+    leaked_store = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    leaked_llm = {m for m in reachable if m == "fireassay.llm" or m.startswith("fireassay.llm.")}
+    assert not leaked_store, (
+        f"fireassay.items.validation's module graph reaches {leaked_store} -- "
+        "validation.py (or something it imports) must not import fireassay.store, see its "
+        "module docstring"
+    )
+    assert not leaked_llm, (
+        f"fireassay.items.validation's module graph reaches {leaked_llm} -- "
+        "validation.py (or something it imports) must not import fireassay.llm, see its "
+        "module docstring"
+    )
+
+
+def test_sanity_the_walker_follows_items_validations_own_cross_module_import() -> None:
+    """`items.validation` imports `items.core` (for `Estimate`) -- the
+    same non-vacuous-pass check as this file's other sanity tests, applied
+    to the new module."""
+    reachable = _reachable_modules("fireassay.items.validation")
+    assert "fireassay.items.core" in reachable

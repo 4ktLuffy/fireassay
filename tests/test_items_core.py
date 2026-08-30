@@ -29,7 +29,7 @@ import math
 
 import pytest
 
-from fireassay.items.core import ItemResponses, analyse
+from fireassay.items.core import MISLABEL_SUSPECT_VALIDATION, ItemResponses, analyse
 
 _SQRT_0_6 = math.sqrt(0.6)  # ramp1, ramp3: (M1-M0)/s_total * sqrt(pq)
 _TWO_OVER_SQRT_5 = 2.0 / math.sqrt(5.0)  # ramp2, live_pos, mislabel (abs value)
@@ -135,3 +135,20 @@ def test_fewer_than_four_systems_raises() -> None:
 def test_empty_responses_raises() -> None:
     with pytest.raises(ValueError, match="no items"):
         analyse([])
+
+
+# -- mislabel_suspect is shipped as NOT VALIDATED (Goal 2 criterion 4, defect 50) --
+
+
+def test_mislabel_suspect_validation_constant_states_not_validated() -> None:
+    """`mislabel_suspect`'s own measured validation record must exist and
+    say plainly that it is not validated -- `discrimination_d < 0` is a
+    real, correctly-computed property (see the classification-boundary
+    tests above), but the *name* `mislabel_suspect` failed measurement
+    against 132 human labels (Fisher p=0.79 against the base rate) and
+    must not be shipped as a working defect detector with no marking at
+    all."""
+    assert MISLABEL_SUSPECT_VALIDATION.detector == "mislabel_suspect"
+    assert MISLABEL_SUSPECT_VALIDATION.verdict == "not_validated"
+    assert MISLABEL_SUSPECT_VALIDATION.n_flagged_labelled > 0
+    assert "NOT VALIDATED" in MISLABEL_SUSPECT_VALIDATION.note

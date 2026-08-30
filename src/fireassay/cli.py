@@ -19,6 +19,7 @@ import csv
 import json
 import uuid
 from collections.abc import Callable, Mapping, Sequence
+from datetime import date
 from pathlib import Path
 
 import typer
@@ -73,6 +74,12 @@ from fireassay.items.review import (
     score_review,
 )
 from fireassay.items.seed import seed_batch
+from fireassay.items.validation import (
+    DetectorValidation,
+    derive_verdict,
+    load_validations,
+    write_validations,
+)
 from fireassay.llm.cache import ResponseCache
 from fireassay.llm.ollama import OllamaClient
 from fireassay.models import EvidenceSpan, Question
@@ -1110,6 +1117,15 @@ def items_analyse(
     reliability_floor: float = typer.Option(0.5, "--reliability-floor"),
     n_splits: int = typer.Option(200, "--n-splits"),
     seed: int = typer.Option(0, "--seed"),
+    validations: Path | None = typer.Option(
+        None,
+        "--validations",
+        help=(
+            "DetectorValidation JSONL (see `items detector-score --write-validation`) -- "
+            "prints each detector's measured precision/recall and derived verdict before "
+            "the item scorecard"
+        ),
+    ),
 ) -> None:
     """Item analysis over a response matrix, via either `--matrix`
     (standalone -- usable with no fireassay store at all) or `--db`/
@@ -1148,7 +1164,8 @@ def items_analyse(
     item_stats, panel_stats = run_item_analysis(
         responses, item_meta, reliability_floor=reliability_floor, n_splits=n_splits, seed=seed
     )
-    render_items_analysis(item_stats, panel_stats)
+    validation_records = load_validations(validations) if validations is not None else None
+    render_items_analysis(item_stats, panel_stats, validation_records)
 
 
 @items_review_app.command("build")
@@ -1356,6 +1373,19 @@ def items_detector_score(
     flagged_size: int | None = typer.Option(
         None, "--flagged-size", help="size of the flagged stratum in the suite (with --pool-size)"
     ),
+    write_validation: Path | None = typer.Option(
+        None,
+        "--write-validation",
+        help=(
+            "append a DetectorValidation record built from this measurement to this JSONL "
+            "path (with --detector) -- see `items analyse --validations`"
+        ),
+    ),
+    detector: str | None = typer.Option(
+        None,
+        "--detector",
+        help="name of the detector being scored, e.g. 'mislabel_suspect' (with --write-validation)",
+    ),
 ) -> None:
     """Score any detector's flagged-items list against accumulated human
     calibration labels (`items.calibration.evaluate_detector`) -- works for
@@ -1368,11 +1398,25 @@ def items_detector_score(
     recall/fpr/base_rate when the calibration stratum is structurally
     disjoint from the detector's flagged items (see
     `items.calibration`'s module docstring on the disjoint-stratum trap)
-    -- both or neither, never one alone."""
+    -- both or neither, never one alone.
+
+    `--write-validation`/`--detector` (both or neither) turn this
+    measurement into a durable `items.validation.DetectorValidation`
+    record -- this is how such a record gets created by running the
+    measurement, not by typing numbers in. Its `verdict` is derived from
+    `precision`/`base_rate` by `items.validation.write_validations`, never
+    taken from anywhere in this command (see that module's docstring)."""
     if (pool_size is None) != (flagged_size is None):
         typer.echo(
             "items detector-score: --pool-size and --flagged-size must be given together, "
             f"or neither (got --pool-size={pool_size!r}, --flagged-size={flagged_size!r})",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if (write_validation is None) != (detector is None):
+        typer.echo(
+            "items detector-score: --write-validation and --detector must be given together, "
+            f"or neither (got --write-validation={write_validation!r}, --detector={detector!r})",
             err=True,
         )
         raise typer.Exit(code=1)
@@ -1392,6 +1436,36 @@ def items_detector_score(
         design=design,
     )
     render_detector_evaluation(evaluation)
+
+    if write_validation is not None and detector is not None:
+        base_rate_value = evaluation.base_rate.value
+        if base_rate_value is None:
+            typer.echo(
+                "items detector-score --write-validation: base_rate is unmeasured "
+                f"(verdict={evaluation.base_rate.verdict!r}) -- refusing to write a "
+                "DetectorValidation record with a fabricated base_rate; see "
+                "items.calibration's disjoint-stratum trap",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+        record = DetectorValidation(
+            detector=detector,
+            measured_on=date.today().isoformat(),
+            labels=(
+                f"{evaluation.n_labels} calibration label(s) from {calibration} "
+                f"(stratum_estimator={evaluation.stratum_estimator})"
+            ),
+            base_rate=base_rate_value,
+            precision=evaluation.precision,
+            recall=evaluation.recall,
+            note=None,
+            verdict=derive_verdict(evaluation.precision, base_rate_value),
+        )
+        n_written = write_validations([record], write_validation)
+        typer.echo(
+            f"wrote {n_written} DetectorValidation record to {write_validation}: "
+            f"detector={record.detector}  verdict={record.verdict}"
+        )
 
 
 @items_review_app.command("export-calibration")
