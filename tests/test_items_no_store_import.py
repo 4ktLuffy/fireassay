@@ -246,3 +246,23 @@ def test_sanity_the_walker_follows_items_validations_own_cross_module_import() -
     to the new module."""
     reachable = _reachable_modules("fireassay.items.validation")
     assert "fireassay.items.core" in reachable
+
+
+def test_items_baseline_module_graph_excludes_store() -> None:
+    """`items.baseline` (the no-model token-overlap detector, defect 46's
+    fix -- see its module docstring) is bound by the same store-free rule
+    as every other module in `items/`."""
+    reachable = _reachable_modules("fireassay.items.baseline")
+    leaked = {m for m in reachable if m == "fireassay.store" or m.startswith("fireassay.store.")}
+    assert not leaked, (
+        f"fireassay.items.baseline's module graph reaches {leaked} -- baseline.py "
+        "(or something it imports) must not import fireassay.store, see its module docstring"
+    )
+
+
+def test_sanity_the_walker_follows_items_baselines_own_cross_module_import() -> None:
+    """`items.baseline` imports `items.core` (for `ItemMeta`) -- the same
+    non-vacuous-pass check as this file's other sanity tests, applied to
+    the new module."""
+    reachable = _reachable_modules("fireassay.items.baseline")
+    assert "fireassay.items.core" in reachable
