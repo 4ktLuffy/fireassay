@@ -42,8 +42,11 @@ from fireassay.curate.serve import (
     next_item,
     submit_decision,
 )
+from fireassay.evidence import EvidenceError, default_style, load_claims, run_check, run_one_claim
+from fireassay.evidence import render_markdown as render_evidence_markdown
 from fireassay.filter.config import load_filter_config
 from fireassay.filter.pipeline import run_filter
+from fireassay.gate import MetricSpec, ThresholdBelowMDEError, evaluate_gate
 from fireassay.generate.models import ResolvedCandidate
 from fireassay.generate.pipeline import (
     DEFAULT_MAX_GENERATION_FAILURE_RATE,
@@ -51,7 +54,7 @@ from fireassay.generate.pipeline import (
     generate_candidates,
     select_chunks_for_target,
 )
-from fireassay.integrity import ComparisonRefusedError
+from fireassay.integrity import ComparisonRefusedError, assert_comparable
 from fireassay.items.adapters.store import load_matrix as items_load_matrix
 from fireassay.items.adapters.store import load_meta as items_load_meta
 from fireassay.items.adapters.tabular import load_meta_jsonl, load_responses_csv, load_responses_jsonl
@@ -91,6 +94,7 @@ from fireassay.report.text import (
     render_control_outcomes,
     render_curate_report,
     render_detector_evaluation,
+    render_gate_report,
     render_items_analysis,
     render_items_score,
     render_leaderboard,
@@ -105,7 +109,7 @@ from fireassay.score.cost import CostScorer
 from fireassay.score.latency import LatencyScorer
 from fireassay.score.policy import PolicyScorer, load_policy_rules
 from fireassay.score.retrieval import RetrievalScorer
-from fireassay.store.db import Store, SuiteExistsError
+from fireassay.store.db import GateAlreadyCheckedError, Store, SuiteExistsError
 from fireassay.system.base import System
 from fireassay.system.bm25 import BM25System
 from fireassay.system.corpus import Chunk, Doc, chunk_corpus, corpus_hash, load_corpus
@@ -472,6 +476,207 @@ def diff(
     render_leaderboard(board)
 
 
+# -- M5: gate -----------------------------------------------------------------
+
+#: Exit codes specific to `fireassay gate`, disjoint from the codes every
+#: other command already uses (1 usage error, 2 comparison refused, 3
+#: disallowed NOT_RUN) so a CI job can tell *why* the gate did not return
+#: 0 without parsing output. 2 is shared with compare/diff on purpose: it
+#: means the same thing here (integrity.assert_comparable refused).
+GATE_EXIT_BLOCKED = 4
+GATE_EXIT_BELOW_MDE = 5
+GATE_EXIT_ALREADY_CHECKED = 6
+
+
+def _parse_metric_spec(raw: str) -> MetricSpec:
+    """`NAME=THRESHOLD[:lower]` -> `MetricSpec`.
+
+    `NAME` is a metric name exactly as scored (`retrieval.recall@5`);
+    `THRESHOLD` is the regression size to block on, in metric units, `> 0`;
+    the optional `:lower` suffix says lower is better for this metric
+    (`latency.total_ms=50:lower` blocks a 50 ms *rise*). `=` is the
+    separator because metric names already contain `@` and `.`.
+    """
+    name, sep, rest = raw.partition("=")
+    if not sep or not name:
+        raise typer.BadParameter(f"--metric must be NAME=THRESHOLD[:lower], got {raw!r}")
+    threshold_text, _, direction = rest.partition(":")
+    try:
+        threshold = float(threshold_text)
+    except ValueError as exc:
+        raise typer.BadParameter(f"--metric {raw!r}: threshold {threshold_text!r} is not a number") from exc
+    if direction not in ("", "lower"):
+        raise typer.BadParameter(
+            f"--metric {raw!r}: the only direction suffix is ':lower', got {direction!r}"
+        )
+    if threshold <= 0:
+        raise typer.BadParameter(f"--metric {raw!r}: threshold must be > 0")
+    return MetricSpec(metric=name, threshold=threshold, higher_is_better=(direction != "lower"))
+
+
+def _aligned_per_item(
+    store: Store, base_run_id: str, head_run_id: str, metrics: Sequence[str]
+) -> tuple[dict[str, tuple[list[float], list[float]]], dict[str, int]]:
+    """Per-metric `(base_values, head_values)` aligned by question id --
+    the pairing `gate.paired_bootstrap` depends on -- plus, per metric,
+    how many questions were scored on one side only and therefore
+    dropped. A question a metric does not apply to on one run (e.g. a
+    retrieval metric on a question with no gold span) is outside the
+    paired population, never imputed as 0 -- the same rule
+    `compare.leaderboard` applies."""
+    base_by: dict[str, dict[str, float]] = {}
+    for question_id, metric, value in store.run_scores(base_run_id):
+        base_by.setdefault(metric, {})[question_id] = value
+    head_by: dict[str, dict[str, float]] = {}
+    for question_id, metric, value in store.run_scores(head_run_id):
+        head_by.setdefault(metric, {})[question_id] = value
+
+    per_item: dict[str, tuple[list[float], list[float]]] = {}
+    dropped: dict[str, int] = {}
+    for metric in metrics:
+        base_values = base_by.get(metric, {})
+        head_values = head_by.get(metric, {})
+        shared = sorted(set(base_values) & set(head_values))
+        per_item[metric] = ([base_values[q] for q in shared], [head_values[q] for q in shared])
+        dropped[metric] = len(set(base_values) ^ set(head_values))
+    return per_item, dropped
+
+
+@app.command()
+def gate(
+    base: str = typer.Option(..., "--base", help="base run id"),
+    head: str = typer.Option(..., "--head", help="head run id"),
+    db: Path = typer.Option(..., "--db"),
+    metric: list[str] = typer.Option(
+        ...,
+        "--metric",
+        help="NAME=THRESHOLD[:lower], repeatable: block if NAME regresses by at least THRESHOLD",
+    ),
+    alpha: float = typer.Option(0.05, "--alpha", help="family-wise significance level"),
+    power: float = typer.Option(0.80, "--power", help="power the MDE refusal is computed at"),
+    bootstrap_b: int = typer.Option(10000, "--b", help="paired-bootstrap replicates per metric"),
+    seed: int = typer.Option(0, "--seed"),
+    force: bool = typer.Option(False, "--force", help="gate an unsound comparison anyway (stamped)"),
+    persist: bool = typer.Option(
+        True,
+        "--persist/--no-persist",
+        help="record the verdict as gate_check rows (once per base/head/metric, ever)",
+    ),
+) -> None:
+    """The release gate (M5): decide whether HEAD regressed against BASE
+    on every --metric, and say so with a number.
+
+    Refuses before it decides: the two runs must be soundly comparable
+    (`integrity.assert_comparable`, exactly as `compare`/`diff`), and every
+    --metric threshold must be at least the minimum detectable effect this
+    suite can resolve at this sample size and corrected alpha
+    (`gate.evaluate_gate`). A verdict is `block` only when the regression
+    is both at least THRESHOLD in size and significant after
+    Holm-Bonferroni correction across every metric checked.
+
+    Exit codes: **0** every metric passed; **2** comparison refused;
+    **4** at least one metric BLOCKED; **5** a threshold is below the MDE
+    (no verdict was reached -- refusing is not passing); **6** this
+    (base, head, metric) has already been gate-checked and --persist is
+    on (re-running a gate on the same pair until it goes green is
+    p-hacking, and the schema forbids it); **1** usage error.
+    """
+    specs = [_parse_metric_spec(m) for m in metric]
+    if base == head:
+        typer.echo("gate: --base and --head are the same run; nothing to compare")
+        raise typer.Exit(code=1)
+
+    store = Store(db)
+    store.migrate()
+    base_run = store.get_run(base)
+    head_run = store.get_run(head)
+
+    scorers_by_run = {r.id: store.run_scorers(r.id) for r in (base_run, head_run)}
+    try:
+        comparability = assert_comparable([base_run, head_run], scorers_by_run=scorers_by_run, force=force)
+    except ComparisonRefusedError as exc:
+        store.close()
+        render_refusal(exc.reasons)
+        raise typer.Exit(code=2) from exc
+
+    per_item, dropped = _aligned_per_item(store, base_run.id, head_run.id, [s.metric for s in specs])
+    for spec in specs:
+        if not per_item[spec.metric][0]:
+            store.close()
+            typer.echo(f"gate: no question is scored for {spec.metric!r} in both runs")
+            raise typer.Exit(code=1)
+
+    try:
+        report = evaluate_gate(
+            base_run_id=base_run.id,
+            head_run_id=head_run.id,
+            suite_id=base_run.suite_id,
+            per_item=per_item,
+            specs=specs,
+            alpha=alpha,
+            power=power,
+            b=bootstrap_b,
+            seed=seed,
+        )
+    except ThresholdBelowMDEError as exc:
+        store.close()
+        typer.echo(f"GATE REFUSED: {exc}")
+        raise typer.Exit(code=GATE_EXIT_BELOW_MDE) from exc
+
+    if persist:
+        try:
+            store.put_gate_report(report)
+        except GateAlreadyCheckedError as exc:
+            store.close()
+            typer.echo(
+                f"gate: base={base_run.id} head={head_run.id} has already been gate-checked on "
+                "at least one of these metrics; a genuinely new comparison needs a fresh head run "
+                "(--no-persist recomputes without recording)"
+            )
+            raise typer.Exit(code=GATE_EXIT_ALREADY_CHECKED) from exc
+    store.close()
+
+    render_gate_report(report, comparability, dropped)
+    if report.blocked:
+        raise typer.Exit(code=GATE_EXIT_BLOCKED)
+
+
+# -- evidence -----------------------------------------------------------------
+
+
+@app.command()
+def evidence(
+    claims: Path = typer.Option(..., "--claims", help="a Python file defining CLAIMS: tuple[Claim, ...]"),
+    check: bool = typer.Option(False, "--check", help="recompute every claim; exit 1 on any FAIL/ERROR"),
+    markdown: bool = typer.Option(False, "--markdown", help="print EVIDENCE.md for the claims"),
+    claim: str | None = typer.Option(None, "--claim", metavar="ID", help="recompute one claim in detail"),
+) -> None:
+    """Recompute the claims in an EVIDENCE.md from their committed
+    artifacts, for this repository or any other (`fireassay.evidence`).
+
+    A claims file is ordinary Python that defines `CLAIMS`, a tuple of
+    `fireassay.evidence.Claim`. `--check` recomputes every one and exits
+    non-zero on the first mismatch; nothing is ever rewritten to match.
+    Exactly one of --check / --markdown / --claim is required.
+    """
+    modes = sum([check, markdown, claim is not None])
+    if modes != 1:
+        typer.echo("evidence: pass exactly one of --check, --markdown, --claim ID")
+        raise typer.Exit(code=1)
+    try:
+        loaded = load_claims(claims)
+    except EvidenceError as exc:
+        typer.echo(f"evidence: {exc}")
+        raise typer.Exit(code=1) from exc
+    style = default_style(str(claims))
+    if markdown:
+        typer.echo(render_evidence_markdown(loaded, style))
+        return
+    code = run_one_claim(loaded, claim) if claim is not None else run_check(loaded)
+    if code:
+        raise typer.Exit(code=code)
+
+
 # -- M2: controls / mutate / mutation ---------------------------------------
 
 
@@ -727,6 +932,11 @@ def mutate(
     result = run_mutation(
         store, suite_row, config_row, questions, docs, system_factory, scorers, scoring_ctx,
         operator_list, detector,
+        # Same corpus identity `run` records, so a mutant run is comparable
+        # with (and gate-checkable against) a `fireassay run` baseline over
+        # the same corpus rather than tripping ENV_MISMATCH -- see
+        # run_mutation's docstring.
+        env_affects_results={"corpus_hash": corpus_hash(docs)},
     )
 
     mutation_run_id = store.put_mutation_run(

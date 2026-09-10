@@ -5,18 +5,28 @@ description = "An evaluation integrity layer: content-addressed suites that refu
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
+# The spine: what `fireassay.hashing`, `integrity`, `admissibility`,
+# `controls`, `mutation`, `score`, `items.core` and the CLI need. A
+# consumer that imports fireassay as a library (agent-assay does) gets
+# exactly this and nothing heavier.
 dependencies = [
     "pydantic>=2",
     "typer",
     "pyyaml",
     "numpy",
     "rich",
-    "krippendorff",
-    "textual",
 ]
 
 [project.optional-dependencies]
+# Curation (M3/M3b): Krippendorff's alpha for `curate report`, and the
+# Textual TUI for `curate tui`. Both are imported lazily, at the command
+# that needs them, so the spine never pulls them in.
+curate = [
+    "krippendorff",
+    "textual",
+]
 dev = [
+    "fireassay[curate]",
     "pytest",
     "pytest-cov",
     "ruff",

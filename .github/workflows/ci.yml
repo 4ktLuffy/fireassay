@@ -1,0 +1,56 @@
+# The per-push check. Everything here is fast (the full suite runs in
+# ~30 s on a laptop) and deterministic: no model, no network beyond
+# installing the package, no database that is not built from
+# tests/fixtures/ on the spot.
+#
+# Four jobs in one, in the order a reviewer would run them by hand:
+#   1. lint + types           ruff, mypy --strict on src/
+#   2. tests                  pytest with coverage
+#   3. evidence               tools/evidence.py --check -- every number in
+#                             EVIDENCE.md recomputed from its committed
+#                             artifact; a drift fails the build, and is
+#                             never rewritten to match
+#   4. gate demo              tools/gate_demo.py -- the M5 gate blocking a
+#                             planted regression, passing a benign change
+#                             and refusing a threshold the fixture suite
+#                             cannot resolve, through the real CLI, from an
+#                             empty database. A gate that has never blocked
+#                             anything is the first failure condition the
+#                             M5 pre-registration names; this step is where
+#                             it blocks, on every push.
+#
+# The slow harness-mutation run (cosmic-ray over fireassay's own source)
+# stays on its weekly schedule in mutants.yml -- gating every push on it
+# would make it the first check disabled under time pressure.
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - name: lint
+        run: ruff check src tests tools
+      - name: types
+        run: mypy src
+      - name: tests
+        run: pytest -q
+      - name: evidence
+        run: python tools/evidence.py --check
+      - name: gate demo
+        # Regenerates run/gate_demo.json into a scratch path so the
+        # committed artifact is never rewritten by CI; the script's own
+        # exit status is the check (non-zero unless all three outcomes
+        # match tools/gate_demo.py's documented expectations).
+        run: python tools/gate_demo.py --out /tmp/gate_demo.json

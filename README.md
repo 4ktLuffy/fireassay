@@ -1,346 +1,195 @@
-# fireassay — M1 + M2 + M3 + M3b
+# fireassay
 
-An evaluation integrity layer: content-addressed suites that refuse to report unsound
-comparisons, and a harness that proves it can fail. This covers **M1, M2, M3 and M3b** — the
-deterministic spine, controls and mutation scores, question generation / deterministic
-filtering / human curation, and (M3b) an interactive curation TUI plus incremental resume for
-generation. Read this section honestly before assuming fireassay does more than it does.
+An evaluation integrity layer for RAG and LLM golden sets. The thesis, in one line:
 
-## What M1 actually is
+> **A green evaluation is only evidence if the harness can be shown to go red.**
 
-- A SQLite store for questions, evidence spans, suites, configs, runs, results and scores —
-  **append-only**: once a run is sealed, writes to it are rejected in Python
-  (`RunSealedError`) and at the database level (SQL triggers), not just by convention.
-- Content-addressed suites and configs (`hashing.py`): a question's id, a suite's
-  `suite_hash`, and a config's `config_hash` are all pure functions of their content, sha256
-  under a versioned scheme prefix.
-- A refusal rule (`integrity.py`): `compare` and `diff` refuse to report a comparison across
-  runs that differ in suite, scorer versions, or environment fields marked `affects_results`,
-  or that are incomplete, empty, or individually inadmissible — unless you pass `--force`, in
-  which case every render is stamped `UNSOUND COMPARISON`. Six refusal codes: `SUITE_MISMATCH`,
-  `SCORER_MISMATCH`, `ENV_MISMATCH`, `RUN_INCOMPLETE`, `EMPTY_RUN`, `RUN_INADMISSIBLE`.
-- A config matrix (`config.py`): a Cartesian product over named axes, with `include`/`exclude`.
-- A real system under test (`system/bm25.py`): a pure-Python Okapi BM25 retriever, no API key,
-  no network call. This is deliberate — a stranger with nothing but this repo can reproduce
-  every retrieval number fireassay reports.
-- Five deterministic scorers (`score/`): `retrieval`, `latency`, `cost`, `policy`,
-  `abstention`. **None of them call an LLM.** That is the credibility anchor of this
-  milestone.
-- A leaderboard (`compare.py`) and a CLI (`cli.py`) to drive all of the above.
+fireassay is the machinery that makes that showable. Content-addressed suites that refuse to
+report a comparison across mismatched questions, scorers or environments. Negative controls
+that must fail, with a measured chance band, before a run is admissible. An item-analysis
+tool whose detectors are scored against blind human labels and shipped as `UNVALIDATED` when
+they lose to a random draw. And a release gate that computes the smallest regression a suite
+can resolve and refuses any threshold below it, instead of rubber-stamping a green.
 
-## What M2 adds
+**Every number in this file is a claim in [`EVIDENCE.md`](EVIDENCE.md)**, mapped to the
+committed artifact it is read from and the command that recomputes it. `make evidence`
+recomputes all of them and fails on any drift; it never rewrites a number to match. CI runs it
+on every push, together with the gate demo below.
 
-The centre of the product (fireassay-SPEC.md §2, pillar 2): **a green evaluation is only
-evidence if the harness can be shown to go red, in both directions, with a number.**
+## What was measured
 
-- **Four deterministic negative controls** (`controls/`): `no_retrieval`, `shuffled_gold`,
-  `corpus_ablation`, `identical_config`. Each wraps or mutates the system/data, proves a
-  **writable twin** (the unmodified measurement genuinely works) before trusting its own
-  silence, and asserts specific **cause** facts (e.g. `recall == 0.0` *and* `len(retrieved) ==
-  0` *and* `judged_fraction == 0.0`), never just "the number dropped".
-- **`shuffled_gold`'s chance band is measured, not assumed — and measured as an estimate, not a
-  single draw.** A fixed threshold (e.g. `max: 0.05`) silently encodes one corpus size — on this
-  repo's 12-document fixture with `top_k=5`, ~40% of the corpus is retrieved on every query, so
-  a *meaningless* (permuted) gold span still overlaps something roughly a third to a half of the
-  time (measured: mean ≈0.376, sd ≈0.105 across 300 draws, only 17 distinct values — `recall@5`
-  over 14 gold-bearing questions is a coarse, discrete statistic); chance would only look like
-  `0.05` on a much larger corpus (~1,181 docs ≈ 0.004). Two narrower fixes were tried and
-  measured, not assumed, to still be wrong: comparing one permutation's recall against the raw
-  sample maximum of `n_seeds` calibration draws has a `1/(n_seeds+1)` false-alarm rate on a
-  *perfectly healthy* system, and a normal-theory tolerance interval (`chance_level + k *
-  chance_sd`, `k=3`) still measured a 1.0% false-alarm rate across 200 independently-seeded
-  suites, because this fixture's recall distribution is coarse and discrete rather than smoothly
-  normal. The control instead averages `m_primary` independent permutations into one estimate
-  and compares *that* against the calibration mean using the standard error of the difference
-  between two means (`chance_sd * sqrt(1/m_primary + 1/n_seeds)`) — simulated at a 0.0000%
-  false-alarm rate over 40,000 trials against the fixture's real empirical distribution, and
-  confirmed empirically (not just simulated) at 200/200 PASSED across independently-seeded
-  suites. PASSES only when the twin clears the measured chance level by `min_margin` *and* the
-  averaged primary estimate stays within the measured tolerance — the same "measure the
-  baseline, never assume it" principle a paired-bootstrap gate applies to its own noise floor,
-  applied a second time to the measurement of the noise floor itself once the first attempt
-  turned out to still be an assumption in disguise.
-- **`judge_calibration` and `null_questions` are registered now, always `NOT_RUN`.**
-  `judge_calibration` needs a judge (M4). `null_questions` was originally specified as a
-  retrieval-shaped check ("does a question with no answer retrieve nothing relevant"), but that
-  property is actually about **abstention** — whether a system that *generates* an answer
-  correctly declines — and M1/M2's system under test (`BM25System`) is retrieval-only and never
-  makes that choice. An earlier implementation forced a retrieval-only proxy onto it and it
-  reported a confident `recall_at_k=1.0` against an expected `0.0`, for no reason connected to
-  whether retrieval was healthy — exactly the "measurement with no external referent" failure
-  mode this project exists to catch (fireassay-SPEC.md §1). `null_questions` will get a real
-  implementation once a generating system exists to measure abstention against (M4).
-- **`NOT_RUN` is never a pass** (`admissibility.py`): a run is admissible iff it has zero
-  invariant violations and every control is `PASSED` (or `NOT_RUN` and explicitly allowed via
-  `--allow-not-run`). `fireassay controls run` exits non-zero on any `FAILED` or disallowed
-  `NOT_RUN`, regardless of how well the real configs scored.
-- **System mutation** (`mutation/`): five operators (`drop_results`, `truncate_topk`,
-  `shuffle_topk`, `corrupt_query`, `swap_ranking`) degrade the system under test
-  deterministically; `ThresholdDetector` (naive, explicitly labelled — the real statistical gate
-  is M5) decides whether each mutant is distinguishable from a baseline; `gate_mutation_score =
-  killed / (total - equivalent)`. Equivalent mutants are **computed, not assumed** — every
-  exclusion carries a `equivalent_reason`, printed in every report.
-- **`harness_mutation_score`**: `cosmic-ray` (dev-only dependency) mutates fireassay's *own*
-  source (`integrity.py`, `hashing.py`, `admissibility.py`, `score/`, `controls/`) — a different
-  question from `gate_mutation_score` ("does this eval setup catch injected regressions in the
-  *system under test*"): "do our tests catch bugs in *fireassay itself*". `make mutants` runs
-  it; see `cosmic-ray.toml` and `.github/workflows/mutants.yml` (scheduled, not per-PR — slow).
-  Target: 80%+ on the modules above; lower is a finding to report, not to quietly lower.
+All of it on one corpus (1,181 gov.uk documents, [OGL v3](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/))
+and one generated candidate set (2,364 questions from a local `qwen2.5:7b`). Human labels are
+Henos's, blind, on a uniform-random stratum.
 
-```
-fireassay controls run     --matrix configs/matrix.example.yaml --corpus corpus.jsonl --db bench.db \
-                            [--allow-not-run judge_calibration --allow-not-run null_questions]
-fireassay controls show    <run_id> --db bench.db
-fireassay mutate           --suite support-kb@1.0.0 --config <config_id> \
-                            --operators configs/mutants.example.yaml --corpus corpus.jsonl --db bench.db
-fireassay mutation score   --mutation-run <id> --db bench.db
+| Finding | Number | Claim |
+|---|---|---|
+| Generated items that are broken (blind human review, 132 uniform-random labels) | **17.4%** [11.9, 24.8]; 40.9% if "needs rewrite" counts | `labels.base_rate`, `labels.lenient_rate` |
+| Defect rate over all 2,364 items, judge + 132 labels combined (prediction-powered inference) | **20.7%** [15.3, 26.1] | `ppi.defect_rate` |
+| Best judge vs human labels: gpt-5.4/low | precision 0.652, recall 0.652 | `judge.gpt54` |
+| Local judge: granite4 7B | precision 0.571, recall 0.174 | `judge.granite4` |
+| DeBERTa-v3-large NLI as a judge | precision 0.224 | `judge.nli` |
+| No-model token-overlap floor every judge has to beat | precision 0.75 (n=8) | `judge.token_overlap` |
+| `mislabel_suspect` detector vs a random draw of the same size | 0.219 vs 0.250, Fisher p=0.79 — **shipped as UNVALIDATED** | `detector.mislabel_suspect` |
+| Split-half reliability of per-item statistics, 54-config panel | 0.503 (usable); 0.286 on the 18-config panel (too few systems) | `panel.reliability`, `panel18.reliability` |
+| Monotonicity inside one retriever family | 0 violations in 42,552 pairs — a `top_k` ladder cannot distinguish strength from breadth | `panel.monotonic` |
+| Closed-book, forced-guess: items answerable with no retrieval | 2 of 149 (1.3%) | `closedbook.forced` |
+| **The gate blocking a planted regression** | exit 4 on `drop_results`; exit 0 on a benign change; **exit 5 (refused)** on a real 0.39 drop asked at threshold 0.3, because 14 items resolve only 0.35 | `gate.*` |
+
+Two of those rows are why this project exists rather than a metric library. The calibration
+set's first act was to kill one of the tool's own detectors: `mislabel_suspect` looked like a
+weak-but-real detector at 0.219 precision until it was put beside the 0.25 a random draw
+scores. And the gate's third case is a regression that is real, larger than the threshold
+asked for, and still refused, because a threshold the suite cannot distinguish from noise is
+not one a gate can honestly enforce.
+
+The full defect log, 50 entries, each a plausible number that was wrong, is in
+`~/ObitosBrain` (private). The ones that changed the code are in the module docstrings.
+
+## The gate (M5)
+
+```bash
+fireassay gate --base <run_id> --head <run_id> --db bench.db \
+    --metric "retrieval.recall@5=0.05" --metric "latency.total_ms=50:lower"
 ```
 
-`controls run` exits **2** on any control `FAILED`, **3** on any disallowed `NOT_RUN`. `mutate`
-always exits **0** — a low `gate_mutation_score` is a finding to report, not a command failure.
-On the M1 fixture (retrieval-only `BM25System`), `judge_calibration` and `null_questions` are
-*always* `NOT_RUN`, so `controls run` needs both named in `--allow-not-run` to exit 0.
+For each `--metric NAME=THRESHOLD[:lower]` the gate pairs the two runs question by question,
+runs a paired bootstrap, Holm-corrects the p-values across every metric checked, and computes
+each metric's minimum detectable effect at the corrected alpha. It refuses before it decides:
+the two runs must be soundly comparable (same suite, scorers and environment — the same rule
+`compare` and `diff` apply), and every threshold must be at least the MDE. A verdict is
+`block` only when the regression is at least THRESHOLD in size **and** significant after
+correction. A `(base, head, metric)` triple can be recorded exactly once; the schema forbids
+re-running a gate on the same pair until it comes back green.
 
-## What M3 adds
+| exit | meaning |
+|---|---|
+| 0 | every metric passed |
+| 2 | comparison refused (`SUITE_MISMATCH`, `SCORER_MISMATCH`, `ENV_MISMATCH`, `RUN_INCOMPLETE`, `EMPTY_RUN`, `RUN_INADMISSIBLE`) |
+| 4 | at least one metric **blocked** |
+| 5 | a threshold is below the MDE — no verdict was reached; refusing is not passing |
+| 6 | this pair has already been gate-checked |
 
-Turning a corpus into a curated golden set (fireassay-SPEC.md §2, pillar 3), with a rubric and
-a measured error rate — not a funnel that trusts its own inputs.
+`make gate-demo` (`tools/gate_demo.py`) shows all of it from an empty database on the
+fixture suite, through the real CLI, and writes `run/gate_demo.json` so the three verdicts are
+recomputable claims. `tools/mde.py` reports a suite's MDE as a distribution over system pairs
+at candidate suite sizes, for pre-registering a threshold before the suite is built.
 
-- **Generation** (`generate/`, `llm/`) is the only part of fireassay allowed to call an LLM, via
-  a thin `OllamaClient` (`urllib.request` only, no new HTTP dependency) that pins a model by
-  **digest, from `GET /api/tags`, never `/api/show`** (verified against a live server: `/api/show`
-  carries no `digest` key at all) and never by tag, and that **raises rather than returns a
-  partial result** when every retry produces invalid JSON. Every LLM response is content-addressed
-  on `(digest, prompt)` in a `ResponseCache`, so tests replay fixtures and never touch a live
-  model. A candidate's evidence span is resolved by locating its quote **verbatim, under
-  whitespace normalisation only** (never fuzzy matching) in the source document; a quote that
-  does not appear, or appears more than once, is discarded and counted, never guessed at.
-- **Filtering** (`filter/`) is entirely deterministic and LLM-free: degeneracy, self-containment,
-  near-duplication (token-set Jaccard via the one shared tokenizer), an `unretrievable` check, and
-  a per-`(qtype, difficulty)` balance cap, in that fixed order, with every candidate's full
-  stage-by-stage trail persisted so the funnel reconciles exactly (`generated == kept + every
-  rejection reason`).
-  **`unretrievable` replaces an earlier per-word document-frequency check (`TOO_GENERIC`)**,
-  measured on the real 1,181-document gov.uk corpus to have a ~50% false-positive rate: on a
-  topically narrow corpus, ordinary words are common simply because the whole corpus shares a
-  topic, so "every content word is common" rejects specific, well-formed questions. `unretrievable`
-  instead asks the more direct question an answerability filter asks — can the retriever that will
-  eventually have to answer this find its own source document at all? — by running the question
-  through the BM25 retriever already in this repo and rejecting it only if its own source document
-  fails to appear in the top `unretrievable_top_n` (default 50 of ~24,584 chunks — a floor, not a
-  selection criterion) of the whole corpus. This is defensible for filtering configs that are
-  later evaluated with the same retriever family only because it is (1) a wide floor, not a
-  ranking criterion, and (2) applied identically to every config, so it cannot differentially
-  favour one. **The bias that remains is real and is not hidden: the curated set will
-  under-represent questions that require semantic rather than lexical matching.** When a second,
-  differently-biased retriever family exists in this repo, filtering with it instead of the one
-  under evaluation is the correct fix; until then this is a documented limitation of the set's
-  composition, not of any comparison drawn from it.
-- **Curation** (`curate/`) is the non-interactive core (`curate next` / `curate submit`) a future
-  TUI (M3b) will drive with no new logic, only keystrokes: a six-question rubric, a queue that
-  interleaves invisible known-bad honeypots and double-reviews, Krippendorff's α (ordinal for the
-  two ordinal rubric fields, nominal for the four booleans, missing observations passed through as
-  `NaN` rather than imputed), and a funnel/coverage/difficulty-validation report.
-  **Agreement and accuracy are different instruments and neither substitutes for the other**: α
-  says whether curators agree with each other, honeypots say whether a curator is right against a
-  known-bad item planted invisibly in the queue. **"Unmeasurable" is a state, not a number**:
-  `krippendorff.alpha` can raise (two curators agreeing on every shared item is an entirely
-  ordinary case) or return `NaN` (sparse, missing-heavy data) without raising — both are reported
-  as a distinct `UNMEASURABLE` status, never silently compared against the low-agreement threshold
-  as if they were a real, if low, α.
-- **`gold_doc_rank`** — the BM25 rank at which a candidate's own source document is first found,
-  measured once at generation time — is recorded as a feature alongside the lexical ones, and
-  `curate report`'s difficulty-validation correlation checks the generator's *proposed* difficulty
-  label against it: the spike found a generator's difficulty labels can be **inverted** relative to
-  what actually drives retrieval (`easy` probes scored 0.176 recall, `hard` scored 0.588, because
-  what drove it was document-title overlap, not passage overlap). A difficulty label that does not
-  correlate with anything measurable is a label, not a difficulty.
+## What is in the box
 
-```
-fireassay generate  --corpus corpus.jsonl --model qwen2.5:7b --n 3000 --cache-dir .cache/llm --db bench.db
-fireassay filter    --batch <batch_id> --config configs/filter.example.yaml --corpus corpus.jsonl --db bench.db
-fireassay curate next    --curator alice --db bench.db
-fireassay curate submit  verdict.json --db bench.db
-fireassay curate tui     --curator alice --db bench.db   # M3b: interactive, drives next/submit
-fireassay curate report  --db bench.db [--corpus corpus.jsonl] [--suite support-kb@1.0.0]
-fireassay suite freeze --name support-kb --version 1.0.0 --db bench.db --from-curated
-```
+| Pillar | Where | What it does |
+|---|---|---|
+| Suite integrity | `hashing.py`, `integrity.py`, `store/` | Content-addressed questions, suites and configs; append-only runs enforced by SQL triggers; `assert_comparable` with six refusal codes |
+| Controls, both directions | `controls/`, `mutation/`, `admissibility.py` | Four deterministic negative controls with a *measured* chance band and a writable twin; five mutation operators and `gate_mutation_score`; `NOT_RUN` is never a pass |
+| Curation with a measured error rate | `generate/`, `filter/`, `curate/` | Generation (the only LLM boundary, digest-pinned, content-cached), a deterministic filter with an exactly reconciling funnel, a six-question rubric, honeypots, Krippendorff's α with `UNMEASURABLE` as a state |
+| Item analysis | `items/` | `fireassay items analyse` on any item × system response matrix — usable with no store, by someone who has never heard of fireassay; split-half reliability, discrimination, blind review decks, seeded corruptions, PPI |
+| The gate | `gate.py`, `store/migrations/0006_gate.sql` | Paired bootstrap, Holm-Bonferroni, MDE refusal, once-only persistence |
+| System under test | `system/` | Pure-Python BM25 (and TF-IDF, a panel of 54 configs) — no API key, no network, so a stranger can reproduce every retrieval number here |
 
-## What M3b adds
-
-Two things: a real interactive curation TUI, and a fix for two measured re-run problems in
-`generate`.
-
-- **Incremental resume** (`generate/pipeline.py`). Re-running `generate` into an existing
-  database used to duplicate candidates (verified: 5 candidates became 10 on a second run,
-  duplicate question texts — `candidate.id` is a random uuid4, so reprocessing a chunk mints a
-  fresh row every time) and, separately, replaying an already-cached chunk into a fresh database
-  still cost ~1s/candidate with zero model calls — about an hour at 4,000 candidates, for a cause
-  the spike could not isolate to BM25 (35ms at gold-rank depth) or per-run retriever construction
-  (built once, not per candidate). The fix for both: `candidate.chunk_id` (migration 0005,
-  additive to `source_doc_id` — several chunks share one document, so `source_doc_id` alone is
-  not enough to resume safely) lets `generate_candidates` skip any chunk the target database
-  already has a candidate for, before any model call or cache lookup. **`rm -f run/golden.db` (or
-  any `--db`) is no longer necessary before re-running `generate`** — doing so now only throws
-  away work. A resumed run reports what it skipped: `resumed=N chunks already present`. The
-  per-row SQLite write pattern some earlier hypotheses pointed at as the ~1s/candidate cause was
-  never profiled in this environment (no shell access) — the skip fix removes the cost for any
-  chunk already present outright, which is the fix M3b-SPEC.md asked for; whether the replay path
-  *itself* is also slow for chunks not yet skipped remains unmeasured and unclaimed.
-- **The curation TUI** (`curate/tui.py`, `textual` — the milestone's one new runtime dependency).
-  `fireassay curate tui --curator <id> --db <db>` drives the exact same `curate.serve.next_item`/
-  `submit_decision` core `curate next`/`curate submit` already used non-interactively — the TUI
-  adds no rule of its own. The one-keystroke fast path (`a` accepts with the rubric defaulted to
-  "everything agrees"; `r` rejects via a single-keystroke reason picker; the six rubric criteria
-  are only touched via `d`, drilling in) is the difference between an annotator averaging ~5s and
-  one averaging ~15s per item — roughly two hours versus five across 1,000 items. Layout is fixed
-  and never scrolls: every field is truncated to a known character budget before rendering, with
-  an explicit "+N chars hidden" marker and a `v` key to see the untruncated original. A 45-minute
-  session banner and a 15-in-a-row identical-verdict note are both non-blocking (M3b-SPEC.md's
-  documented fatigue/autopilot thresholds — the same constants `curate.quality`'s post-hoc report
-  already uses). Honeypots render through the exact same code path as any real item, since
-  `ServedItem.view` never carries the honeypot flags in the first place — nothing in the TUI could
-  branch on them even by accident. Every decision worth testing (the default-accept rubric, the
-  reject-reason key bijection, truncation, the two session thresholds) is a plain function in
-  `curate/tui_logic.py`/`curate/tui_session.py`, fully unit-tested with no `textual` import;
-  `curate/tui.py` itself is Textual wiring this milestone's environment could not exercise
-  headlessly, and says so in its own docstring.
-
-## What M1+M2+M3 are honestly *not*
-
-The following are explicitly out of scope and **not built**, regardless of what the parent
-spec (`../fireassay-SPEC.md`) describes for the finished project:
-
-- No crowd-kit/Dawid-Skene aggregation — pointless with one curator, revisit when there are
-  several.
-- **No LLM judges** (`correctness`, `groundedness`), no `judge_calibration` control with a real
-  judge — five of the eventual eight metrics are built; the three that need a judge, and the
-  sixth control, are M4.
-- **No CJE integration**, no calibration, no pooling.
-- **No release gate** (`GateDetector`, paired bootstrap significance testing, Holm–Bonferroni,
-  power check, `confseq` re-runs), no GitHub Action gating PRs — M5.
-- **No HTML report.** Rendering is `rich` tables to a terminal (`report/text.py`).
-- **No corpus scraping.** You provide `corpus.jsonl`.
-
-If you came here looking for the finished product described in `fireassay-SPEC.md`, it is not
-here yet. What *is* here is real: a working store, a real refusal mechanism, a real retriever,
-and real deterministic metrics — not a mockup of any of them.
-
-## Beyond the original M1 spec
-
-Several rounds of correction were applied to the original M1 spec during implementation; the
-following exist because of them, not because the original spec asked for them:
-
-- **Retrieval relevance is judged by character-range overlap, not `chunk_id` equality**
-  (`score/retrieval.py`). Chunking is a config axis; matching on `chunk_id` made recall
-  incomparable across chunk sizes. `RetrievedChunk` now carries `char_start`/`char_end`.
-- **`retrieval.judged_fraction@k` and `retrieval.bpref`** exist because gold evidence spans are
-  known-incomplete: a chunk that genuinely answers a question but was never annotated as gold
-  is scored as a miss by recall/nDCG/MRR. `judged_fraction` makes that incompleteness visible;
-  `bpref` (Buckley & Voorhees 2004) is designed for incomplete judgments — it is `1.0` whenever
-  anything relevant is retrieved in M1, because M1 has no data source for negative judgments
-  yet (`ScoringContext.judged_nonrelevant_spans_by_question` is always empty in a real run);
-  the formula is implemented and tested now so a later milestone's pooling work is a drop-in.
-- **A missing Score is never a pass.** `AbstentionScorer` emits `abstention.wrongly_abstained`
-  for every answerable question an answer-generating system abstains on, so an
-  abstain-everything system cannot win by having nothing scored against it.
-  `compare.MetricSummary.applicable_n` surfaces when a metric's mean is based on a shrinking
-  subset of its population. Conversely, a retrieval-only system (`System.generates_answers ==
-  False`, e.g. `BM25System`) gets **no** abstention metrics at all — not `0.0`/`1.0` — because
-  it never made an abstain/answer choice for either metric to measure.
-- **Metric self-consistency invariants** (`score/invariants.py`) run automatically at the end of
-  every run: value ranges, `recall@k` monotonicity, `mrr >= recall@1`, and consistency between
-  `ndcg@k`/`mrr` and `recall@k` on whether anything relevant was found at all. (An earlier
-  `ndcg@k` monotonicity rule was removed — it was mathematically wrong: IDCG@k grows with k, so
-  a perfect `ndcg@1` can legitimately fall by `ndcg@3`.) A run that violates one is marked
-  `admissible=False` and is a first-class refusal ground: `integrity.assert_comparable` raises
-  `RUN_INADMISSIBLE` for it.
-- **BM25 ranking ties are broken by `(doc_id, chunk_id)`, never by score alone**, so a fully
-  tied ranking is reproducible regardless of corpus load order.
-- **The corpus is content-hashed from raw documents** (`system/corpus.corpus_hash`, hashing
-  `doc.text` only — not chunk boundaries) into `run.env_json["affects_results"]["corpus_hash"]`,
-  so a corpus that changes underneath a suite trips `ENV_MISMATCH` instead of silently comparing
-  against stale evidence, while two configs that differ only in chunk size still hash identically
-  and remain comparable — chunking is a property of the *config* (already in `config_hash`), not
-  of the corpus.
-- **`compare.leaderboard` supports `split_by=("qtype", "difficulty")`** alongside
-  `split_by_provenance`, so a config that wins overall but fails every `multi_hop` question is
-  visible in the leaderboard rather than averaged away.
-- **Tokenisation is centralised** in `text.py`; `BM25System` imports it rather than defining its
-  own regex, so a future text-matching component (dedup, curation) cannot silently diverge from
-  what the retriever considers a token.
-
-## Install
-
-```
-pip install -e ".[dev]"
-```
-
-Runtime dependencies are `pydantic>=2`, `typer`, `pyyaml`, `numpy`, `rich`, `krippendorff` (M3's
-one new dependency — no pandas, no scikit-learn), plus **`textual`** (M3b's one new dependency,
-for `curate/tui.py` only — every other command works without it ever being imported). Dev-only:
-`pytest`, `pytest-cov`, `ruff`, `mypy`, `cosmic-ray` (the last is never imported at runtime; it
-powers `make mutants` only). No SQLAlchemy, no ORM — SQLite is stdlib `sqlite3`; Ollama access is
-stdlib `urllib.request`, no HTTP library. No LLM call and no network anywhere in M1 or M2, and
-nowhere in M3/M3b outside `generate/`.
+Deterministic scorers (`score/`): `retrieval` (recall/nDCG/MRR by character-range overlap, plus
+`judged_fraction` and `bpref` because gold spans are known-incomplete), `latency`, `cost`,
+`policy`, `abstention`. None of them calls a model.
 
 ## Quick tour
 
+```bash
+pip install -e ".[dev]"
+make demo          # init, import fixtures, freeze, run a 4-config matrix, compare
+make gate-demo     # the gate: block, pass, refuse -- from an empty db
+make test          # pytest, coverage on
+make evidence      # recompute every claim in EVIDENCE.md
 ```
+
+```bash
 fireassay init                --db bench.db
 fireassay questions import    questions.jsonl --db bench.db
 fireassay suite freeze        --name support-kb --version 1.0.0 --db bench.db
-fireassay suite show          support-kb@1.0.0 --db bench.db
 fireassay run                 --matrix configs/matrix.example.yaml --corpus corpus.jsonl --db bench.db
-fireassay compare             --suite support-kb@1.0.0 --db bench.db [--force] [--by-provenance] [--split-by qtype]
-fireassay diff                --base <run_id> --head <run_id> --db bench.db [--force]
+fireassay compare             --suite support-kb@1.0.0 --db bench.db        # exit 2 if unsound
+fireassay controls run        --matrix ... --corpus ... --db bench.db        # exit 2/3 on FAILED/NOT_RUN
+fireassay mutate              --suite ... --config <id> --operators configs/mutants.example.yaml ...
+fireassay items analyse       --matrix panel.csv                             # no db needed
+fireassay gate                --base <run> --head <run> --metric "retrieval.recall@5=0.05" --db bench.db
 ```
 
-`compare`/`diff` exit **2** when the comparison is refused as unsound (`ComparisonRefused`),
-distinct from exit 1 for a plain CLI usage error.
+`fireassay generate / filter / curate next / curate submit / curate tui / curate report` turn
+a corpus into a curated set; see [`docs/MILESTONES.md`](docs/MILESTONES.md) for each one.
 
-`make demo` runs this whole sequence against the fixture corpus/questions in `tests/fixtures/`.
+## What this is honestly not, yet
 
-## Tests
+- **The golden set is not curated.** The generation run produced 3,054 candidates; the
+  curation TUI works; no suite has been frozen from curated decisions. The pre-registered
+  acceptance check for this project names "a golden set that is really uncurated candidates"
+  as a failure condition, and as of this README it is still triggered. The gate above is
+  demonstrated on the 20-question fixture suite, not on a curated set.
+- **No LLM judge scores answer correctness.** The three judges measured here score *item
+  quality* (is this question answerable from its evidence). `correctness` and `groundedness`,
+  and the `judge_calibration` control, remain unbuilt. `null_questions` is registered and
+  always `NOT_RUN` because the system under test is retrieval-only.
+- **No pooling, no CJE, no HTML report, single-turn only.** Rendering is `rich` tables.
+- The curated set will under-represent questions needing semantic rather than lexical
+  matching: the `unretrievable` filter uses the same BM25 family the panel evaluates. Stated,
+  not hidden.
 
+## Using fireassay as a library
+
+[`agent-assay`](https://github.com/4ktLuffy/agent-assay), the sibling layer for tool-calling
+agents, imports the spine rather than copying it: `hashing`, `integrity.assert_comparable`,
+`admissibility.assess`, `controls.base.ControlOutcome`, `mutation.detector`, `items.core.wilson_ci`,
+and the cost and latency scorers.
+
+```bash
+pip install "fireassay @ git+https://github.com/4ktLuffy/fireassay"            # the spine
+pip install "fireassay[curate] @ git+https://github.com/4ktLuffy/fireassay"    # + Krippendorff, Textual TUI
 ```
-make test       # pytest, coverage on
+
+The spine depends on `pydantic`, `numpy`, `pyyaml`, `typer`, `rich` and nothing else. The
+package ships `py.typed`. `items.core` imports nothing from `fireassay.store`, by test.
+
+## Tests and CI
+
+```bash
+make test       # 644 tests, 91% coverage
 make lint       # ruff
 make typecheck  # mypy --strict on src/
-make mutants    # cosmic-ray over integrity/hashing/admissibility/score/controls (slow; M2 §8)
+make mutants    # cosmic-ray over integrity/hashing/admissibility/score/controls (slow; weekly in CI)
 ```
+
+`.github/workflows/ci.yml` runs lint, types, tests, `evidence.py --check` and the gate demo on
+every push. `mutants.yml` runs the harness mutation score weekly; its target is 80%+ on the
+five modules above, and a lower number is a finding to report, not a target to lower.
 
 ## Repo layout
 
 ```
 src/fireassay/
-├── cli.py               # typer CLI
-├── hashing.py            # canonical_json, content_hash, and the three id schemes
-├── models.py              # pydantic v2 models (Question, Score, Run, ...)
-├── integrity.py           # assert_comparable — the refusal engine
-├── admissibility.py        # M2: assess() — controls + invariants -> admissible verdict
-├── config.py                 # MatrixSpec, expand()
-├── text.py                    # the one tokenizer
-├── runner.py                    # sequential run_matrix, run_once (M2)
-├── compare.py                     # leaderboard aggregation
-├── store/                           # migrations/ (0001 M1, 0002 M2, 0003 M3, 0004/0005 M3 addenda), db.py
-├── system/                           # bm25.py, corpus.py, base.py (System protocol)
-├── score/                             # retrieval, latency, cost, policy, abstention, invariants
-├── controls/                           # M2: 5 deterministic controls + expected.yaml + registry
-├── mutation/                            # M2: operators, ThresholdDetector, score, run_mutation
-├── llm/                                  # M3: OllamaClient, ResponseCache — the only LLM boundary
-├── generate/                              # M3: candidate generation, span resolution, features
-├── filter/                                 # M3: deterministic filter pipeline (no LLM)
-├── curate/                                  # M3: rubric, queue, honeypots, agreement, report;
-│                                             # M3b: tui.py, tui_logic.py, tui_session.py
-└── report/                                   # text.py — rich table rendering (M1 + M2 + M3)
-tests/
-├── fixtures/            # corpus.jsonl (12 docs), questions.jsonl (20 questions), llm/ (cache fixtures)
-└── test_*.py
+├── cli.py                  # typer CLI (every command above)
+├── hashing.py  integrity.py  admissibility.py  config.py  text.py  models.py
+├── gate.py                 # M5: paired bootstrap, Holm, MDE refusal
+├── runner.py  compare.py
+├── store/                  # sqlite3, migrations 0001-0006, append-only triggers
+├── system/                 # bm25, tfidf, corpus, panel, coverage
+├── score/                  # the five deterministic scorers + invariants
+├── controls/  mutation/    # negative controls; mutation operators and detector
+├── llm/  generate/  filter/  curate/   # the LLM boundary and the curation funnel
+├── items/                  # item analysis, review decks, seeding, calibration, PPI
+└── report/text.py          # rich renderers
+tools/        evidence.py (EVIDENCE.md's generator/verifier), gate_demo.py, mde.py, measurement scripts
+run/          committed artifacts every claim reads (response matrices, labels, judge outputs)
+docs/         SPEC.md (the full v3 specification), MILESTONES.md (M1-M3b history)
+tests/        fixtures/ (12 docs, 20 questions) and test_*.py
 ```
 
-## Prices are per million tokens
+Milestone specs: `M1-SPEC.md`, `M2-SPEC.md`, `M3-SPEC.md`, `M3b-SPEC.md`, `M-ITEMS-SPEC.md`.
 
-`ScoringContext.price_in_per_mtok` / `price_out_per_mtok` are USD **per million tokens**, not
-per token and not per thousand. Getting this unit wrong silently corrupts every cost number in
-the repo — see the docstring on `score/cost.py`.
+## Two units that will silently corrupt numbers
+
+`ScoringContext.price_in_per_mtok` / `price_out_per_mtok` are USD **per million tokens**. The
+corpus JSONL contains a U+2028 character inside one string; read it by iterating the file
+handle, never with `read_text().splitlines()`, which treats it as a line break and truncates
+one record.
+
+## Licence
+
+Apache-2.0 (`LICENSE`). The corpus under `data/` is Crown copyright, reused under the Open
+Government Licence v3.0.

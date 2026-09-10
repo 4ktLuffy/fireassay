@@ -25,12 +25,14 @@ from pathlib import Path
 from typing import Literal
 
 from fireassay.curate.models import Decision, QueueItem, RubricVerdict
+from fireassay.gate import GateReport
 from fireassay.generate.models import CandidateFeatures, ResolvedCandidate
 from fireassay.hashing import config_hash as _config_hash
 from fireassay.hashing import suite_hash as _suite_hash
 from fireassay.models import (
     Config,
     EvidenceSpan,
+    GateCheckRow,
     Question,
     RetrievedChunk,
     Run,
@@ -181,6 +183,22 @@ class SuiteExistsError(Exception):
     A suite version is a promise about exact question-set content. Silently
     overwriting it would retroactively break every run that already cites
     that (name, version) as its comparison basis, without anyone knowing.
+    """
+
+
+class GateAlreadyCheckedError(Exception):
+    """Raised by `put_gate_report` when a (base_run_id, head_run_id, metric)
+    triple already has a recorded `gate_check` row.
+
+    `gate_check.UNIQUE (base_run_id, head_run_id, metric)` (migration
+    0006) exists precisely so this cannot silently happen: a gate check
+    for a given pair of runs may be recorded exactly once. Re-running a
+    gate on the same pair of runs until it happens to come back green is
+    p-hacking with extra steps -- "the gate counts how many times you
+    asked" (docs/SPEC.md §8) -- so the schema forbids it rather than
+    trusting the operator or a retry loop not to do it. A genuinely new
+    comparison needs a fresh head run, not a second gate check against
+    the same one.
     """
 
 
@@ -1216,3 +1234,98 @@ class Store:
     def get_all_decisions(self) -> list[Decision]:
         rows = self._conn.execute("SELECT * FROM decision ORDER BY decided_at").fetchall()
         return [self._row_to_decision(r) for r in rows]
+
+    # -- M5: gate_check -------------------------------------------------------
+
+    def put_gate_report(self, report: GateReport) -> None:
+        """Persist one `gate.GateReport`, one `gate_check` row per metric,
+        inside a single transaction.
+
+        Raises `GateAlreadyCheckedError` (translated from the
+        `sqlite3.IntegrityError` the `UNIQUE (base_run_id, head_run_id,
+        metric)` constraint raises -- see migration 0006's header
+        comment) the moment any metric's triple already has a recorded
+        row, and rolls back everything this call had already inserted so
+        far -- a partially-persisted `GateReport` (some metrics recorded,
+        others not) would be exactly as misleading as the repeated check
+        this constraint exists to forbid. `gate_check` rows are
+        append-only (migration 0006's triggers): this method only ever
+        INSERTs, never UPDATEs or DELETEs.
+        """
+        for result in report.results:
+            check_id = uuid.uuid4().hex
+            try:
+                self._conn.execute(
+                    "INSERT INTO gate_check (id, base_run_id, head_run_id, suite_id, metric, "
+                    "n_items, base_mean, head_mean, delta, ci_low, ci_high, p_value, p_adjusted, "
+                    "mde, threshold, alpha, power, bootstrap_b, seed, verdict, checked_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        check_id,
+                        report.base_run_id,
+                        report.head_run_id,
+                        report.suite_id,
+                        result.metric,
+                        result.n,
+                        result.base_mean,
+                        result.head_mean,
+                        result.delta,
+                        result.ci_low,
+                        result.ci_high,
+                        result.p_value,
+                        result.p_adjusted,
+                        result.mde,
+                        result.threshold,
+                        report.alpha,
+                        report.power,
+                        report.b,
+                        report.seed,
+                        result.verdict,
+                        _now(),
+                    ),
+                )
+            except sqlite3.IntegrityError as exc:
+                self._conn.rollback()
+                raise GateAlreadyCheckedError(
+                    f"gate_check already recorded for base_run_id={report.base_run_id!r}, "
+                    f"head_run_id={report.head_run_id!r}, metric={result.metric!r} -- a gate "
+                    "check cannot be repeated: re-running a gate until it passes is p-hacking"
+                ) from exc
+        self._conn.commit()
+
+    def get_gate_checks(self, base_run_id: str, head_run_id: str) -> list[GateCheckRow]:
+        """Return every `gate_check` row recorded for (base_run_id,
+        head_run_id), ordered by metric."""
+        rows = self._conn.execute(
+            "SELECT id, base_run_id, head_run_id, suite_id, metric, n_items, base_mean, "
+            "head_mean, delta, ci_low, ci_high, p_value, p_adjusted, mde, threshold, alpha, "
+            "power, bootstrap_b, seed, verdict, checked_at FROM gate_check "
+            "WHERE base_run_id = ? AND head_run_id = ? ORDER BY metric",
+            (base_run_id, head_run_id),
+        ).fetchall()
+        return [
+            GateCheckRow(
+                id=r["id"],
+                base_run_id=r["base_run_id"],
+                head_run_id=r["head_run_id"],
+                suite_id=r["suite_id"],
+                metric=r["metric"],
+                n_items=r["n_items"],
+                base_mean=r["base_mean"],
+                head_mean=r["head_mean"],
+                delta=r["delta"],
+                ci_low=r["ci_low"],
+                ci_high=r["ci_high"],
+                p_value=r["p_value"],
+                p_adjusted=r["p_adjusted"],
+                mde=r["mde"],
+                threshold=r["threshold"],
+                alpha=r["alpha"],
+                power=r["power"],
+                bootstrap_b=r["bootstrap_b"],
+                seed=r["seed"],
+                verdict=r["verdict"],
+                checked_at=r["checked_at"],
+            )
+            for r in rows
+        ]

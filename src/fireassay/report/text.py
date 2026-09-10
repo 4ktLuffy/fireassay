@@ -12,7 +12,8 @@ from rich.table import Table
 from fireassay.compare import Leaderboard
 from fireassay.controls.base import ControlOutcome
 from fireassay.curate.report import CurateReport, SessionFlag
-from fireassay.integrity import RefusalReason
+from fireassay.gate import GateReport
+from fireassay.integrity import ComparabilityReport, RefusalReason
 from fireassay.items.calibration import DetectorEvaluation
 from fireassay.items.core import MISLABEL_SUSPECT_VALIDATION, Estimate, ItemStats, PanelStats
 from fireassay.items.review import DetectorScore
@@ -31,6 +32,73 @@ def render_refusal(reasons: Sequence[RefusalReason], console: Console | None = N
     for reason in reasons:
         table.add_row(reason.code, reason.detail)
     console.print(table)
+
+
+def render_gate_report(
+    report: GateReport,
+    comparability: ComparabilityReport,
+    dropped: Mapping[str, int],
+    console: Console | None = None,
+) -> None:
+    """Render a `gate.GateReport` (from `fireassay gate`): one row per
+    metric with the paired-bootstrap delta, its family-wise interval, the
+    raw and Holm-adjusted p-values, the MDE the threshold was checked
+    against, and the verdict; then the single line a CI log is read for.
+
+    Like every renderer, prefixes 'UNSOUND COMPARISON' when
+    `comparability.forced` (the caller passed --force past a refusal).
+    `dropped[metric]` is the number of questions scored on one run only
+    and so excluded from the pairing -- printed, never hidden, because a
+    gate whose paired population silently shrank is measuring a different
+    suite from the one it names.
+    """
+    console = console or Console()
+    if comparability.forced:
+        console.print("[bold red]UNSOUND COMPARISON[/bold red]")
+        for reason in comparability.reasons:
+            console.print(f"  {reason.code}: {reason.detail}")
+
+    table = Table(title=f"fireassay gate  base={report.base_run_id[:12]}  head={report.head_run_id[:12]}")
+    table.add_column("metric")
+    table.add_column("n", justify="right")
+    table.add_column("base", justify="right")
+    table.add_column("head", justify="right")
+    table.add_column("delta", justify="right")
+    table.add_column("CI", justify="right")
+    table.add_column("p", justify="right")
+    table.add_column("p Holm", justify="right")
+    table.add_column("MDE", justify="right")
+    table.add_column("threshold", justify="right")
+    table.add_column("verdict")
+    for result in report.results:
+        verdict = "[bold red]BLOCK[/bold red]" if result.verdict == "block" else "[green]pass[/green]"
+        n_text = str(result.n)
+        if dropped.get(result.metric, 0):
+            n_text += f" (-{dropped[result.metric]} unpaired)"
+        table.add_row(
+            result.metric,
+            n_text,
+            f"{result.base_mean:.4f}",
+            f"{result.head_mean:.4f}",
+            f"{result.delta:+.4f}",
+            f"[{result.ci_low:+.4f}, {result.ci_high:+.4f}]",
+            f"{result.p_value:.4f}",
+            f"{result.p_adjusted:.4f}",
+            f"{result.mde:.4f}",
+            f"{result.threshold:.4f}",
+            verdict,
+        )
+    console.print(table)
+    console.print(
+        f"alpha={report.alpha} power={report.power} b={report.b} seed={report.seed} "
+        f"metrics={len(report.results)}  CI is family-wise at "
+        f"{1 - report.alpha / len(report.results):.2%}"
+    )
+    if report.blocked:
+        blocked = ", ".join(r.metric for r in report.results if r.verdict == "block")
+        console.print(f"[bold red]GATE BLOCKED[/bold red] on {blocked}")
+    else:
+        console.print("[green]GATE PASSED[/green] on every metric checked")
 
 
 def render_leaderboard(board: Leaderboard, console: Console | None = None) -> None:

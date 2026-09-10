@@ -130,20 +130,22 @@ the regular suite).
 
 from __future__ import annotations
 
-import argparse
 import csv
 import json
 import math
 import re
 import sys
 from collections import Counter
-from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 
+from fireassay.evidence import Claim, ClaimResult, EvidenceError, MarkdownStyle, Metric
+from fireassay.evidence import main as _evidence_main
+from fireassay.evidence import render_markdown as _render_markdown
+from fireassay.gate import MetricSpec, ThresholdBelowMDEError, evaluate_gate, paired_bootstrap
 from fireassay.items.adapters.tabular import load_meta_jsonl, load_responses_csv
 from fireassay.items.baseline import answer_unsupported
 from fireassay.items.calibration import CalibrationLabel, evaluate_detector, load_calibration_jsonl
@@ -160,13 +162,6 @@ _RUN = Path("run")
 #: per-item statistics -- so this claim recomputes the split directly
 #: over per-system totals instead of over per-item point-biserials.
 _EXTREME_GROUP_FRACTION = 0.27
-
-
-class EvidenceError(RuntimeError):
-    """A claim's recompute function found the committed artifacts it read
-    to be internally inconsistent in a way no `Metric` tolerance check
-    could express (e.g. a missing item id) -- raised instead of silently
-    dropping or zero-filling the offending data."""
 
 
 # ---------------------------------------------------------------------------
@@ -204,53 +199,6 @@ def fisher_exact_two_sided(a: int, b: int, c: int, d: int) -> float:
         for k in range(lo, hi + 1)
         if (p := _hypergeom_pmf(k, row1, row2, col1)) <= threshold
     )
-
-
-# ---------------------------------------------------------------------------
-# Claim / Metric plumbing
-# ---------------------------------------------------------------------------
-
-
-@dataclass(frozen=True)
-class Metric:
-    """One number (or verdict string) a `Claim`'s recompute is checked
-    against. `expected` a `str` means exact-match (a verdict like
-    `"usable"`); a `float` means `abs(actual - expected) <= tolerance`."""
-
-    name: str
-    expected: float | str
-    tolerance: float = 0.0
-
-    def check(self, actual: float | str) -> tuple[bool, str]:
-        if isinstance(self.expected, str):
-            ok = actual == self.expected
-            return ok, f"{self.name}={actual!r} (expected {self.expected!r})"
-        if not isinstance(actual, (int, float)):
-            return False, f"{self.name}: expected a number, got {actual!r}"
-        ok = abs(float(actual) - self.expected) <= self.tolerance
-        return ok, f"{self.name}={actual!r} (expected {self.expected!r} +/- {self.tolerance!r})"
-
-
-@dataclass(frozen=True)
-class ClaimResult:
-    """One `recompute()` call's output: every `Metric.name` this claim
-    declares must have a matching key in `values`. `detail` is free text
-    for `--claim`/`--check` to print alongside the pass/fail line -- the
-    full counts a `Metric`'s single number cannot carry on its own (e.g.
-    `panel.strength_is_breadth`'s full top/bottom breakdown)."""
-
-    values: dict[str, float | str]
-    detail: str = ""
-
-
-@dataclass(frozen=True)
-class Claim:
-    id: str
-    group: str
-    description: str
-    artifacts: tuple[str, ...]
-    metrics: tuple[Metric, ...]
-    recompute: Callable[[], ClaimResult]
 
 
 # ---------------------------------------------------------------------------
@@ -871,10 +819,148 @@ def _recompute_closedbook_forced() -> ClaimResult:
 
 
 # ---------------------------------------------------------------------------
+# Gate (run/gate_demo.json)
+# ---------------------------------------------------------------------------
+
+
+def _load_gate_demo() -> dict[str, Any]:
+    data = json.loads((_RUN / "gate_demo.json").read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or "cases" not in data:
+        raise EvidenceError("run/gate_demo.json: not a gate_demo artifact (no 'cases' key)")
+    return data
+
+
+def _gate_case_inputs(
+    case: dict[str, Any],
+) -> tuple[dict[str, tuple[list[float], list[float]]], list[MetricSpec]]:
+    per_item = {
+        metric: (list(map(float, values["base"])), list(map(float, values["head"])))
+        for metric, values in case["per_item"].items()
+    }
+    specs = [MetricSpec(metric=m, threshold=float(t)) for m, t in case["thresholds"].items()]
+    return per_item, specs
+
+
+def _recompute_gate_case(name: str) -> ClaimResult:
+    """Re-run `fireassay.gate.evaluate_gate` on the per-item values the
+    artifact records for one case, with the artifact's own alpha/power/b/
+    seed. The verdict is recomputed, never read back from the artifact's
+    `gate_checks` (those are the CLI's record of the same call, kept for
+    comparison in `detail`)."""
+    data = _load_gate_demo()
+    case = data["cases"][name]
+    per_item, specs = _gate_case_inputs(case)
+    params = data["gate"]
+    try:
+        report = evaluate_gate(
+            base_run_id="base", head_run_id="head", suite_id="suite",
+            per_item=per_item, specs=specs,
+            alpha=float(params["alpha"]), power=float(params["power"]),
+            b=int(params["b"]), seed=int(params["seed"]),
+        )
+    except ThresholdBelowMDEError as exc:
+        # Refusal is a distinct, reportable outcome -- not a pass, not a
+        # block. Report the MDE and the observed regression it refused to
+        # judge, computed the way the gate computes them.
+        boot = paired_bootstrap(
+            *per_item[exc.metric], b=int(params["b"]), alpha=float(params["alpha"]) / len(specs),
+            seed=int(params["seed"]),
+        )
+        recorded = case["exit_code"]
+        return ClaimResult(
+            values={"outcome": "refused", "mde": exc.mde, "delta": boot.delta, "n": float(boot.n),
+                    "exit_code": float(recorded)},
+            detail=(f"threshold {exc.threshold} < mde {exc.mde:.4f} on n={boot.n}; observed delta "
+                    f"{boot.delta:+.4f}; CLI recorded exit {recorded}"),
+        )
+    outcome = "block" if report.blocked else "pass"
+    recorded = case["exit_code"]
+    detail = "; ".join(
+        f"{r.metric}: delta {r.delta:+.4f}, p_holm {r.p_adjusted:.4f}, mde {r.mde:.4f} -> {r.verdict}"
+        for r in report.results
+    )
+    # Deltas are keyed by metric name, never by position: the artifact is
+    # written with sorted keys, so "the first metric" is whichever sorts
+    # first, and a claim that assumed otherwise failed its own first check.
+    values: dict[str, float | str] = {
+        "outcome": outcome,
+        "n": float(report.results[0].n),
+        "exit_code": float(recorded),
+        "n_metrics": float(len(report.results)),
+        "n_block": float(sum(r.verdict == "block" for r in report.results)),
+    }
+    for r in report.results:
+        values[f"delta:{r.metric}"] = r.delta
+    return ClaimResult(values=values, detail=f"{detail}; CLI recorded exit {recorded}")
+
+
+def _recompute_gate_benign() -> ClaimResult:
+    return _recompute_gate_case("benign")
+
+
+def _recompute_gate_planted_total() -> ClaimResult:
+    return _recompute_gate_case("planted_total")
+
+
+def _recompute_gate_planted_subtle_refused() -> ClaimResult:
+    return _recompute_gate_case("planted_subtle_refused")
+
+
+# ---------------------------------------------------------------------------
 # The claims
 # ---------------------------------------------------------------------------
 
 CLAIMS: tuple[Claim, ...] = (
+    Claim(
+        id="gate.benign_passes",
+        group="Gate (run/gate_demo.json)",
+        description=(
+            "The M5 gate passes a benign config change (top_k 5 vs 3 on the fixture suite, "
+            "threshold 0.5 on retrieval.recall@5): recomputed from the per-item values "
+            "tools/gate_demo.py recorded, with its alpha/power/b/seed."
+        ),
+        artifacts=("run/gate_demo.json",),
+        metrics=(
+            Metric("outcome", "pass"), Metric("delta:retrieval.recall@5", -1 / 14, 1e-9), Metric("n", 14.0),
+            Metric("exit_code", 0.0), Metric("n_block", 0.0),
+        ),
+        recompute=_recompute_gate_benign,
+    ),
+    Claim(
+        id="gate.planted_regression_blocked",
+        group="Gate (run/gate_demo.json)",
+        description=(
+            "The gate blocks a planted regression (drop_results n=4 on the top_k=5 config: "
+            "retrieval.recall@5 1.0 -> 0.0 on every paired item, retrieval.mrr likewise) on "
+            "both metrics after Holm correction, and the CLI exited 4. The first failure "
+            "condition of the M5 pre-registration -- a gate that has never blocked anything -- "
+            "is what this claim exists to refute."
+        ),
+        artifacts=("run/gate_demo.json",),
+        metrics=(
+            Metric("outcome", "block"), Metric("delta:retrieval.recall@5", -1.0, 1e-9),
+            Metric("delta:retrieval.mrr", -0.9107, 0.001), Metric("n", 14.0),
+            Metric("n_metrics", 2.0), Metric("n_block", 2.0), Metric("exit_code", 4.0),
+        ),
+        recompute=_recompute_gate_planted_total,
+    ),
+    Claim(
+        id="gate.subtle_regression_refused",
+        group="Gate (run/gate_demo.json)",
+        description=(
+            "A real regression the suite cannot resolve is refused, not passed and not blocked: "
+            "corrupt_query pct=0.9 drops retrieval.recall@5 by about 0.39 on 14 paired items, "
+            "larger than the 0.3 threshold asked for, but the minimum detectable effect at this "
+            "n is about 0.35, so the gate raises ThresholdBelowMDEError and the CLI exits 5. "
+            "Defect 9 (a threshold below what the suite resolves), caught by the gate itself."
+        ),
+        artifacts=("run/gate_demo.json",),
+        metrics=(
+            Metric("outcome", "refused"), Metric("delta", -0.3929, 0.001), Metric("mde", 0.35, 0.02),
+            Metric("n", 14.0), Metric("exit_code", 5.0),
+        ),
+        recompute=_recompute_gate_planted_subtle_refused,
+    ),
     Claim(
         id="panel.shape",
         group="Panel (run/panel54_matrix.csv)",
@@ -1153,130 +1239,32 @@ _EXCLUDED_CLAIMS_NOTE = """\
 """
 
 
+STYLE = MarkdownStyle(
+    regenerate_command=".venv/bin/python tools/evidence.py --markdown > EVIDENCE.md",
+    check_command=".venv/bin/python tools/evidence.py --check",
+    verify_command=".venv/bin/python tools/evidence.py --claim {claim_id}",
+    preamble=(
+        "Every claim below names the committed artifact(s) it reads and the command that "
+        "recomputes and verifies it. `tools/evidence.py --check` recomputes every claim "
+        "fresh from those artifacts and compares it against the expected value encoded "
+        "there; a mismatch prints FAIL and the run exits non-zero -- it is never silently "
+        "rewritten to match whatever the recompute produced (defects 43 and 46, "
+        "`~/ObitosBrain/notes/2026-08-28-fireassay-eval-integrity.md`)."
+    ),
+    excluded_note=_EXCLUDED_CLAIMS_NOTE,
+)
+
+
 def render_markdown(claims: Sequence[Claim]) -> str:
-    """Format `claims` as `EVIDENCE.md` -- the registered `expected`
-    value/tolerance for every metric, never a live recompute (see the
-    module docstring for why `--markdown` and `--check` are deliberately
-    different weights)."""
-    lines: list[str] = [
-        "<!--",
-        "GENERATED by `tools/evidence.py --markdown`. Do not hand-edit.",
-        "Regenerate: .venv/bin/python tools/evidence.py --markdown > EVIDENCE.md",
-        "Verify:     .venv/bin/python tools/evidence.py --check",
-        "-->",
-        "",
-        "# EVIDENCE.md",
-        "",
-        (
-            "Every claim below names the committed artifact(s) it reads and the command that "
-            "recomputes and verifies it. `tools/evidence.py --check` recomputes every claim "
-            "fresh from those artifacts and compares it against the expected value encoded "
-            "there; a mismatch prints FAIL and the run exits non-zero -- it is never silently "
-            "rewritten to match whatever the recompute produced (defects 43 and 46, "
-            "`~/ObitosBrain/notes/2026-08-28-fireassay-eval-integrity.md`)."
-        ),
-        "",
-    ]
-
-    groups: list[str] = []
-    for claim in claims:
-        if claim.group not in groups:
-            groups.append(claim.group)
-
-    for group in groups:
-        lines.append(f"## {group}")
-        lines.append("")
-        for claim in claims:
-            if claim.group != group:
-                continue
-            lines.append(f"### `{claim.id}`")
-            lines.append("")
-            lines.append(claim.description)
-            lines.append("")
-            artifact_list = ", ".join(f"`{artifact}`" for artifact in claim.artifacts)
-            lines.append(f"- artifact(s): {artifact_list}")
-            lines.append(f"- verify: `.venv/bin/python tools/evidence.py --claim {claim.id}`")
-            for metric in claim.metrics:
-                if isinstance(metric.expected, str):
-                    lines.append(f"- expected `{metric.name}`: `{metric.expected}`")
-                else:
-                    lines.append(
-                        f"- expected `{metric.name}`: `{metric.expected}` "
-                        f"(tolerance `{metric.tolerance}`)"
-                    )
-            lines.append("")
-
-    lines.append("## Claims deliberately excluded")
-    lines.append("")
-    lines.append(_EXCLUDED_CLAIMS_NOTE)
-    return "\n".join(lines)
-
-
-def _claims_by_id() -> dict[str, Claim]:
-    return {claim.id: claim for claim in CLAIMS}
-
-
-def _check_one(claim: Claim) -> bool:
-    """Recompute `claim`, print a PASS/FAIL (or ERROR) line and its
-    detail, and return whether it passed. Shared by `--check` (every
-    claim) and `--claim ID` (one)."""
-    try:
-        result = claim.recompute()
-    except Exception as exc:  # noqa: BLE001 -- a failed recompute is itself a FAIL, never skipped
-        print(f"ERROR {claim.id}: {type(exc).__name__}: {exc}")
-        return False
-
-    ok = True
-    messages: list[str] = []
-    for metric in claim.metrics:
-        if metric.name not in result.values:
-            print(f"ERROR {claim.id}: recompute did not report metric {metric.name!r}")
-            return False
-        passed, message = metric.check(result.values[metric.name])
-        ok = ok and passed
-        messages.append(message)
-
-    print(f"{'PASS' if ok else 'FAIL'} {claim.id}: {'; '.join(messages)}")
-    if result.detail:
-        print(f"     {result.detail}")
-    return ok
-
-
-def run_check(claims: Sequence[Claim]) -> int:
-    any_failed = False
-    for claim in claims:
-        if not _check_one(claim):
-            any_failed = True
-    return 1 if any_failed else 0
-
-
-def run_one_claim(claim_id: str) -> int:
-    claim = _claims_by_id().get(claim_id)
-    if claim is None:
-        known = ", ".join(sorted(_claims_by_id()))
-        print(f"unknown claim id {claim_id!r}. Known ids: {known}", file=sys.stderr)
-        return 2
-    print(f"{claim.id}: {claim.description}")
-    print(f"artifacts: {', '.join(claim.artifacts)}")
-    return 0 if _check_one(claim) else 1
+    """`fireassay.evidence.render_markdown` with this repo's `STYLE`."""
+    return _render_markdown(claims, STYLE)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--check", action="store_true", help="recompute every claim and verify it")
-    mode.add_argument("--markdown", action="store_true", help="emit EVIDENCE.md to stdout")
-    mode.add_argument("--claim", metavar="ID", help="recompute and print one claim in detail")
-    args = parser.parse_args(argv)
-
-    if args.markdown:
-        print(render_markdown(CLAIMS))
-        return 0
-    if args.claim:
-        return run_one_claim(args.claim)
-    return run_check(CLAIMS)
+    """`fireassay.evidence.main` over this repo's `CLAIMS`. The same
+    claims file also runs through the CLI, with the generic style:
+    `fireassay evidence --claims tools/evidence.py --check`."""
+    return _evidence_main(CLAIMS, argv, style=STYLE, description=__doc__)
 
 
 if __name__ == "__main__":

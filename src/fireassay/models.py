@@ -15,6 +15,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from fireassay.hashing import question_id as _question_id
 
+GateVerdict = Literal["pass", "block"]
+
 
 class EvidenceSpan(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -246,3 +248,43 @@ class Run(BaseModel):
     result_count: int = 0
     admissible: bool = True
     admissibility_json: dict[str, object] = Field(default_factory=dict)
+
+
+class GateCheckRow(BaseModel):
+    """One persisted `gate_check` row (M5, migration 0006), read back from
+    the store by `Store.get_gate_checks`.
+
+    Mirrors `gate.GateMetricResult` field-for-field plus the identifying
+    columns (`id`, `base_run_id`, `head_run_id`, `suite_id`,
+    `checked_at`) that only exist once a result has actually been
+    persisted -- `GateMetricResult` itself carries no run/suite identity
+    or row id, since a single `gate.GateReport` already carries
+    `base_run_id`/`head_run_id`/`suite_id` once for every metric it
+    contains. `n_items` mirrors `GateMetricResult.n` under the column
+    name migration 0006 actually uses (`n` is not a valid, self-describing
+    SQL column name on its own next to `n_items`'s sibling columns).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str
+    base_run_id: str
+    head_run_id: str
+    suite_id: str
+    metric: str
+    n_items: int
+    base_mean: float
+    head_mean: float
+    delta: float
+    ci_low: float
+    ci_high: float
+    p_value: float
+    p_adjusted: float
+    mde: float
+    threshold: float
+    alpha: float
+    power: float
+    bootstrap_b: int
+    seed: int
+    verdict: GateVerdict
+    checked_at: str

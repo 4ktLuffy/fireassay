@@ -29,6 +29,8 @@ def run_mutation(
     scoring_ctx: ScoringContext,
     operators: Sequence[MutationOperator],
     detector: MutationDetector,
+    *,
+    env_affects_results: Mapping[str, object] | None = None,
 ) -> MutationScoreResult:
     """Run `config`'s system once as the baseline, then once per operator
     in `operators` (each wrapping a freshly built baseline system), check
@@ -45,6 +47,18 @@ def run_mutation(
     `controls._common.seed_from_suite_hash`) — the same deterministic-seed
     convention the controls use — so a mutation run is exactly reproducible
     for a given suite.
+
+    `env_affects_results` is stored on the baseline run and on every mutant
+    run as `run.env_json["affects_results"]`, exactly as `runner.run_matrix`
+    stores its `corpus_hash`. Without it (the pre-M5 behaviour, and still
+    the default) a mutant run carries an empty `affects_results`, and
+    `integrity.assert_comparable` then refuses to set it beside any run
+    `fireassay run` produced over the same corpus -- `ENV_MISMATCH`,
+    because one side recorded a corpus hash and the other did not. The
+    CLI's `mutate` passes `{"corpus_hash": corpus_hash(docs)}` so a mutant
+    is usable as a planted regression against a real baseline in
+    `fireassay gate` (M5), not only against the baseline this function
+    builds for itself.
     """
     judged: dict[str, list[EvidenceSpan]] = {}
     for q in questions:
@@ -58,6 +72,7 @@ def run_mutation(
     baseline_run = run_once(
         store, suite, config, baseline_system, list(scorers), scoring_ctx, list(questions),
         judged_spans_by_doc=judged_spans_by_doc,
+        env_affects_results=env_affects_results,
     )
     baseline_retrieved = store.run_retrieved(baseline_run.id)
     baseline_lengths = [len(chunks) for chunks in baseline_retrieved.values()]
@@ -75,6 +90,7 @@ def run_mutation(
         mutant_run = run_once(
             store, suite, mutant_config, mutant_system, list(scorers), scoring_ctx, list(questions),
             judged_spans_by_doc=judged_spans_by_doc,
+            env_affects_results=env_affects_results,
         )
         killed, detail = detector.detects(baseline_run, mutant_run, store)
         mutants.append(

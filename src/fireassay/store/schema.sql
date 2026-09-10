@@ -95,11 +95,14 @@ CREATE TABLE score (
 -- score_seal_update). See migrations/0002_controls_mutation.sql for
 -- control_check / mutation_run / mutant (M2), migrations/
 -- 0003_generation_curation.sql for candidate / filter_result /
--- queue_item / decision (M3) and their own append-only triggers, and
+-- queue_item / decision (M3) and their own append-only triggers,
 -- migrations/0004_target_cells.sql for candidate.target_qtype /
--- target_difficulty (M3 pre-flight addendum: stratified generation), and
+-- target_difficulty (M3 pre-flight addendum: stratified generation),
 -- migrations/0005_candidate_chunk_id.sql for candidate.chunk_id (M3b
--- addendum: incremental resume).
+-- addendum: incremental resume), and migrations/0006_gate.sql for
+-- gate_check (M5: `fireassay.gate.evaluate_gate` results, one row per
+-- checked metric, UNIQUE(base_run_id, head_run_id, metric) and its own
+-- append-only triggers).
 
 CREATE TABLE candidate (
     id                TEXT PRIMARY KEY,
@@ -153,4 +156,33 @@ CREATE TABLE decision (
     notes         TEXT,
     duration_ms   INTEGER NOT NULL,
     decided_at    TEXT NOT NULL
+);
+
+-- M5 (migrations/0006_gate.sql): one row per metric checked by
+-- fireassay.gate.evaluate_gate. UNIQUE(base_run_id, head_run_id, metric)
+-- is load-bearing -- a (base, head, metric) triple can be gate-checked
+-- exactly once; see that migration's header comment.
+CREATE TABLE gate_check (
+    id            TEXT PRIMARY KEY,
+    base_run_id   TEXT NOT NULL REFERENCES run(id),
+    head_run_id   TEXT NOT NULL REFERENCES run(id),
+    suite_id      TEXT NOT NULL REFERENCES suite(id),
+    metric        TEXT NOT NULL,
+    n_items       INTEGER NOT NULL,
+    base_mean     REAL NOT NULL,
+    head_mean     REAL NOT NULL,
+    delta         REAL NOT NULL,
+    ci_low        REAL NOT NULL,
+    ci_high       REAL NOT NULL,
+    p_value       REAL NOT NULL,
+    p_adjusted    REAL NOT NULL,
+    mde           REAL NOT NULL,
+    threshold     REAL NOT NULL,
+    alpha         REAL NOT NULL,
+    power         REAL NOT NULL,
+    bootstrap_b   INTEGER NOT NULL,
+    seed          INTEGER NOT NULL,
+    verdict       TEXT NOT NULL,
+    checked_at    TEXT NOT NULL,
+    UNIQUE (base_run_id, head_run_id, metric)
 );

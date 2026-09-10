@@ -19,20 +19,31 @@ from __future__ import annotations
 from typing import Protocol
 
 from fireassay.models import Run
-from fireassay.store.db import Store
+
+
+class ScoreSource(Protocol):
+    """The one thing a detector reads: per-question scores for a run, in
+    `Store.run_scores`'s `(question_id, metric, value)` shape. Declared as
+    a Protocol rather than taking `Store` itself so a consumer that keeps
+    its scores elsewhere (agent-assay wraps its own store in a view with
+    exactly this method) can use the detector without a fireassay
+    database, and so this module does not import `fireassay.store` at all
+    -- the same rule `items.core` follows."""
+
+    def run_scores(self, run_id: str) -> list[tuple[str, str, float]]: ...
 
 
 class MutationDetector(Protocol):
     name: str
 
-    def detects(self, baseline: Run, mutant: Run, store: Store) -> tuple[bool, str]:
+    def detects(self, baseline: Run, mutant: Run, store: ScoreSource) -> tuple[bool, str]:
         """Whether the mutant is distinguishable from the baseline.
         Returns `(killed, detail)` — `detail` explains the comparison that
         was made, regardless of the outcome."""
         ...
 
 
-def _mean_metric(store: Store, run_id: str, metric: str) -> float | None:
+def _mean_metric(store: ScoreSource, run_id: str, metric: str) -> float | None:
     rows = store.run_scores(run_id)
     values = [v for _q, m, v in rows if m == metric]
     if not values:
@@ -61,7 +72,7 @@ class ThresholdDetector:
         self.max_drop = max_drop
         self.max_rise = max_rise
 
-    def detects(self, baseline: Run, mutant: Run, store: Store) -> tuple[bool, str]:
+    def detects(self, baseline: Run, mutant: Run, store: ScoreSource) -> tuple[bool, str]:
         baseline_mean = _mean_metric(store, baseline.id, self.metric)
         mutant_mean = _mean_metric(store, mutant.id, self.metric)
         if baseline_mean is None or mutant_mean is None:

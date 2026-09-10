@@ -42,9 +42,8 @@ import math
 import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
-import krippendorff
 import numpy as np
 
 from fireassay.curate.models import RubricVerdict
@@ -110,6 +109,29 @@ def _numeric_value(rubric: RubricVerdict, criterion: str) -> float:
     return 1.0 if value else 0.0
 
 
+def _import_krippendorff() -> Any:
+    """`krippendorff` is imported here, at call time, not at module import.
+
+    The `curate` package is imported by the CLI (`curate report`) and by
+    `report/text.py`, so a module-level import made `krippendorff` a hard
+    dependency of *every* `fireassay` install -- including a consumer that
+    only wants `fireassay.hashing`/`integrity`/`items.core` as a library
+    (agent-assay is one; see pyproject's `[curate]` extra). The package
+    itself is tiny and pure Python; the point is that the spine must not
+    require the curation stack, and the import error, when it happens,
+    must say which extra to install rather than surface as a bare
+    ModuleNotFoundError from inside a rubric report.
+    """
+    try:
+        import krippendorff
+    except ImportError as exc:  # pragma: no cover - exercised only on a spine-only install
+        raise ImportError(
+            "Krippendorff's alpha needs the optional 'krippendorff' package: "
+            "pip install 'fireassay[curate]'"
+        ) from exc
+    return krippendorff
+
+
 def krippendorff_alpha(
     rubrics_by_curator: Mapping[str, Mapping[str, RubricVerdict]], criterion: RubricCriterion
 ) -> AgreementResult:
@@ -157,6 +179,7 @@ def krippendorff_alpha(
             if cid in by_cand:
                 matrix[row, col] = _numeric_value(by_cand[cid], criterion)
 
+    krippendorff = _import_krippendorff()
     try:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)

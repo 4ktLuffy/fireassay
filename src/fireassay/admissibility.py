@@ -19,12 +19,27 @@ treated as a pass.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
 
 from fireassay.controls.base import ControlOutcome
 from fireassay.models import Run
-from fireassay.score.invariants import InvariantViolation
+
+
+class InvariantViolationLike(Protocol):
+    """What `assess` needs from an invariant violation: a rule name and a
+    detail string. `fireassay.score.invariants.InvariantViolation` is one
+    such thing; a consumer with its own violation model (agent-assay's is
+    scoped to an *item* rather than a *question*, so it is a different
+    class on purpose) is another. `assess` only ever counts these and
+    reports the count, so the Protocol is deliberately this small."""
+
+    @property
+    def rule(self) -> str: ...
+
+    @property
+    def detail(self) -> str: ...
 
 
 class Admissibility(BaseModel):
@@ -44,7 +59,7 @@ class Admissibility(BaseModel):
 
 def assess(
     run: Run,
-    invariant_violations: Sequence[InvariantViolation],
+    invariant_violations: Sequence[InvariantViolationLike],
     controls: Sequence[ControlOutcome],
     *,
     allow_not_run: Sequence[str] = (),

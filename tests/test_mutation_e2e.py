@@ -71,6 +71,36 @@ def test_mutation_e2e_baseline_five_mutants_detector_score(store: Store) -> None
             pytest.fail("a non-equivalent mutant appeared after an equivalent one")
 
 
+def test_mutation_runs_record_env_affects_results_when_given(store: Store) -> None:
+    """Baseline and every mutant carry the caller's `affects_results` (the
+    CLI passes the corpus hash), so a mutant run is comparable with a
+    `run` baseline over the same corpus. Without the argument, the
+    pre-M5 behaviour -- an empty dict -- is preserved."""
+    suite, questions = setup_suite(store)
+    docs = load_fixture_docs()
+    config = store.put_config({"top_k": 5})
+    scoring_ctx = scoring_ctx_factory(config.spec)
+    detector = ThresholdDetector(metric="retrieval.recall@5", max_drop=0.05)
+
+    run_mutation(
+        store, suite, config, questions, docs, bm25_system_factory, standard_scorers(), scoring_ctx,
+        [TruncateTopkOperator(k=1)], detector, env_affects_results={"corpus_hash": "abc"},
+    )
+    first_batch = store.runs_for_suite(suite.id)
+    assert len(first_batch) == 2  # baseline + one mutant
+    for run in first_batch:
+        assert run.env_json["affects_results"] == {"corpus_hash": "abc"}
+
+    run_mutation(
+        store, suite, config, questions, docs, bm25_system_factory, standard_scorers(), scoring_ctx,
+        [TruncateTopkOperator(k=1)], detector,
+    )
+    second_batch = store.runs_for_suite(suite.id)[len(first_batch):]
+    assert len(second_batch) == 2
+    for run in second_batch:
+        assert run.env_json["affects_results"] == {}
+
+
 def test_mutation_e2e_equivalent_mutants_are_excluded_and_justified(store: Store) -> None:
     suite, questions = setup_suite(store)
     docs = load_fixture_docs()
