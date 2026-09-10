@@ -21,11 +21,12 @@ module-path = "src/fireassay"
 # line, so on the runner the baseline exceeded it. Verified 2026-09-10 from
 # the workflow logs ("Baseline failed ... >>> timeout"); the runner's actual
 # suite time was not recorded and is not claimed here. A weekly job that has
-# never once produced a number is not a measurement; 240 s is eight times
-# the laptop figure, and --no-cov drops the coverage plugin's overhead
+# never once produced a number is not a measurement. The first ci.yml run
+# (2026-09-10) measured the full suite at 151 s on the runner with coverage
+# on, so 600 s is four times that, and --no-cov drops the coverage plugin's overhead
 # (pyproject's addopts turn it on) from every one of the hundreds of mutant
 # runs, where it measures nothing anyone reads.
-timeout = 240.0
+timeout = 600.0
 excluded-modules = []
 test-command = "pytest -x -q --no-cov -p no:cacheprovider tests/"
 

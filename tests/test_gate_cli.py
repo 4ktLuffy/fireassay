@@ -18,13 +18,21 @@ threshold says so instead of guessing.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
+import typer
 from click.testing import Result
 from typer.testing import CliRunner
 
-from fireassay.cli import GATE_EXIT_ALREADY_CHECKED, GATE_EXIT_BELOW_MDE, GATE_EXIT_BLOCKED, app
+from fireassay.cli import (
+    GATE_EXIT_ALREADY_CHECKED,
+    GATE_EXIT_BELOW_MDE,
+    GATE_EXIT_BLOCKED,
+    _parse_metric_spec,
+    app,
+)
 from fireassay.store.db import Store
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -179,10 +187,25 @@ def test_unsound_comparison_is_refused_with_exit_2(gated_db: dict[str, str], tmp
 
 
 def test_metric_spec_parsing_rejects_bad_input(gated_db: dict[str, str]) -> None:
-    for bad in ("retrieval.recall@5", "retrieval.recall@5=abc", "retrieval.recall@5=0", "x=0.5:higher"):
+    """The parser's messages are checked on the parser itself, not on the
+    CLI's rendered output: typer draws a BadParameter inside a rich panel
+    whose wrapping and colour codes depend on the terminal (the first CI
+    run failed on exactly that -- the literal `--metric` was split by
+    escape sequences on an 80-column runner). The CLI assertion is the
+    exit code alone."""
+    for bad, needle in (
+        ("retrieval.recall@5", "NAME=THRESHOLD"),
+        ("retrieval.recall@5=abc", "not a number"),
+        ("retrieval.recall@5=0", "must be > 0"),
+        ("x=0.5:higher", "':lower'"),
+    ):
+        with pytest.raises(typer.BadParameter, match=re.escape(needle)):
+            _parse_metric_spec(bad)
         result = _gate(gated_db, gated_db["other"], bad, extra=("--no-persist",))
         assert result.exit_code == 2, bad  # typer BadParameter -> usage error exit 2
-        assert "--metric" in result.output
+
+    spec = _parse_metric_spec("latency.total_ms=50:lower")
+    assert (spec.metric, spec.threshold, spec.higher_is_better) == ("latency.total_ms", 50.0, False)
 
 
 def test_metric_absent_from_both_runs_is_a_usage_error(gated_db: dict[str, str]) -> None:
