@@ -34,14 +34,18 @@ Henos's, blind, on a uniform-random stratum.
 | Split-half reliability of per-item statistics, 54-config panel | 0.503 (usable); 0.286 on the 18-config panel (too few systems) | `panel.reliability`, `panel18.reliability` |
 | Monotonicity inside one retriever family | 0 violations in 42,552 pairs — a `top_k` ladder cannot distinguish strength from breadth | `panel.monotonic` |
 | Closed-book, forced-guess: items answerable with no retrieval | 2 of 149 (1.3%) | `closedbook.forced` |
+| **Dense retrieval vs BM25**, 2,364 items, matched chunking and top_k | dense loses all 6 pairs: **-8.5 to -6.3 points** at 1024/128 (gate **blocks**), -2.0 to -1.1 at 512/128 | `dense.vs_bm25` |
+| The frozen panel's lost `correct` definition, recovered by reproduction | 14,184 cells regenerated, **0 mismatched** | `dense.bm25_twin` |
 | **The gate blocking a planted regression** | exit 4 on `drop_results`; exit 0 on a benign change; **exit 5 (refused)** on a real 0.39 drop asked at threshold 0.3, because 14 items resolve only 0.35 | `gate.*` |
 
-Two of those rows are why this project exists rather than a metric library. The calibration
+Three of those rows are why this project exists rather than a metric library. The calibration
 set's first act was to kill one of the tool's own detectors: `mislabel_suspect` looked like a
 weak-but-real detector at 0.219 precision until it was put beside the 0.25 a random draw
 scores. And the gate's third case is a regression that is real, larger than the threshold
 asked for, and still refused, because a threshold the suite cannot distinguish from noise is
-not one a gate can honestly enforce.
+not one a gate can honestly enforce. And the dense row is the result nobody sets out to get: a
+2026 embedding model, run properly, beaten by a 1994 lexical baseline on every matched
+configuration — which is only a finding at all because the baseline was there to lose to.
 
 The full defect log, 50 entries, each a plausible number that was wrong, is in
 `~/ObitosBrain` (private). The ones that changed the code are in the module docstrings.
@@ -84,7 +88,7 @@ at candidate suite sizes, for pre-registering a threshold before the suite is bu
 | Curation with a measured error rate | `generate/`, `filter/`, `curate/` | Generation (the only LLM boundary, digest-pinned, content-cached), a deterministic filter with an exactly reconciling funnel, a six-question rubric, honeypots, Krippendorff's α with `UNMEASURABLE` as a state |
 | Item analysis | `items/` | `fireassay items analyse` on any item × system response matrix — usable with no store, by someone who has never heard of fireassay; split-half reliability, discrimination, blind review decks, seeded corruptions, PPI |
 | The gate | `gate.py`, `store/migrations/0006_gate.sql` | Paired bootstrap, Holm-Bonferroni, MDE refusal, once-only persistence |
-| System under test | `system/` | Pure-Python BM25 (and TF-IDF, a panel of 54 configs) — no API key, no network, so a stranger can reproduce every retrieval number here |
+| System under test | `system/` | Pure-Python BM25, TF-IDF and coverage (a panel of 54 configs) — no API key, no network, so a stranger can reproduce every lexical retrieval number here — plus a dense retriever over a local embedding model (below) |
 
 Deterministic scorers (`score/`): `retrieval` (recall/nDCG/MRR by character-range overlap, plus
 `judged_fraction` and `bpref` because gold spans are known-incomplete), `latency`, `cost`,
@@ -115,6 +119,48 @@ fireassay gate                --base <run> --head <run> --metric "retrieval.reca
 `fireassay generate / filter / curate next / curate submit / curate tui / curate report` turn
 a corpus into a curated set; see [`docs/MILESTONES.md`](docs/MILESTONES.md) for each one.
 
+## Dense retrieval (M-DENSE), and what it cost
+
+A fourth retriever sits beside `bm25`, `tfidf` and `coverage`: exact dot product over a local
+embedding model (`qwen3-embedding:0.6b`, 1024-d, pinned by digest, served by Ollama). Exact,
+not approximate — 12,513 chunks is one BLAS call, and an ANN index would add a recall loss
+that then has to be measured inside the very comparison this exists to make.
+
+```yaml
+# configs/matrix.dense.yaml
+axes:
+  retriever: ["dense"]     # absent => "bm25", so every pre-existing config hash is unchanged
+```
+
+**The result is a loss.** Against BM25 at matched chunking and `top_k`, over the same 2,364
+items, dense is worse on all six pairs — by 6.3 to 8.5 points at 1024/128, where the gate
+blocks, and by 1.1 to 2.0 at 512/128, inside the pre-registered 0.05 threshold. The same
+comparison asked at a 0.01 threshold is **refused**: this suite's minimum detectable effect at
+n=2,364, after correcting for six comparisons, is 0.027.
+
+**Before any of that was believed, the instrument was checked against the frozen panel.** The
+script that produced `run/panel54_matrix.csv` was never committed and is lost, so the meaning
+of its `correct` column existed nowhere. `tools/panel_dense.py --verify-bm25` recovers it by
+reproduction: it regenerates the six BM25 columns and compares 14,184 cells against the frozen
+file. They agree exactly, which is what licenses comparing anything to that panel.
+
+```bash
+ollama serve &
+.venv/bin/python tools/embed_corpus.py --chunkings 1024-128,512-128   # ~64 min, 178 MB
+.venv/bin/python tools/panel_dense.py --verify-bm25                   # must pass first
+.venv/bin/python tools/panel_dense.py --retrievers bm25,dense --resume
+.venv/bin/python tools/dense_vs_bm25.py
+```
+
+**Reproducing a dense number needs a model and about an hour**; reproducing every other number
+in this repo needs only the repo. That asymmetry is why `.cache/embeddings/` is gitignored and
+the *response matrix* is committed instead: `dense.vs_bm25` recomputes from
+`run/panel_dense_matrix.csv`, never from the vectors. The cache is content-addressed on
+`(model digest, chunk size, overlap, corpus hash)`, resumable one shard at a time, and refuses
+a mismatched cache rather than reusing or silently rebuilding it. It is also what lets the
+`identical_config` control pass at `max_abs_delta == 0.0` against a dense retriever, which a
+live model call per build could never do.
+
 ## What this is honestly not, yet
 
 - **The golden set is not curated.** The generation run produced 3,054 candidates; the
@@ -129,7 +175,15 @@ a corpus into a curated set; see [`docs/MILESTONES.md`](docs/MILESTONES.md) for 
 - **No pooling, no CJE, no HTML report, single-turn only.** Rendering is `rich` tables.
 - The curated set will under-represent questions needing semantic rather than lexical
   matching: the `unretrievable` filter uses the same BM25 family the panel evaluates. Stated,
-  not hidden.
+  not hidden — and it is the strongest caveat on the dense result above. Items that only a
+  semantic retriever could reach were filtered out *before* the panel saw them, by a lexical
+  filter, so the comparison is run on ground the lexical baseline helped choose. The honest
+  reading of "dense loses" is therefore "dense loses on this set, which was selected
+  lexically", not "dense loses". Re-running the filter with the dense retriever in the
+  `unretrievable` stage, and re-measuring, is the experiment that would settle it; it is not
+  in this milestone.
+- **One embedding model, one size.** `qwen3-embedding:0.6b` is 0.6B parameters and quantised
+  to Q8_0. Nothing here shows a larger or unquantised model would also lose.
 
 ## Using fireassay as a library
 
@@ -149,7 +203,7 @@ package ships `py.typed`. `items.core` imports nothing from `fireassay.store`, b
 ## Tests and CI
 
 ```bash
-make test       # 644 tests, 91% coverage
+make test       # 716 tests, 91% coverage
 make lint       # ruff
 make typecheck  # mypy --strict on src/
 make mutants    # cosmic-ray over integrity/hashing/admissibility/score/controls (slow; weekly in CI)
@@ -168,19 +222,21 @@ src/fireassay/
 ├── gate.py                 # M5: paired bootstrap, Holm, MDE refusal
 ├── runner.py  compare.py
 ├── store/                  # sqlite3, migrations 0001-0006, append-only triggers
-├── system/                 # bm25, tfidf, corpus, panel, coverage
+├── system/                 # bm25, tfidf, coverage, dense (+ embedding, embedding_cache), corpus, panel
 ├── score/                  # the five deterministic scorers + invariants
 ├── controls/  mutation/    # negative controls; mutation operators and detector
 ├── llm/  generate/  filter/  curate/   # the LLM boundary and the curation funnel
 ├── items/                  # item analysis, review decks, seeding, calibration, PPI
 └── report/text.py          # rich renderers
-tools/        evidence.py (EVIDENCE.md's generator/verifier), gate_demo.py, mde.py, measurement scripts
+tools/        evidence.py (EVIDENCE.md's generator/verifier), gate_demo.py, mde.py,
+              panel_dense.py, embed_corpus.py, dense_vs_bm25.py, measurement scripts
 run/          committed artifacts every claim reads (response matrices, labels, judge outputs)
 docs/         SPEC.md (the full v3 specification), MILESTONES.md (M1-M3b history)
 tests/        fixtures/ (12 docs, 20 questions) and test_*.py
 ```
 
-Milestone specs: `M1-SPEC.md`, `M2-SPEC.md`, `M3-SPEC.md`, `M3b-SPEC.md`, `M-ITEMS-SPEC.md`.
+Milestone specs: `M1-SPEC.md`, `M2-SPEC.md`, `M3-SPEC.md`, `M3b-SPEC.md`, `M-ITEMS-SPEC.md`,
+`M-DENSE-SPEC.md`.
 
 ## Two units that will silently corrupt numbers
 

@@ -113,6 +113,16 @@ from fireassay.store.db import GateAlreadyCheckedError, Store, SuiteExistsError
 from fireassay.system.base import System
 from fireassay.system.bm25 import BM25System
 from fireassay.system.corpus import Chunk, Doc, chunk_corpus, corpus_hash, load_corpus
+from fireassay.system.coverage import CoverageSystem
+from fireassay.system.dense import DenseSystem
+from fireassay.system.embedding import DEFAULT_BASE_URL, DEFAULT_EMBED_MODEL, OllamaEmbedder
+from fireassay.system.embedding_cache import (
+    DEFAULT_CACHE_ROOT,
+    CacheKey,
+    QueryCache,
+    resolve_vectors,
+)
+from fireassay.system.tfidf import TfidfSystem
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 questions_app = typer.Typer(no_args_is_help=True)
@@ -343,6 +353,81 @@ def _config_float(config: Mapping[str, object], key: str, default: float) -> flo
     raise TypeError(f"config[{key!r}] must be float-like, got {type(value).__name__}")
 
 
+def _config_str(config: Mapping[str, object], key: str, default: str) -> str:
+    """As `_config_int`, narrowing to `str`."""
+    value = config.get(key, default)
+    if isinstance(value, str):
+        return value
+    raise TypeError(f"config[{key!r}] must be a string, got {type(value).__name__}")
+
+
+#: Every retriever a config's `retriever` key may name. **`bm25` is what
+#: an absent key means**, which is the whole compatibility contract: a
+#: config dict that does not mention `retriever` is byte-identical to the
+#: dicts every stored run and every evidence claim was produced from, so
+#: `hashing.config_hash` is unchanged and nothing already measured moves.
+#: Pinned by `tests/test_retriever_dispatch.py`.
+RETRIEVERS: tuple[str, ...] = ("bm25", "tfidf", "coverage", "dense")
+
+DEFAULT_RETRIEVER = "bm25"
+
+
+def _build_dense(
+    config: Mapping[str, object], chunks: Sequence[Chunk], docs: Sequence[Doc], top_k: int
+) -> System:
+    """`DenseSystem` over the cached embedding matrix for this config's
+    chunking.
+
+    The vectors come from `.cache/embeddings/` and never from a live call,
+    and so do the query vectors (`QueryCache`) — that is what makes two
+    independently built dense systems score byte-identically, which is
+    what `controls.identical_config` asserts. Only the model *digest* is
+    resolved over the network here; a cache miss on the corpus matrix is a
+    `StaleCacheError`, never a silent hour of re-embedding inside a run.
+    """
+    size = _config_int(config, "chunk_size", 0)
+    overlap = _config_int(config, "chunk_overlap", 0)
+    root = Path(_config_str(config, "embed_cache", str(DEFAULT_CACHE_ROOT)))
+    embedder = OllamaEmbedder.resolve(
+        _config_str(config, "embed_model", DEFAULT_EMBED_MODEL),
+        base_url=_config_str(config, "embed_base_url", DEFAULT_BASE_URL),
+    )
+    key = CacheKey(
+        model_name=embedder.model.name,
+        model_digest=embedder.model.digest,
+        chunk_size=size,
+        chunk_overlap=overlap,
+        corpus_hash=corpus_hash(docs),
+        chunk_ids=tuple(c.chunk_id for c in chunks),
+    )
+    vectors, _provenance = resolve_vectors(key, root=root)
+    query_embed = QueryCache.open(embedder.model, root=root).wrap(embedder)
+    return DenseSystem(chunks, top_k=top_k, vectors=vectors, query_embed=query_embed)
+
+
+def _build_retriever(config: Mapping[str, object], chunks: Sequence[Chunk], docs: Sequence[Doc]) -> System:
+    """Dispatch one config dict to its retriever.
+
+    `config["retriever"]` defaults to `bm25` when absent — see
+    `RETRIEVERS`. `k1`/`b` are BM25's alone; `tfidf` and `coverage` take
+    `(chunks, top_k)` and nothing else; `dense` additionally needs the
+    chunking and the corpus to find its cache.
+    """
+    retriever = _config_str(config, "retriever", DEFAULT_RETRIEVER)
+    top_k = _config_int(config, "top_k", 5)
+    if retriever == "bm25":
+        k1 = _config_float(config, "k1", 1.5)
+        b = _config_float(config, "b", 0.75)
+        return BM25System(chunks, top_k=top_k, k1=k1, b=b)
+    if retriever == "tfidf":
+        return TfidfSystem(chunks, top_k=top_k)
+    if retriever == "coverage":
+        return CoverageSystem(chunks, top_k=top_k)
+    if retriever == "dense":
+        return _build_dense(config, chunks, docs, top_k)
+    raise ValueError(f"config['retriever'] = {retriever!r} is not one of {list(RETRIEVERS)}")
+
+
 @app.command()
 def run(
     matrix: Path = typer.Option(..., "--matrix", help="MatrixSpec YAML file"),
@@ -379,16 +464,18 @@ def run(
     docs = load_corpus(corpus)
     policy_rules = load_policy_rules(policy) if policy is not None else ()
 
-    def _chunks_for(config: Mapping[str, object]) -> list[Chunk]:
-        size = _config_int(config, "chunk_size", chunk_size)
-        overlap = _config_int(config, "chunk_overlap", chunk_overlap)
-        return list(chunk_corpus(docs, size=size, overlap=overlap))
+    def _chunking_for(config: Mapping[str, object]) -> tuple[int, int]:
+        return (
+            _config_int(config, "chunk_size", chunk_size),
+            _config_int(config, "chunk_overlap", chunk_overlap),
+        )
 
     def system_factory(config: Mapping[str, object]) -> System:
-        top_k = _config_int(config, "top_k", 5)
-        k1 = _config_float(config, "k1", 1.5)
-        b = _config_float(config, "b", 0.75)
-        return BM25System(_chunks_for(config), top_k=top_k, k1=k1, b=b)
+        size, overlap = _chunking_for(config)
+        chunks = list(chunk_corpus(docs, size=size, overlap=overlap))
+        # See `_docs_system_factory` for why the resolved chunking is
+        # written into the copy the retriever builder reads.
+        return _build_retriever(dict(config, chunk_size=size, chunk_overlap=overlap), chunks, docs)
 
     def ctx_factory(config: Mapping[str, object]) -> ScoringContext:
         top_k = _config_int(config, "top_k", 5)
@@ -695,10 +782,12 @@ def _docs_system_factory(
         size = _config_int(config, "chunk_size", chunk_size)
         overlap = _config_int(config, "chunk_overlap", chunk_overlap)
         chunks = list(chunk_corpus(docs, size=size, overlap=overlap))
-        top_k = _config_int(config, "top_k", 5)
-        k1 = _config_float(config, "k1", 1.5)
-        b = _config_float(config, "b", 0.75)
-        return BM25System(chunks, top_k=top_k, k1=k1, b=b)
+        # The chunking actually used is written back into the dict the
+        # retriever builder reads, so `dense` finds the cache for the
+        # chunking this factory built rather than for whatever (possibly
+        # absent) `chunk_size` the config itself carries. `config` is not
+        # mutated: the copy never reaches `config_hash`.
+        return _build_retriever(dict(config, chunk_size=size, chunk_overlap=overlap), chunks, docs)
 
     return factory
 

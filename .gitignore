@@ -37,6 +37,18 @@ spike/*.jsonl
 # checkpoint worth committing.
 .cache/judge/
 
+# the dense retriever's embedding cache: ~40,921 chunk vectors plus the
+# panel's question vectors, about 170 MB and roughly 80 minutes of local
+# model time. Covered by `.cache/` above and named here for the same
+# reason `.cache/judge/` is: it is a disposable re-run cache, NOT a
+# checkpoint worth committing, and the dense numbers it backs are
+# reproduced from run/panel_dense_matrix.csv, never from these bytes.
+.cache/embeddings/
+
+# per-(retriever, chunking) resume files for tools/panel_dense.py --
+# minutes of BM25, not hours of model time; rebuilt on demand.
+.cache/panel_dense/
+
 # raw measurement artifacts behind handbook/eval-of-evals.md's claims -
 # a number without a reproducible artifact is an assertion
 !run/item_analysis.json

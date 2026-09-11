@@ -272,6 +272,47 @@ Forced-guess closed-book screen: fraction of sampled items answerable with no re
 - expected `scored`: `149.0` (tolerance `0.0`)
 - expected `rate`: `0.013422818791946308` (tolerance `0.0005`)
 
+## Dense retrieval (run/panel_dense_matrix.csv)
+
+### `dense.bm25_twin`
+
+The frozen 54-config panel's `correct` definition, recovered by reproducing it. The script that produced run/panel54_matrix.csv was never committed and is lost, so the definition behind every panel.* claim was written down nowhere. tools/panel_dense.py regenerates the same six BM25 columns through the shipped config dispatch and they agree cell for cell: correct == retrieval.recall@k > 0 at overlap_min_chars=1. Without this, no dense-vs-BM25 comparison against that panel would mean anything.
+
+- artifact(s): `run/panel_dense_matrix.csv`, `run/panel54_matrix.csv`, `run/panel_dense_twin.json`
+- verify: `.venv/bin/python tools/evidence.py --claim dense.bm25_twin`
+- expected `n_cells_compared`: `14184.0` (tolerance `0.0`)
+- expected `n_cells_mismatched`: `0.0` (tolerance `0.0`)
+- expected `n_columns`: `6.0` (tolerance `0.0`)
+
+### `dense.panel_shape`
+
+The dense panel: the same 2,364 items as the frozen 54-config panel, over 2 chunkings x 3 top_ks x {bm25, dense} = 12 systems, with both retrievers covering exactly the same (chunking, top_k) set so every comparison is matched.
+
+- artifact(s): `run/panel_dense_matrix.csv`
+- verify: `.venv/bin/python tools/evidence.py --claim dense.panel_shape`
+- expected `n_items`: `2364.0` (tolerance `0.0`)
+- expected `n_systems`: `12.0` (tolerance `0.0`)
+- expected `n_bm25`: `6.0` (tolerance `0.0`)
+- expected `n_dense`: `6.0` (tolerance `0.0`)
+
+### `dense.vs_bm25`
+
+**Dense loses to BM25 on this corpus, on all six matched pairs.** qwen3-embedding:0.6b (1024-d, exact dot product) against Okapi BM25 at matched chunking and top_k, through gate.evaluate_gate: paired bootstrap, Holm correction across all six comparisons, MDE computed at alpha/6. At the 1024-128 chunking dense is 6.3 to 8.5 points worse, larger than the pre-registered 0.05 threshold and significant after correction, so the gate BLOCKS; at 512-128 it is 1.1 to 2.0 points worse, inside the threshold. Zero pairs favour dense.
+
+- artifact(s): `run/panel_dense_matrix.csv`
+- verify: `.venv/bin/python tools/evidence.py --claim dense.vs_bm25`
+- expected `outcome`: `block`
+- expected `n`: `2364.0` (tolerance `0.0`)
+- expected `n_pairs`: `6.0` (tolerance `0.0`)
+- expected `n_dense_wins`: `0.0` (tolerance `0.0`)
+- expected `max_mde`: `0.0345` (tolerance `0.002`)
+- expected `delta:dense_vs_bm25.1024-128.k3`: `-0.085` (tolerance `0.001`)
+- expected `delta:dense_vs_bm25.1024-128.k5`: `-0.0821` (tolerance `0.001`)
+- expected `delta:dense_vs_bm25.1024-128.k10`: `-0.063` (tolerance `0.001`)
+- expected `delta:dense_vs_bm25.512-128.k3`: `-0.0165` (tolerance `0.001`)
+- expected `delta:dense_vs_bm25.512-128.k5`: `-0.0195` (tolerance `0.001`)
+- expected `delta:dense_vs_bm25.512-128.k10`: `-0.011` (tolerance `0.001`)
+
 ## Claims deliberately excluded
 
 - **`judge.nli`'s Fisher exact p-value** (handbook: p=0.169) -- the

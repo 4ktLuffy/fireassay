@@ -8,8 +8,11 @@ install:
 test:
 	pytest
 
+# `src tests tools` -- the same three paths .github/workflows check. This
+# target checked only `src tests` until M-DENSE, so a lint error in a
+# tool passed locally and failed in CI.
 lint:
-	ruff check src tests
+	ruff check src tests tools
 
 typecheck:
 	mypy src

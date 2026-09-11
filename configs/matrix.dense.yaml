@@ -1,0 +1,35 @@
+# The dense retriever, as a config matrix — what `fireassay controls run`
+# points at to check the four deterministic controls against
+# `system.dense.DenseSystem` rather than against BM25.
+#
+# `retriever` is the key M-DENSE added to the config dispatch
+# (`cli._build_retriever`). It defaults to `bm25` when ABSENT, which is
+# why every pre-existing matrix file, stored run and `config_hash` is
+# unchanged — and why this file has to name it explicitly to get anything
+# else.
+#
+# Requires an embedding cache for this corpus at this chunking. Build it
+# first (an Ollama serving qwen3-embedding:0.6b, seconds for the fixture
+# corpus, roughly an hour for the real one):
+#
+#   .venv/bin/python tools/embed_corpus.py \
+#       --corpus tests/fixtures/corpus.jsonl --chunkings 800-100 --skip-questions
+#   .venv/bin/python -m fireassay.cli controls run \
+#       --matrix configs/matrix.dense.yaml --corpus tests/fixtures/corpus.jsonl \
+#       --db /tmp/fireassay-dense-controls.db \
+#       --allow-not-run null_questions --allow-not-run judge_calibration
+#
+# A cache that does not match this corpus and chunking raises
+# `StaleCacheError` rather than re-embedding inside the run — see
+# `system.embedding_cache`.
+suite: demo@1.0.0
+
+axes:
+  retriever:
+    - "dense"
+  top_k:
+    - "3"
+    - "5"
+
+include: []
+exclude: []

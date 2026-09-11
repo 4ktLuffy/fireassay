@@ -894,6 +894,180 @@ def _recompute_gate_case(name: str) -> ClaimResult:
     return ClaimResult(values=values, detail=f"{detail}; CLI recorded exit {recorded}")
 
 
+# ---------------------------------------------------------------------------
+# Dense retrieval (run/panel_dense_matrix.csv, run/panel_dense_twin.json)
+# ---------------------------------------------------------------------------
+#
+# Every `dense.*` claim below reads only committed artifacts under `run/`.
+# None of them runs a retriever, opens `run/golden.db` or touches Ollama:
+# reproducing the dense *vectors* needs a local model and roughly ninety
+# minutes, which is exactly the shape of claim this file exists to keep
+# out (see the module docstring). What is committed, and therefore what is
+# checked, is the response matrix those vectors produced.
+#
+# The comparison arithmetic here is written out rather than imported from
+# `tools/dense_vs_bm25.py`. That is deliberate and not duplication for its
+# own sake: a claim that called the same function that produced the
+# artifact would only prove the function is a function. Two independent
+# readings of one CSV is the check.
+
+
+def _dense_columns() -> tuple[list[str], dict[str, list[float]]]:
+    """`(item_ids, {system_id: per-item 0.0/1.0})` from the dense panel."""
+    item_ids: list[str] = []
+    seen: set[str] = set()
+    columns: dict[str, dict[str, float]] = {}
+    with open(_RUN / "panel_dense_matrix.csv", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            item_id = row["item_id"]
+            if item_id not in seen:
+                seen.add(item_id)
+                item_ids.append(item_id)
+            columns.setdefault(row["system_id"], {})[item_id] = 1.0 if row["correct"] == "1" else 0.0
+    return item_ids, {sid: [col[i] for i in item_ids] for sid, col in columns.items()}
+
+
+def _recompute_dense_panel_shape() -> ClaimResult:
+    item_ids, columns = _dense_columns()
+    bm25 = sorted(s for s in columns if s.startswith("bm25/"))
+    dense = sorted(s for s in columns if s.startswith("dense/"))
+    if sorted(s.partition("/")[2] for s in bm25) != sorted(s.partition("/")[2] for s in dense):
+        raise EvidenceError(
+            "run/panel_dense_matrix.csv: the bm25 and dense columns do not cover the same "
+            "(chunking, top_k) set, so no matched comparison is possible"
+        )
+    return ClaimResult(
+        values={
+            "n_items": float(len(item_ids)),
+            "n_systems": float(len(columns)),
+            "n_bm25": float(len(bm25)),
+            "n_dense": float(len(dense)),
+        },
+        detail=f"{len(item_ids)} items x {len(columns)} systems: {len(bm25)} bm25, {len(dense)} dense",
+    )
+
+
+def _recompute_dense_bm25_twin() -> ClaimResult:
+    """The milestone's load-bearing check, recomputed from the two
+    committed matrices rather than read back from the twin report.
+
+    `run/panel54_matrix.csv`'s `correct` column was produced by a script
+    that was never committed and is lost. `tools/panel_dense.py`
+    regenerates the same BM25 columns from a *committed* generator; if a
+    single cell disagrees, the definition behind the frozen panel is not
+    the definition behind the dense columns and no comparison between them
+    means anything. `run/panel_dense_twin.json`'s own recorded counts are
+    cross-checked against this fresh recomputation in `detail`, so a
+    stale report cannot pass by agreeing with itself.
+    """
+    _item_ids, dense_columns = _dense_columns()
+    shared = sorted(s for s in dense_columns if s.startswith("bm25/"))
+    if not shared:
+        raise EvidenceError("run/panel_dense_matrix.csv has no bm25 column to verify against")
+
+    frozen: dict[str, dict[str, float]] = {s: {} for s in shared}
+    want = set(shared)
+    with open(_RUN / "panel54_matrix.csv", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row["system_id"] in want:
+                frozen[row["system_id"]][row["item_id"]] = 1.0 if row["correct"] == "1" else 0.0
+
+    item_ids, _ = _dense_columns()
+    compared = 0
+    mismatched = 0
+    for sid in shared:
+        for index, item_id in enumerate(item_ids):
+            if item_id not in frozen[sid]:
+                raise EvidenceError(f"run/panel54_matrix.csv has no row for item {item_id!r} ({sid})")
+            compared += 1
+            if dense_columns[sid][index] != frozen[sid][item_id]:
+                mismatched += 1
+
+    report = json.loads((_RUN / "panel_dense_twin.json").read_text(encoding="utf-8"))
+    recorded = int(report["n_cells_mismatched"])
+    return ClaimResult(
+        values={
+            "n_cells_compared": float(compared),
+            "n_cells_mismatched": float(mismatched),
+            "n_columns": float(len(shared)),
+        },
+        detail=(
+            f"{compared} cell(s) over {len(shared)} bm25 column(s); {mismatched} disagree with "
+            f"run/panel54_matrix.csv. run/panel_dense_twin.json recorded "
+            f"{report['n_cells_mismatched']}/{report['n_cells_compared']} at generation time"
+            + ("" if recorded == mismatched else " -- WHICH DISAGREES WITH THIS RECOMPUTATION")
+        ),
+    )
+
+
+def _recompute_dense_vs_bm25() -> ClaimResult:
+    """Dense against BM25 at matched `(chunking, top_k)`, through
+    `gate.evaluate_gate` — all six pairs in one call, so Holm-Bonferroni
+    corrects across the six comparisons actually made and each MDE is
+    computed at `alpha / 6`.
+
+    The threshold is the pre-registered `tools/dense_vs_bm25.py`
+    `DEFAULT_THRESHOLD` (0.05, five points of retrieval success), repeated
+    here as a literal rather than imported, so this claim states the value
+    it checks instead of inheriting whatever a tool currently holds.
+    """
+    item_ids, columns = _dense_columns()
+    per_item: dict[str, tuple[list[float], list[float]]] = {}
+    for sid in sorted(columns):
+        if not sid.startswith("bm25/"):
+            continue
+        rest = sid.partition("/")[2]
+        head = f"dense/{rest}"
+        if head in columns:
+            # Same metric naming as `tools/dense_vs_bm25.py`, because
+            # `gate._metric_seed` derives each metric's bootstrap seed
+            # from its *name*: a claim that renamed the pairs would
+            # report different intervals for identical data and look
+            # like drift.
+            chunking, _, k = rest.partition("/")
+            per_item[f"dense_vs_bm25.{chunking}.{k}"] = (columns[sid], columns[head])
+    if not per_item:
+        raise EvidenceError("run/panel_dense_matrix.csv has no matched (bm25, dense) pair")
+
+    specs = [MetricSpec(metric=name, threshold=0.05, higher_is_better=True) for name in per_item]
+    try:
+        report = evaluate_gate(
+            base_run_id="bm25",
+            head_run_id="dense",
+            suite_id="panel_dense",
+            per_item=per_item,
+            specs=specs,
+            seed=0,
+        )
+    except ThresholdBelowMDEError as exc:
+        boot = paired_bootstrap(*per_item[exc.metric], alpha=0.05 / len(specs), seed=0)
+        return ClaimResult(
+            values={
+                "outcome": "refused",
+                "n": float(boot.n),
+                "n_pairs": float(len(specs)),
+                "mde": exc.mde,
+            },
+            detail=f"threshold {exc.threshold} < mde {exc.mde:.4f} on {exc.metric}; no report produced",
+        )
+
+    values: dict[str, float | str] = {
+        "outcome": "block" if report.blocked else "pass",
+        "n": float(report.results[0].n),
+        "n_pairs": float(len(report.results)),
+        "n_dense_wins": float(sum(r.delta > 0 for r in report.results)),
+        "max_mde": max(r.mde for r in report.results),
+    }
+    for r in report.results:
+        values[f"delta:{r.metric}"] = r.delta
+    detail = "; ".join(
+        f"{r.metric}: bm25 {r.base_mean:.4f} vs dense {r.head_mean:.4f}, delta {r.delta:+.4f} "
+        f"[{r.ci_low:+.4f},{r.ci_high:+.4f}], p_holm {r.p_adjusted:.4f}, mde {r.mde:.4f} -> {r.verdict}"
+        for r in report.results
+    )
+    return ClaimResult(values=values, detail=detail)
+
+
 def _recompute_gate_benign() -> ClaimResult:
     return _recompute_gate_case("benign")
 
@@ -1229,6 +1403,75 @@ CLAIMS: tuple[Claim, ...] = (
         artifacts=("run/closedbook_forced.log",),
         metrics=(Metric("hits", 2.0), Metric("scored", 149.0), Metric("rate", 2 / 149, 0.0005)),
         recompute=_recompute_closedbook_forced,
+    ),
+    Claim(
+        id="dense.bm25_twin",
+        group="Dense retrieval (run/panel_dense_matrix.csv)",
+        description=(
+            "The frozen 54-config panel's `correct` definition, recovered by reproducing it. "
+            "The script that produced run/panel54_matrix.csv was never committed and is lost, so "
+            "the definition behind every panel.* claim was written down nowhere. "
+            "tools/panel_dense.py regenerates the same six BM25 columns through the shipped "
+            "config dispatch and they agree cell for cell: correct == retrieval.recall@k > 0 at "
+            "overlap_min_chars=1. Without this, no dense-vs-BM25 comparison against that panel "
+            "would mean anything."
+        ),
+        artifacts=(
+            "run/panel_dense_matrix.csv",
+            "run/panel54_matrix.csv",
+            "run/panel_dense_twin.json",
+        ),
+        metrics=(
+            Metric("n_cells_compared", 14184.0),
+            Metric("n_cells_mismatched", 0.0),
+            Metric("n_columns", 6.0),
+        ),
+        recompute=_recompute_dense_bm25_twin,
+    ),
+    Claim(
+        id="dense.panel_shape",
+        group="Dense retrieval (run/panel_dense_matrix.csv)",
+        description=(
+            "The dense panel: the same 2,364 items as the frozen 54-config panel, over "
+            "2 chunkings x 3 top_ks x {bm25, dense} = 12 systems, with both retrievers covering "
+            "exactly the same (chunking, top_k) set so every comparison is matched."
+        ),
+        artifacts=("run/panel_dense_matrix.csv",),
+        metrics=(
+            Metric("n_items", 2364.0),
+            Metric("n_systems", 12.0),
+            Metric("n_bm25", 6.0),
+            Metric("n_dense", 6.0),
+        ),
+        recompute=_recompute_dense_panel_shape,
+    ),
+    Claim(
+        id="dense.vs_bm25",
+        group="Dense retrieval (run/panel_dense_matrix.csv)",
+        description=(
+            "**Dense loses to BM25 on this corpus, on all six matched pairs.** qwen3-embedding:"
+            "0.6b (1024-d, exact dot product) against Okapi BM25 at matched chunking and top_k, "
+            "through gate.evaluate_gate: paired bootstrap, Holm correction across all six "
+            "comparisons, MDE computed at alpha/6. At the 1024-128 chunking dense is 6.3 to 8.5 "
+            "points worse, larger than the pre-registered 0.05 threshold and significant after "
+            "correction, so the gate BLOCKS; at 512-128 it is 1.1 to 2.0 points worse, inside "
+            "the threshold. Zero pairs favour dense."
+        ),
+        artifacts=("run/panel_dense_matrix.csv",),
+        metrics=(
+            Metric("outcome", "block"),
+            Metric("n", 2364.0),
+            Metric("n_pairs", 6.0),
+            Metric("n_dense_wins", 0.0),
+            Metric("max_mde", 0.0345, 0.002),
+            Metric("delta:dense_vs_bm25.1024-128.k3", -0.0850, 0.001),
+            Metric("delta:dense_vs_bm25.1024-128.k5", -0.0821, 0.001),
+            Metric("delta:dense_vs_bm25.1024-128.k10", -0.0630, 0.001),
+            Metric("delta:dense_vs_bm25.512-128.k3", -0.0165, 0.001),
+            Metric("delta:dense_vs_bm25.512-128.k5", -0.0195, 0.001),
+            Metric("delta:dense_vs_bm25.512-128.k10", -0.0110, 0.001),
+        ),
+        recompute=_recompute_dense_vs_bm25,
     ),
 )
 

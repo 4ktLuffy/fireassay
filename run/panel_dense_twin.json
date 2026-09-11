@@ -1,0 +1,35 @@
+{
+  "frozen_matrix": "run/panel54_matrix.csv",
+  "n_items": 2364,
+  "n_columns": 6,
+  "n_cells_compared": 14184,
+  "n_cells_mismatched": 0,
+  "per_column": {
+    "bm25/1024-128/k3": {
+      "compared": 2364,
+      "mismatch": 0
+    },
+    "bm25/1024-128/k5": {
+      "compared": 2364,
+      "mismatch": 0
+    },
+    "bm25/1024-128/k10": {
+      "compared": 2364,
+      "mismatch": 0
+    },
+    "bm25/512-128/k3": {
+      "compared": 2364,
+      "mismatch": 0
+    },
+    "bm25/512-128/k5": {
+      "compared": 2364,
+      "mismatch": 0
+    },
+    "bm25/512-128/k10": {
+      "compared": 2364,
+      "mismatch": 0
+    }
+  },
+  "examples": [],
+  "definition": "correct = any(ch.doc_id == doc_id and ch.char_start < char_end and ch.char_end > char_start for ch in retrieved[:k]) -- i.e. retrieval.recall@k > 0 at overlap_min_chars=1"
+}
